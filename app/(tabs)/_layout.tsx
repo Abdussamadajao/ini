@@ -3,21 +3,31 @@ import {
   QuickActionItem,
   QuickActionsModal,
 } from "@/components/shared/quick-actions-modal";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useColors, useSpacing } from "@/theme";
 import { router, Tabs } from "expo-router";
 import React, { useState } from "react";
+import { View } from "react-native";
+
+const FAB_SIZE = 48;
+const FAB_BOTTOM_OFFSET = 120;
 
 export default function TabLayout() {
-  const { colors } = useTheme();
+  const colors = useColors();
+  const spacing = useSpacing();
   const styles = useStyles();
   const [open, setOpen] = useState(false);
+
+  // Single source of truth for the FAB's right offset — read once here and
+  // passed to both the FAB's own style and QuickActionsModal, so the two
+  // can never drift out of alignment again.
+  const fabRightOffset = spacing[5];
 
   const quickActions: QuickActionItem[] = [
     {
       key: "income",
-      label: "Income",
+      label: "Add Income",
       iconSet: "material",
-      iconName: "trending-up",
+      iconName: "arrow-upward",
       onPress: () => {
         setOpen(false);
         router.push("/add-income");
@@ -25,12 +35,33 @@ export default function TabLayout() {
     },
     {
       key: "expense",
-      label: "Expense",
+      label: "Add Expense",
       iconSet: "material",
-      iconName: "trending-down",
+      iconName: "arrow-downward",
+      iconColor: "error",
       onPress: () => {
         setOpen(false);
         router.push("/add-expenses");
+      },
+    },
+    {
+      key: "batch",
+      label: "Batch Transactions",
+      iconSet: "material",
+      iconName: "receipt-long",
+      onPress: () => {
+        setOpen(false);
+        router.push("/batch-expense");
+      },
+    },
+    {
+      key: "budget",
+      label: "Add Budget",
+      iconSet: "material",
+      iconName: "pie-chart",
+      onPress: () => {
+        setOpen(false);
+        router.push("/add-budget");
       },
     },
   ];
@@ -58,25 +89,20 @@ export default function TabLayout() {
         <Tabs.Screen
           name="transactions"
           options={{
-            title: "Wallet",
+            title: "History",
             tabBarIcon: ({ color, focused }) => (
               <TabItem name="transactions" color={color} focused={focused} />
             ),
           }}
         />
+
         <Tabs.Screen
-          name="add"
+          name="budgets"
           options={{
-            title: "",
-            tabBarIcon: () => <FABTab onPress={() => setOpen(true)} />,
-          }}
-          listeners={{
-            tabPress: (e) => {
-              // Prevent default navigation to the "add" route — the FAB
-              // should only toggle the quick actions menu, not push a screen.
-              e.preventDefault();
-              setOpen(true);
-            },
+            title: "Reports",
+            tabBarIcon: ({ color, focused }) => (
+              <TabItem name="budgets" color={color} focused={focused} />
+            ),
           }}
         />
         <Tabs.Screen
@@ -99,11 +125,18 @@ export default function TabLayout() {
         />
       </Tabs>
 
+      {/* Floating FAB — detached from the tab bar row entirely */}
+      <View style={styles.fabFloating} pointerEvents="box-none">
+        <FABTab onPress={() => setOpen((prev) => !prev)} isOpen={open} />
+      </View>
+
       <QuickActionsModal
         open={open}
         close={() => setOpen(false)}
         actions={quickActions}
-        bottomOffset={130}
+        rightOffset={fabRightOffset}
+        bottomOffset={FAB_BOTTOM_OFFSET}
+        fabSize={FAB_SIZE}
       />
     </>
   );
@@ -114,37 +147,29 @@ export default function TabLayout() {
 const useStyles = makeStyles(({ colors, spacing, radius }) => ({
   tabBar: {
     backgroundColor: colors.background.surface,
-    borderTopWidth: 0,
-    borderWidth: 1,
-    borderColor: colors.background.surface,
-    height: 80,
-    paddingBottom: spacing[10],
-    paddingTop: spacing[2.5],
+    borderTopWidth: 1,
+    borderTopColor: colors.border.default,
+    height: 90,
+    paddingBottom: spacing[6],
+    paddingTop: spacing[1],
     position: "absolute",
-    borderRadius: radius.full,
-    bottom: spacing[7.5],
-    left: spacing[4],
-    right: spacing[4],
-    shadowColor: colors.status.success.main,
-    shadowOffset: { width: 1, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    elevation: 11,
+    bottom: spacing[0],
+    left: 0,
+    right: 0,
+    shadowColor: colors.palette.black,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.02,
+    shadowRadius: 10,
+    elevation: 4,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    marginHorizontal: spacing[4],
   },
-  buttonContainer: {
+  fabFloating: {
     position: "absolute",
-    right: spacing[4],
-    bottom: 130,
-    zIndex: 1000,
-  },
-  button: {
-    width: 60,
-    height: 60,
-    borderRadius: radius.full,
-    backgroundColor: colors.primary.main,
+    right: spacing[5],
+    bottom: FAB_BOTTOM_OFFSET,
+    zIndex: 10000,
+    elevation: 10,
   },
 }));

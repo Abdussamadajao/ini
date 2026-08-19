@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { StyleSheet } from "react-native";
-
 import { ThemeColors } from "../types";
-import type { sharedTokens } from "../typography";
+import type { sharedTokens, SpacingScale } from "../typography";
 import { useColors } from "./theme";
 import {
   useRadius,
@@ -14,16 +13,14 @@ import {
 
 type Tokens = {
   colors: ThemeColors;
-  spacing: typeof sharedTokens.spacing;
+  spacing: SpacingScale;
   radius: typeof sharedTokens.radius;
   typography: typeof sharedTokens.typography;
   shadow: typeof sharedTokens.shadow;
   zIndex: typeof sharedTokens.zIndex;
 };
 
-type SheetStyle<T> =
-  | StyleSheet.NamedStyles<T>
-  | StyleSheet.NamedStyles<any>;
+type SheetStyle<T> = StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>;
 
 type StyleFn<T extends SheetStyle<T>> = (tokens: Tokens) => T;
 
@@ -34,7 +31,6 @@ function useStyles<T extends SheetStyle<T>>(fn: StyleFn<T>): T {
   const typography = useTypography();
   const shadow = useShadow();
   const zIndex = useZIndex();
-
   return useMemo(
     () =>
       StyleSheet.create(
@@ -45,9 +41,7 @@ function useStyles<T extends SheetStyle<T>>(fn: StyleFn<T>): T {
   );
 }
 
-export function makeStyles<T extends SheetStyle<T>>(
-  fn: StyleFn<T>,
-): () => T {
+export function makeStyles<T extends SheetStyle<T>>(fn: StyleFn<T>): () => T {
   return function useCreatedStyles() {
     return useStyles(fn);
   };

@@ -1,21 +1,26 @@
 import { authClient } from "@/lib/auth-client";
 import { axiosInstance } from "@/lib/axios";
-import type { DashboardResponse, InsightsResponse } from "@/types";
+import type { DashboardResponse, InsightsResponse, PeriodTab } from "@/types";
 import { useQuery } from "@tanstack/react-query";
+import { dashboardKeys } from "./key";
 
-export const dashboardKeys = {
-  all: ["dashboard"] as const,
-  summary: () => [...dashboardKeys.all, "summary"] as const,
-  insights: () => [...dashboardKeys.all, "insights"] as const,
+// Maps UI tab labels to the query param sent to the backend.
+// I have NOT confirmed the backend reads this param yet — see note below.
+const PERIOD_PARAM_MAP: Record<PeriodTab, string> = {
+  Week: "week",
+  Month: "month",
+  "3M": "3m",
+  Year: "year",
 };
 
-export function useDashboard() {
+export function useDashboard(period: PeriodTab = "Month") {
   const hasToken = !!authClient.getCookie();
   return useQuery({
-    queryKey: dashboardKeys.summary(),
+    queryKey: dashboardKeys.summary(period),
     queryFn: async () => {
       const res = await axiosInstance.get<DashboardResponse>(
         "/api/dashboard/summary",
+        { params: { period: PERIOD_PARAM_MAP[period] } },
       );
       return res.data.data;
     },

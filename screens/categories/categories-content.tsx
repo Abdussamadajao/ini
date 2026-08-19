@@ -26,7 +26,7 @@ type CategoriesContentProps = {
 };
 
 const GRID_COLUMNS = 3;
-const MAX_CUSTOM_CATEGORIES = 10;
+// const MAX_CUSTOM_CATEGORIES = 10;
 
 type Section = {
   key: string;
@@ -34,6 +34,37 @@ type Section = {
   countLabel: string;
   data: Category[];
 };
+
+// --- Skeleton Loading Component ---
+function CategoriesSkeleton() {
+  const styles = useCategoriesStyles();
+
+  // Create skeleton data for 6 items (2 rows of 3)
+  const skeletonData = Array.from({ length: 6 }, (_, index) => ({
+    id: `skeleton-${index}`,
+  }));
+
+  return (
+    <FlatList
+      data={skeletonData}
+      keyExtractor={(item) => item.id}
+      renderItem={() => (
+        <View style={[styles.tile, styles.tileSurface]}>
+          <View style={styles.tileIconWrap}>
+            <SkeletonListItem />
+          </View>
+          <Text style={styles.tileTitle}> </Text>
+          <View style={styles.colorDot} />
+        </View>
+      )}
+      numColumns={GRID_COLUMNS}
+      columnWrapperStyle={styles.gridRow}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+    />
+  );
+}
 
 export function CategoriesContent({
   isRefetching,
@@ -86,7 +117,9 @@ export function CategoriesContent({
       toast.success("Category deleted successfully");
       modalRef.current?.dismiss();
     } catch (error) {
-      toast.error("Failed to delete category");
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to delete category";
+      toast.error(errorMessage);
     }
   }, [selectedCategory, deleteCategory, toast]);
 
@@ -166,6 +199,7 @@ export function CategoriesContent({
           <Text style={styles.sectionCount}>{item.countLabel}</Text>
         </View>
         <FlatList
+          key={`grid-${GRID_COLUMNS}`}
           data={item.data}
           keyExtractor={(cat) => cat.id}
           renderItem={renderCategoryTile}
@@ -178,6 +212,7 @@ export function CategoriesContent({
     [renderCategoryTile, styles],
   );
 
+  // --- Show Error State ---
   if (showError) {
     return (
       <InlineError
@@ -190,18 +225,32 @@ export function CategoriesContent({
     );
   }
 
+  // --- Show Loading State ---
   if (isLoading && !categories) {
     return (
-      <View style={styles.content}>
-        {Array.from({ length: 5 }).map((_, index) => (
-          <View key={index} style={[styles.tile, styles.tileSurface]}>
-            <SkeletonListItem />
-          </View>
-        ))}
-      </View>
+      <FlatList
+        data={
+          sections.length > 0
+            ? sections
+            : [{ key: "loading", title: "", countLabel: "", data: [] }]
+        }
+        keyExtractor={(section) => section.key}
+        renderItem={() => <CategoriesSkeleton />}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={refetch}
+            colors={[colors.primary.main]}
+          />
+        }
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      />
     );
   }
 
+  // --- Show Content ---
   return (
     <>
       <FlatList

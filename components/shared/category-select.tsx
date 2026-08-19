@@ -47,7 +47,6 @@ export function FormikCategorySelect({
     error: categoriesQueryError,
     refetch: refetchCategories,
   } = useCategories();
-  const categories = categoriesData ?? [];
   const [field, meta, helpers] = useField<string>({
     name,
     validate: (val) => {
@@ -59,8 +58,11 @@ export function FormikCategorySelect({
   });
 
   const filtered = useMemo(
-    () => categories.filter((category) => category.type === categoryType),
-    [categories, categoryType],
+    () =>
+      (categoriesData ?? []).filter(
+        (category) => category.type === categoryType,
+      ),
+    [categoriesData, categoryType],
   );
 
   const error =
@@ -69,6 +71,17 @@ export function FormikCategorySelect({
       : undefined;
   const selectedCategory =
     filtered.find((category) => category.id === (field.value || "")) ?? null;
+
+  // Determine if select should be disabled
+  const isDisabled = isLoading || (isCategoriesError && !categoriesData);
+
+  // Determine placeholder text
+  const getPlaceholder = () => {
+    if (isLoading) return "Loading categories...";
+    if (isCategoriesError && !categoriesData) return "Error loading categories";
+    if (filtered.length === 0) return "No categories available";
+    return placeholder;
+  };
 
   return (
     <Select
@@ -84,7 +97,7 @@ export function FormikCategorySelect({
         );
       }}
       label={label}
-      placeholder={isLoading ? "Loading categories..." : placeholder}
+      placeholder={getPlaceholder()}
       modalTitle={modalTitle}
       modalHeaderRight={(closeModal) => (
         <Pressable
@@ -111,7 +124,8 @@ export function FormikCategorySelect({
           </Text>
         </Pressable>
       )}
-      listDisabled={isLoading || (isCategoriesError && !categoriesData)}
+      listDisabled={isDisabled}
+      disabled={isDisabled}
       error={error}
       leftIcon={
         selectedCategory ? (
@@ -173,6 +187,11 @@ export function FormikCategorySelect({
               onRetry={refetchCategories}
               retryLabel="Retry"
             />
+          ) : null}
+          {!isLoading && !isCategoriesError && filtered.length === 0 ? (
+            <Text style={[styles.infoText, { color: colors.text.secondary }]}>
+              No {categoryType.toLowerCase()} categories available
+            </Text>
           ) : null}
         </>
       )}

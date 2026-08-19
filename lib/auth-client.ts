@@ -26,7 +26,7 @@ export const authClient = createAuthClient({
         },
         username: {
           type: "string",
-          required: false,
+          required: true,
         },
         bio: {
           type: "string",

@@ -3,12 +3,13 @@ import { authClient } from "@/lib/auth-client";
 import { axiosInstance } from "@/lib/axios";
 import type {
   AnyTransaction,
+  CreateBatchTransactionBody,
   CreateTransactionBody,
   IncomeSummary,
   TransactionFilters,
   TransactionListResponse,
   UpdateTransactionBody,
-} from "@/types";
+} from "@/types/index";
 import {
   useInfiniteQuery,
   useMutation,
@@ -16,18 +17,7 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from "@tanstack/react-query";
-
-// ─── Query keys ───────────────────────────────────────────────────────────
-
-export const transactionKeys = {
-  all: ["transactions"] as const,
-  lists: () => [...transactionKeys.all, "list"] as const,
-  list: (f: TransactionFilters) => [...transactionKeys.lists(), f] as const,
-  details: () => [...transactionKeys.all, "detail"] as const,
-  detail: (id: string) => [...transactionKeys.details(), id] as const,
-  summaries: () => [...transactionKeys.all, "summary"] as const,
-  summary: (id: string) => [...transactionKeys.summaries(), id] as const,
-};
+import { dashboardKeys, transactionKeys } from "./key";
 
 // ─── Build query string ───────────────────────────────────────────────────
 
@@ -100,7 +90,10 @@ export function useInfiniteTransactions(
 
 export function useIncomeTransactions(
   filters: Omit<TransactionFilters, "type"> = {},
-  options?: Omit<UseQueryOptions<TransactionListResponse>, "queryKey" | "queryFn">,
+  options?: Omit<
+    UseQueryOptions<TransactionListResponse>,
+    "queryKey" | "queryFn"
+  >,
 ) {
   return useTransactions({ ...filters, type: "INCOME" }, options);
 }
@@ -159,26 +152,22 @@ export function useIncomeSummary(incomeId: string, enabled = true) {
   });
 }
 
-// ─── Create transaction ───────────────────────────────────────────────────
-
-export function useCreateTransaction() {
-  const queryClient = useQueryClient();
+export function useTransactionMutation() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  return useMutation({
+  const createTransaction = useMutation({
     mutationFn: async (body: CreateTransactionBody) => {
-      if (!authClient.getCookie())
-        throw new Error("Please sign in to continue");
       const res = await axiosInstance.post<{ data: AnyTransaction }>(
         "/api/transactions",
         body,
       );
       return res.data.data;
     },
-
     onSuccess: (data) => {
       // invalidate all lists
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
 
       // if expense tied to income — invalidate that income's summary + detail
       if (data.type === "EXPENSE" && data.income_id) {
@@ -198,15 +187,14 @@ export function useCreateTransaction() {
       toast.error(errorMessage);
     },
   });
-}
-
-// ─── Update transaction ───────────────────────────────────────────────────
-
-export function useUpdateTransaction(id: string) {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  return useMutation({
-    mutationFn: async (body: UpdateTransactionBody) => {
+  const updateTransaction = useMutation({
+    mutationFn: async ({
+      id,
+      body,
+    }: {
+      id: string;
+      body: UpdateTransactionBody;
+    }) => {
       if (!authClient.getCookie())
         throw new Error("Please sign in to continue");
       const res = await axiosInstance.patch<{ data: AnyTransaction }>(
@@ -215,10 +203,12 @@ export function useUpdateTransaction(id: string) {
       );
       return res.data.data;
     },
+    onSuccess: (data, variables) => {
+      const { id } = variables;
 
-    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       queryClient.invalidateQueries({ queryKey: transactionKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
 
       // re-fetch summary if income amount or expenses changed
       if (data.type === "INCOME") {
@@ -236,6 +226,7 @@ export function useUpdateTransaction(id: string) {
           queryKey: transactionKeys.detail(data.income_id),
         });
       }
+
       toast.success("Transaction updated successfully");
     },
     onError: (error) => {
@@ -243,14 +234,7 @@ export function useUpdateTransaction(id: string) {
       toast.error(errorMessage);
     },
   });
-}
-
-// ─── Delete transaction ───────────────────────────────────────────────────
-
-export function useDeleteTransaction() {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-  return useMutation({
+  const deleteTransaction = useMutation({
     mutationFn: async ({
       id,
       incomeId,
@@ -267,6 +251,7 @@ export function useDeleteTransaction() {
     onSuccess: ({ id, incomeId }) => {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       queryClient.removeQueries({ queryKey: transactionKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
 
       // if expense — update linked income summary
       if (incomeId) {
@@ -284,4 +269,51 @@ export function useDeleteTransaction() {
       toast.error(errorMessage);
     },
   });
+
+  const createBatchTransaction = useMutation({
+    mutationFn: async (body: CreateBatchTransactionBody) => {
+      const res = await axiosInstance.post<TransactionListResponse>(
+        "/api/transactions/batch",
+        body,
+      );
+      return res.data.data;
+    },
+    onSuccess: (data) => {
+      // invalidate all lists + dashboard summary
+      queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+
+      // invalidate any income summaries/details linked to expenses in this batch
+      const linkedIncomeIds = data
+        .filter((t) => t.type === "EXPENSE" && t.income_id)
+        .map((t) => t.income_id as string);
+
+      new Set(linkedIncomeIds).forEach((incomeId) => {
+        queryClient.invalidateQueries({
+          queryKey: transactionKeys.summary(incomeId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: transactionKeys.detail(incomeId),
+        });
+      });
+
+      toast.success(
+        data.length > 1
+          ? `${data.length} transactions created successfully`
+          : "Transaction created successfully",
+      );
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Failed to create transactions";
+      toast.error(errorMessage);
+      console.log(error);
+    },
+  });
+
+  return {
+    createTransaction,
+    updateTransaction,
+    deleteTransaction,
+    createBatchTransaction,
+  };
 }

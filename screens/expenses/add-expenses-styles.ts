@@ -15,6 +15,8 @@ export const useAddExpensesStyles = makeStyles(
       paddingVertical: spacing[3],
       minHeight: 48,
       backgroundColor: colors.background.screen,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border.default,
     },
     backBtn: {
       padding: spacing[2],
@@ -35,7 +37,7 @@ export const useAddExpensesStyles = makeStyles(
       paddingBottom: spacing[6],
     },
 
-    // ── Existing keys used by sub-components — unchanged ──────────
+    // ── Income Card ──────────────────────────────────────────────────────
     incomeCard: {
       borderRadius: radius.lg,
       borderWidth: 1,
@@ -110,58 +112,236 @@ export const useAddExpensesStyles = makeStyles(
       color: colors.text.muted,
     },
 
-    // ── Hero amount — redesigned ───────────────────────────────────
-    amountSection: {
-      marginTop: spacing[6],
-      marginBottom: spacing[5],
+    // ── Header ───────────────────────────────────────────────────────────
+    headerBtn: {
+      width: 40,
+      height: 40,
       alignItems: "center",
-    },
-    typeChip: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: spacing[1.5],
-      alignSelf: "center",
-      paddingVertical: spacing[1.5],
-      paddingHorizontal: spacing[3],
-      borderRadius: radius.full,
-      backgroundColor: colors.status.error.main + "14",
-      marginBottom: spacing[3],
-    },
-    typeChipText: {
-      fontSize: 11,
-      fontFamily: typography.fontFamily.Manrope.Bold,
-      letterSpacing: 0.8,
-      textTransform: "uppercase",
-      color: colors.status.error.main,
-    },
-    amountLabel: {
-      fontSize: typography.fontSize.lg,
-      fontFamily: typography.fontFamily.Manrope.Medium,
-      letterSpacing: 0.5,
-      textTransform: "uppercase",
-      marginBottom: spacing[2],
-      textAlign: "center",
-      color: colors.text.secondary,
-    },
-    amountExceedsRow: {
-      alignItems: "center",
-      flexDirection: "row",
-      gap: spacing[2],
       justifyContent: "center",
-      marginTop: spacing[3],
-      paddingHorizontal: spacing[4],
-      paddingVertical: spacing[2],
-      borderRadius: radius.lg,
-      backgroundColor: colors.status.warning.main + "14",
-    },
-    amountExceedsText: {
-      flexShrink: 1,
-      fontFamily: typography.fontFamily.Manrope.SemiBold,
-      fontSize: typography.fontSize.sm,
-      color: colors.status.warning.main,
     },
 
-    // ── Category grid — tinted-fill selection instead of thick borders ──
+    // ── Amount Section ───────────────────────────────────────────────────
+    amountSection: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: spacing[3],
+    },
+    amountLabel: {
+      fontSize: typography.fontSize.sm,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.text.secondary,
+      marginBottom: spacing[1],
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      textAlign: "center",
+    },
+    amountRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    amountCurrency: {
+      fontSize: typography.fontSize["2xl"],
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.text.primary,
+      marginRight: spacing[1],
+      marginBottom: spacing[1],
+    },
+    amountField: {
+      marginBottom: 0,
+      width: 180,
+    },
+    amountInput: {
+      fontSize: typography.fontSize["5xl"],
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      textAlign: "center",
+      color: colors.text.primary,
+      paddingVertical: 0,
+    },
+
+    // ── Form Content ─────────────────────────────────────────────────────
+    formContent: {
+      gap: spacing[6],
+    },
+    fieldGroup: {
+      gap: spacing[2],
+    },
+    fieldLabel: {
+      fontSize: 12,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      letterSpacing: 0.6,
+      textTransform: "uppercase",
+      color: colors.text.secondary,
+    },
+    errorText: {
+      fontSize: typography.fontSize.xs,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.status.error.main,
+      marginTop: spacing[1],
+    },
+    hintText: {
+      fontSize: typography.fontSize.xs,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.text.secondary,
+      marginTop: spacing[1],
+    },
+
+    // ── Segmented Control ────────────────────────────────────────────────
+    segmentedControl: {
+      flexDirection: "row",
+      backgroundColor: colors.background.surfaceAlt,
+      borderRadius: radius.lg,
+      padding: spacing[1],
+      borderWidth: 1,
+      borderColor: colors.border.default,
+    },
+    segmentedButton: {
+      flex: 1,
+      paddingVertical: spacing[2],
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: radius.md,
+    },
+    segmentedButtonActive: {
+      backgroundColor: colors.background.screen,
+      shadowColor: colors.palette.black,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 2,
+    },
+    segmentedButtonText: {
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.secondary,
+    },
+    segmentedButtonTextActive: {
+      color: colors.primary.main,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+    },
+
+    // ── Budget Button ────────────────────────────────────────────────────
+    budgetButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: spacing[4],
+      backgroundColor: colors.background.screen,
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+    },
+    budgetButtonLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[4],
+    },
+    budgetIcon: {
+      borderRadius: radius.sm,
+    },
+    budgetIconText: {
+      fontSize: 20,
+    },
+    budgetInfo: {
+      gap: spacing[0.5],
+    },
+    budgetName: {
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.text.primary,
+    },
+    budgetMeta: {
+      fontSize: typography.fontSize.sm,
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.secondary,
+    },
+
+    // ── Category Button ──────────────────────────────────────────────────
+    categoryButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: spacing[4],
+      backgroundColor: colors.background.surfaceAlt,
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+    },
+    categoryButtonLocked: {
+      opacity: 0.8,
+    },
+    categoryLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[4],
+    },
+    categoryIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: radius.full,
+      backgroundColor: colors.background.screen,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    categoryIconText: {
+      fontSize: 16,
+    },
+    categoryName: {
+      fontSize: typography.fontSize.lg,
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.primary,
+    },
+
+    // ── Note Field ───────────────────────────────────────────────────────
+    noteField: {
+      marginBottom: 0,
+    },
+
+    // ── Date Button ──────────────────────────────────────────────────────
+    dateButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: spacing[4],
+      backgroundColor: colors.background.screen,
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+    },
+    dateLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[4],
+    },
+    dateText: {
+      fontSize: typography.fontSize.lg,
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.primary,
+    },
+
+    // ── Footer ───────────────────────────────────────────────────────────
+    footer: {
+      paddingHorizontal: spacing[5],
+      paddingTop: spacing[5],
+      paddingBottom: spacing[6],
+      backgroundColor: colors.background.screen,
+      borderTopWidth: 1,
+      borderTopColor: colors.border.default,
+    },
+    saveButton: {
+      backgroundColor: colors.primary.main,
+      borderRadius: radius.lg,
+      paddingVertical: spacing[4],
+    },
+    saveButtonText: {
+      fontSize: typography.fontSize.lg,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.primary.contrastText,
+      textAlign: "center",
+    },
+
+    // ── Category grid ────────────────────────────────────────────────────
     categorySection: {
       marginBottom: spacing[6],
     },
@@ -214,7 +394,7 @@ export const useAddExpensesStyles = makeStyles(
       justifyContent: "center",
     },
 
-    // ── Ledger-style field rows (date/notes), matching Add Income ───
+    // ── Ledger-style field rows ──────────────────────────────────────────
     field: {
       marginBottom: 0,
     },
@@ -238,11 +418,7 @@ export const useAddExpensesStyles = makeStyles(
       justifyContent: "center",
       backgroundColor: colors.primary.main + "14",
     },
-    fieldLabel: {
-      fontSize: typography.fontSize.sm,
-      fontFamily: typography.fontFamily.Manrope.SemiBold,
-      color: colors.text.primary,
-    },
+
     notesInput: {
       minHeight: 100,
       padding: spacing[3.5],
@@ -269,15 +445,7 @@ export const useAddExpensesStyles = makeStyles(
       textAlignVertical: "top",
     },
 
-    // ── Footer — spending summary + Save ────────────────────────────
-    footer: {
-      paddingHorizontal: spacing[6],
-      paddingTop: spacing[4],
-      paddingBottom: spacing[6],
-      backgroundColor: colors.background.screen,
-      borderTopWidth: 1,
-      borderTopColor: colors.border.default,
-    },
+    // ── Footer — spending summary + Save ────────────────────────────────
     summaryStrip: {
       flexDirection: "row",
       alignItems: "center",
@@ -318,19 +486,28 @@ export const useAddExpensesStyles = makeStyles(
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
 
-    // ── Existing keys used by sub-components — unchanged ──────────
+    // ── Modal Styles ─────────────────────────────────────────────────────
     modalBackground: {
       borderTopLeftRadius: radius.xl,
       borderTopRightRadius: radius.xl,
       backgroundColor: colors.background.surface,
     },
+    modalHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: spacing[4],
+      paddingTop: spacing[2],
+      paddingBottom: spacing[3],
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border.default,
+      backgroundColor: colors.background.surface,
+    },
     modalTitle: {
       fontSize: typography.fontSize.lg,
       fontFamily: typography.fontFamily.Manrope.Bold,
-      textAlign: "center",
-      paddingVertical: spacing[4],
-      paddingHorizontal: spacing[6],
       color: colors.text.primary,
+      flex: 1,
     },
     modalListContent: {
       paddingHorizontal: spacing[6],
@@ -387,18 +564,15 @@ export const useAddExpensesStyles = makeStyles(
       textAlign: "center",
       lineHeight: 20,
     },
-    incomeModalTitle: {
-      fontSize: typography.fontSize.lg,
-      fontFamily: typography.fontFamily.Manrope.Bold,
-      textAlign: "center",
-      paddingVertical: spacing[4],
-      paddingHorizontal: spacing[6],
-      color: colors.text.primary,
-    },
+
+    // ── Income Modal Styles ──────────────────────────────────────────────
     incomeModalScrollContent: {
-      paddingHorizontal: spacing[6],
-      paddingBottom: spacing[8.5],
+      paddingHorizontal: spacing[4],
+      paddingVertical: spacing[3],
+      paddingBottom: spacing[4],
     },
+
+    // Income Source Card (non-progress mode)
     incomeSourceCard: {
       flexDirection: "row",
       alignItems: "center",
@@ -474,6 +648,100 @@ export const useAddExpensesStyles = makeStyles(
       borderRadius: radius.full,
       backgroundColor: colors.primary.main,
     },
+
+    // Budget Sheet Row (progress mode)
+    budgetSheetRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: spacing[3],
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      marginBottom: spacing[2],
+      backgroundColor: colors.background.surface,
+    },
+    budgetSheetRowSelected: {
+      borderColor: colors.primary.main,
+      backgroundColor: `${colors.primary.main}08`,
+    },
+    budgetSheetIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: spacing[3],
+      backgroundColor: colors.background.surfaceAlt,
+    },
+    budgetSheetIconText: {
+      fontSize: 20,
+    },
+    budgetSheetBody: {
+      flex: 1,
+      minWidth: 0,
+    },
+    budgetSheetTopRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: spacing[1],
+    },
+    budgetSheetLabel: {
+      flex: 1,
+      marginRight: spacing[2],
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.text.primary,
+    },
+    budgetSheetAmount: {
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      color: colors.text.primary,
+    },
+    budgetSheetMetaRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: spacing[1.5],
+    },
+    budgetSheetMetaText: {
+      fontSize: typography.fontSize.xs,
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.secondary,
+    },
+    budgetSheetProgressTrack: {
+      width: "100%",
+      height: 4,
+      borderRadius: radius.sm,
+      overflow: "hidden",
+      backgroundColor: colors.background.surfaceAlt,
+    },
+    budgetSheetProgressFill: {
+      height: "100%",
+      borderRadius: radius.sm,
+    },
+    budgetSheetCheckWrap: {
+      marginLeft: spacing[2],
+      width: 24,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    budgetSheetCheckCircle: {
+      width: 24,
+      height: 24,
+      borderRadius: radius.full,
+      backgroundColor: colors.primary.main,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    // Modal Footer Buttons
+    incomeSourceConfirmBtnWrap: {
+      paddingHorizontal: spacing[4],
+      paddingVertical: spacing[3],
+      borderTopWidth: 1,
+      borderTopColor: colors.border.default,
+      backgroundColor: colors.background.surface,
+    },
     incomeSourceConfirmBtn: {
       flexDirection: "row",
       alignItems: "center",
@@ -481,7 +749,6 @@ export const useAddExpensesStyles = makeStyles(
       gap: spacing[2],
       paddingVertical: spacing[3.5],
       borderRadius: radius.lg,
-      marginTop: spacing[2],
       backgroundColor: colors.primary.main,
     },
     incomeSourceConfirmBtnText: {
@@ -489,10 +756,173 @@ export const useAddExpensesStyles = makeStyles(
       fontSize: typography.fontSize.md,
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
-    incomeSourceConfirmBtnWrap: {
+    incomeSourceCancelBtn: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: spacing[2.5],
+      borderRadius: radius.md,
+      borderWidth: 1,
+    },
+    incomeSourceCancelBtnText: {
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+    },
+    budgetCreateNewBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing[2],
+      paddingVertical: spacing[3],
+      borderRadius: radius.md,
+      borderWidth: 1,
+      marginTop: spacing[2],
+    },
+    budgetCreateNewText: {
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+    },
+
+    // ── Batch Entry ──────────────────────────────────────────────────────
+    headerCountBadge: {
+      backgroundColor: colors.background.surfaceAlt,
+      borderRadius: radius.full,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[1],
+    },
+    headerCountText: {
+      fontSize: 12,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      letterSpacing: 0.6,
+      textTransform: "uppercase",
+      color: colors.text.primary,
+    },
+    headerSubtitle: {
+      textAlign: "center",
+      fontSize: typography.fontSize.sm,
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.secondary,
+      paddingBottom: spacing[2],
+      paddingHorizontal: spacing[6],
+      backgroundColor: colors.background.screen,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border.default,
+    },
+    batchSection: {
+      marginVertical: spacing[3],
+    },
+    batchSectionHeader: {
+      flexDirection: "row",
+      alignItems: "center",
       justifyContent: "space-between",
-      marginTop: spacing[4],
-      padding: spacing[6],
+      paddingBottom: spacing[2],
+      marginBottom: spacing[4],
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border.default,
+    },
+    removeButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[1],
+      paddingVertical: spacing[1],
+      paddingHorizontal: spacing[2],
+      borderRadius: radius.sm,
+    },
+    removeButtonText: {
+      fontSize: typography.fontSize.sm,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.status.error.main,
+    },
+    addAnotherButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing[2],
+      alignSelf: "center",
+      paddingVertical: spacing[2.5],
+      paddingHorizontal: spacing[4],
+      borderRadius: radius.full,
+      marginTop: spacing[2],
+      marginBottom: spacing[6],
+    },
+    addAnotherText: {
+      fontSize: typography.fontSize.sm,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      color: colors.primary.main,
+    },
+    batchSummaryRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: spacing[4],
+    },
+    batchTotalText: {
+      fontSize: typography.fontSize.xl,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.status.error.main,
+      textAlign: "right",
+    },
+
+    // ── Review Expenses Sheet ────────────────────────────────────────────
+    reviewHeader: {
+      paddingHorizontal: spacing[6],
+      paddingBottom: spacing[4],
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border.default,
+      gap: spacing[1],
+    },
+    reviewHeaderRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    reviewTotalRow: {
+      alignItems: "flex-end",
+      gap: spacing[0.5],
+    },
+    reviewTotalText: {
+      fontSize: typography.fontSize.xl,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.primary.main,
+    },
+    reviewList: {
+      paddingHorizontal: spacing[6],
+      paddingVertical: spacing[2],
+    },
+    reviewListItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: spacing[4],
+      borderBottomWidth: 1,
+      borderBottomColor: colors.background.surfaceAlt,
+    },
+    numeralLg: {
+      fontSize: typography.fontSize.lg,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      color: colors.text.primary,
+    },
+    reviewFooter: {
+      paddingHorizontal: spacing[6],
+      paddingTop: spacing[4],
+      paddingBottom: spacing[8],
+      backgroundColor: colors.background.screen,
+      borderTopWidth: 1,
+      borderTopColor: colors.border.default,
+      gap: spacing[2],
+    },
+    editButton: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: spacing[3],
+      borderRadius: radius.lg,
+    },
+    editButtonText: {
+      fontSize: typography.fontSize.md,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      color: colors.primary.main,
+      textAlign: "center",
     },
   }),
 );

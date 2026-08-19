@@ -1,5 +1,5 @@
 import { zustandStorage } from "@/lib/store-manager";
-import { User } from "@/types";
+import { User } from "@/types/index";
 import { Session } from "better-auth";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";

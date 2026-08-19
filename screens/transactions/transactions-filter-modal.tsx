@@ -1,12 +1,7 @@
-﻿import DateRangePicker, {
-  type RangeValue,
-} from "@/components/form/date-range-picker";
-import { Button } from "@/components/shared";
+﻿import { DateRangePicker, type RangeValue } from "@/components/form";
 import BlurBackdrop, {
   BlurBackdropProps,
 } from "@/components/shared/blur-backdrop";
-import SegmentedTabs from "@/components/shared/segmented-tabs";
-import { formatPrice } from "@/lib/custom";
 import { makeStyles, useTheme } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
@@ -18,16 +13,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  LayoutChangeEvent,
-  PanResponder,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { TABS, TabType } from "./types";
 
-export type DateRangePreset = "today" | "this_week" | "this_month" | "custom";
+export type DateRangePreset =
+  "all_time" | "today" | "this_week" | "this_month" | "custom";
 
 export type TransactionCategoryId = string;
 
@@ -41,18 +31,17 @@ export type TransactionFilter = {
 
 const AMOUNT_MIN = 0;
 const AMOUNT_MAX = 1_000_000;
-const THUMB = 22;
-const TRACK_PAD = THUMB / 2;
 
 const DATE_OPTIONS: {
   id: DateRangePreset;
   label: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon?: keyof typeof MaterialIcons.glyphMap;
 }[] = [
-  { id: "today", label: "Today", icon: "today" },
-  { id: "this_week", label: "This Week", icon: "view-week" },
-  { id: "this_month", label: "This Month", icon: "calendar-month" },
-  { id: "custom", label: "Custom", icon: "tune" },
+  { id: "all_time", label: "All time" },
+  { id: "today", label: "Today" },
+  { id: "this_week", label: "This week" },
+  { id: "this_month", label: "This month" },
+  { id: "custom", label: "Custom range", icon: "calendar-month" },
 ];
 
 const DEFAULT_CATEGORIES: {
@@ -60,13 +49,11 @@ const DEFAULT_CATEGORIES: {
   label: string;
   icon: keyof typeof MaterialIcons.glyphMap;
 }[] = [
-  { id: "food", label: "Food", icon: "restaurant" },
-  { id: "transport", label: "Transport", icon: "directions-bus" },
-  { id: "shopping", label: "Shopping", icon: "shopping-bag" },
-  { id: "bills", label: "Bills", icon: "receipt-long" },
-  { id: "entertainment", label: "Entertainment", icon: "theater-comedy" },
-  { id: "health", label: "Health", icon: "favorite" },
-  { id: "investment", label: "Investment", icon: "trending-up" },
+  { id: "shopping", label: "Shopping", icon: "shopping-cart" },
+  { id: "food", label: "Dining", icon: "restaurant" },
+  { id: "transport", label: "Transport", icon: "directions-car" },
+  { id: "bills", label: "Utilities", icon: "home" },
+  { id: "travel", label: "Travel", icon: "flight" },
 ];
 
 function defaultCustomRange(): RangeValue {
@@ -76,143 +63,12 @@ function defaultCustomRange(): RangeValue {
 }
 
 export const defaultTransactionFilter: TransactionFilter = {
-  dateRange: "this_month",
+  dateRange: "all_time",
   categoryIds: [],
   amountMin: AMOUNT_MIN,
   amountMax: AMOUNT_MAX,
   customRange: null,
 };
-
-function clamp(n: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, n));
-}
-
-function AmountRangeSlider({
-  low,
-  high,
-  onChange,
-  accent,
-  trackBg,
-  labelColor,
-}: {
-  low: number;
-  high: number;
-  onChange: (next: [number, number]) => void;
-  accent: string;
-  trackBg: string;
-  labelColor: string;
-}) {
-  const styles = useStyles();
-  const [trackW, setTrackW] = useState(0);
-  const dragging = useRef<"low" | "high" | null>(null);
-
-  const valueFromX = useCallback(
-    (x: number) => {
-      const w = trackW;
-      if (w <= 0) return AMOUNT_MIN;
-      const inner = w - THUMB;
-      const t = clamp((x - TRACK_PAD) / inner, 0, 1);
-      return Math.round(AMOUNT_MIN + t * (AMOUNT_MAX - AMOUNT_MIN));
-    },
-    [trackW],
-  );
-
-  const xFromValue = useCallback(
-    (v: number) => {
-      const w = trackW;
-      if (w <= 0) return 0;
-      const inner = w - THUMB;
-      const t = (v - AMOUNT_MIN) / (AMOUNT_MAX - AMOUNT_MIN);
-      return TRACK_PAD + t * inner;
-    },
-    [trackW],
-  );
-
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: (e) => {
-          const x = e.nativeEvent.locationX;
-          const xl = xFromValue(low);
-          const xh = xFromValue(high);
-          dragging.current =
-            Math.abs(x - xl) <= Math.abs(x - xh) ? "low" : "high";
-        },
-        onPanResponderMove: (e) => {
-          const x = e.nativeEvent.locationX;
-          const v = valueFromX(x);
-          const step = 1000;
-          const rounded = Math.round(v / step) * step;
-          if (dragging.current === "low") {
-            const next = clamp(rounded, AMOUNT_MIN, high - step);
-            onChange([next, high]);
-          } else {
-            const next = clamp(rounded, low + step, AMOUNT_MAX);
-            onChange([low, next]);
-          }
-        },
-        onPanResponderRelease: () => {
-          dragging.current = null;
-        },
-      }),
-    [high, low, onChange, valueFromX, xFromValue],
-  );
-
-  const onTrackLayout = (e: LayoutChangeEvent) => {
-    setTrackW(e.nativeEvent.layout.width);
-  };
-
-  const lowX = xFromValue(low);
-  const highX = xFromValue(high);
-  const fillLeft = Math.min(lowX, highX);
-  const fillW = Math.abs(highX - lowX);
-
-  return (
-    <View>
-      <View
-        style={[styles.sliderTrack, { backgroundColor: trackBg }]}
-        onLayout={onTrackLayout}
-        {...panResponder.panHandlers}
-      >
-        <View
-          pointerEvents="none"
-          style={[
-            styles.sliderFill,
-            {
-              left: fillLeft,
-              width: fillW,
-              backgroundColor: accent,
-            },
-          ]}
-        />
-        <View
-          pointerEvents="none"
-          style={[
-            styles.sliderThumb,
-            { left: lowX - THUMB / 2, borderColor: accent },
-          ]}
-        />
-        <View
-          pointerEvents="none"
-          style={[
-            styles.sliderThumb,
-            { left: highX - THUMB / 2, borderColor: accent },
-          ]}
-        />
-      </View>
-      <View style={styles.sliderEnds}>
-        <Text style={[styles.sliderEndText, { color: labelColor }]}>
-          {formatPrice(AMOUNT_MIN)}
-        </Text>
-        <Text style={[styles.sliderEndText, { color: labelColor }]}>
-          {formatPrice(AMOUNT_MAX)}+
-        </Text>
-      </View>
-    </View>
-  );
-}
 
 export interface TransactionsFilterModalProps {
   visible: boolean;
@@ -248,8 +104,8 @@ export default function TransactionsFilterModal({
   const [categoryIds, setCategoryIds] = useState<TransactionCategoryId[]>(
     () => [...initial.categoryIds],
   );
-  const [amountMin, setAmountMin] = useState(initial.amountMin);
-  const [amountMax, setAmountMax] = useState(initial.amountMax);
+  const [amountMin, setAmountMin] = useState(String(initial.amountMin));
+  const [amountMax, setAmountMax] = useState(String(initial.amountMax));
   const [customRange, setCustomRange] = useState<RangeValue | null>(
     initial.customRange ?? null,
   );
@@ -273,8 +129,8 @@ export default function TransactionsFilterModal({
     if (!visible) return;
     setDateRange(initial.dateRange);
     setCategoryIds([...initial.categoryIds]);
-    setAmountMin(initial.amountMin);
-    setAmountMax(initial.amountMax);
+    setAmountMin(String(initial.amountMin));
+    setAmountMax(String(initial.amountMax));
     setCustomRange(initial.customRange ?? null);
   }, [visible, initial]);
 
@@ -306,43 +162,25 @@ export default function TransactionsFilterModal({
   const reset = () => {
     setDateRange(defaultTransactionFilter.dateRange);
     setCategoryIds([]);
-    setAmountMin(defaultTransactionFilter.amountMin);
-    setAmountMax(defaultTransactionFilter.amountMax);
+    setAmountMin(String(defaultTransactionFilter.amountMin));
+    setAmountMax(String(defaultTransactionFilter.amountMax));
     setCustomRange(null);
   };
 
   const apply = () => {
+    const min = Number(amountMin) || AMOUNT_MIN;
+    const max = Number(amountMax) || AMOUNT_MAX;
     const range =
       dateRange === "custom" ? (customRange ?? defaultCustomRange()) : null;
     onApply({
       dateRange,
       categoryIds,
-      amountMin,
-      amountMax,
+      amountMin: min,
+      amountMax: max,
       customRange: range,
     });
     modalRef.current?.dismiss();
   };
-
-  const chipInactiveBg = colors.background.surfaceAlt;
-  const chipActiveBg = colors.primary.main;
-  const chipInactiveText = colors.text.primary;
-  const chipActiveText = colors.primary.contrastText;
-
-  // Active-filter count, surfaced on the Apply button and in the header
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (dateRange !== defaultTransactionFilter.dateRange) count += 1;
-    count += categoryIds.length;
-    if (
-      amountMin !== defaultTransactionFilter.amountMin ||
-      amountMax !== defaultTransactionFilter.amountMax
-    )
-      count += 1;
-    return count;
-  }, [dateRange, categoryIds, amountMin, amountMax]);
-
-  const amountIsDefault = amountMin === AMOUNT_MIN && amountMax === AMOUNT_MAX;
 
   return (
     <BottomSheetModal
@@ -359,36 +197,18 @@ export default function TransactionsFilterModal({
         { backgroundColor: colors.background.surface },
       ]}
       handleIndicatorStyle={{
-        backgroundColor: colors.text.muted,
+        backgroundColor: colors.border.default,
         marginTop: 8,
       }}
       backdropComponent={renderBackdrop}
     >
-      {/* Header: title + inline reset (only shown once something differs from default) */}
+      {/* Header */}
       <View style={styles.header}>
-        <View style={{ width: 56 }} />
         <Text style={[styles.title, { color: colors.text.primary }]}>
-          Filters
+          Filter transactions
         </Text>
-        <Pressable
-          onPress={reset}
-          hitSlop={8}
-          disabled={activeFilterCount === 0}
-          style={styles.headerReset}
-        >
-          <Text
-            style={[
-              styles.headerResetText,
-              {
-                color:
-                  activeFilterCount === 0
-                    ? colors.text.muted
-                    : colors.primary.main,
-              },
-            ]}
-          >
-            Reset
-          </Text>
+        <Pressable onPress={onClose} hitSlop={8} style={styles.closeBtn}>
+          <MaterialIcons name="close" size={22} color={colors.text.secondary} />
         </Pressable>
       </View>
 
@@ -397,21 +217,14 @@ export default function TransactionsFilterModal({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.tabsWrapper}>
-          <SegmentedTabs
-            style={{ paddingHorizontal: 3 }}
-            tabs={TABS}
-            activeTab={activeTab}
-            onChange={onTabChange}
-          />
-        </View>
-
+        {/* Date Filter */}
         <Text style={[styles.sectionLabel, { color: colors.text.secondary }]}>
-          DATE RANGE
+          DATE
         </Text>
-        <View style={styles.chipRow}>
+        <View style={styles.dateGrid}>
           {DATE_OPTIONS.map((opt) => {
             const sel = dateRange === opt.id;
+            const isCustom = opt.id === "custom";
             return (
               <Pressable
                 key={opt.id}
@@ -422,24 +235,32 @@ export default function TransactionsFilterModal({
                   }
                 }}
                 style={[
-                  styles.chip,
+                  styles.dateChip,
                   {
-                    backgroundColor: sel ? chipActiveBg : chipInactiveBg,
-                    borderColor: sel ? chipActiveBg : colors.border.default,
+                    borderColor: sel
+                      ? colors.primary.main
+                      : colors.border.default,
+                    backgroundColor: sel
+                      ? `${colors.primary.main}14`
+                      : "transparent",
                   },
+                  isCustom && styles.dateChipFull,
                 ]}
               >
-                <MaterialIcons
-                  name={opt.icon}
-                  size={15}
-                  color={sel ? chipActiveText : colors.text.secondary}
-                  style={{ marginRight: 5 }}
-                />
+                {opt.icon && (
+                  <MaterialIcons
+                    name={opt.icon}
+                    size={16}
+                    color={sel ? colors.primary.main : colors.text.primary}
+                    style={{ marginRight: 4 }}
+                  />
+                )}
                 <Text
                   style={[
-                    styles.chipText,
+                    styles.dateChipText,
                     {
-                      color: sel ? chipActiveText : chipInactiveText,
+                      color: sel ? colors.primary.main : colors.text.primary,
+                      fontWeight: sel ? "600" : "400",
                     },
                   ]}
                 >
@@ -460,23 +281,63 @@ export default function TransactionsFilterModal({
           </View>
         ) : null}
 
+        {/* Type Filter */}
+        <Text style={[styles.sectionLabel, { color: colors.text.secondary }]}>
+          TYPE
+        </Text>
+        <View
+          style={[
+            styles.typeSegment,
+            {
+              backgroundColor: colors.background.surfaceAlt,
+              borderColor: colors.border.default,
+            },
+          ]}
+        >
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <Pressable
+                key={tab}
+                onPress={() => onTabChange(tab)}
+                style={[
+                  styles.typeSegmentItem,
+                  isActive && [
+                    styles.typeSegmentItemActive,
+                    {
+                      backgroundColor: colors.primary.main,
+                      shadowColor: colors.palette.black,
+                    },
+                  ],
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.typeSegmentText,
+                    {
+                      color: isActive
+                        ? colors.text.inverse
+                        : colors.text.secondary,
+                      fontWeight: isActive ? "600" : "400",
+                    },
+                  ]}
+                >
+                  {tab}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {/* Category Filter */}
         {hasCategories && (
           <>
-            <View style={styles.sectionLabelRow}>
-              <Text
-                style={[styles.sectionLabel, { color: colors.text.secondary }]}
-              >
-                CATEGORIES
-              </Text>
-              {categoryIds.length > 0 && (
-                <Text
-                  style={[styles.sectionCount, { color: colors.primary.main }]}
-                >
-                  {categoryIds.length} selected
-                </Text>
-              )}
-            </View>
-            <View style={styles.catGrid}>
+            <Text
+              style={[styles.sectionLabel, { color: colors.text.secondary }]}
+            >
+              CATEGORY
+            </Text>
+            <View style={styles.categoryGrid}>
               {categories.map((cat) => {
                 const sel = categoryIds.includes(cat.id);
                 return (
@@ -484,43 +345,30 @@ export default function TransactionsFilterModal({
                     key={cat.id}
                     onPress={() => toggleCategory(cat.id)}
                     style={[
-                      styles.catTile,
+                      styles.categoryChip,
                       {
-                        backgroundColor: sel
-                          ? colors.primary.main + "14"
-                          : colors.background.surfaceAlt,
                         borderColor: sel
                           ? colors.primary.main
                           : colors.border.default,
+                        backgroundColor: sel
+                          ? `${colors.primary.main}14`
+                          : "transparent",
                       },
                     ]}
                   >
-                    {sel && (
-                      <View
-                        style={[
-                          styles.catCheck,
-                          { backgroundColor: colors.primary.main },
-                        ]}
-                      >
-                        <MaterialIcons
-                          name="check"
-                          size={10}
-                          color={colors.primary.contrastText}
-                        />
-                      </View>
-                    )}
                     <MaterialIcons
                       name={cat.icon}
-                      size={22}
-                      color={sel ? colors.primary.main : colors.text.secondary}
+                      size={16}
+                      color={sel ? colors.primary.main : colors.text.primary}
                     />
                     <Text
                       style={[
-                        styles.catLabel,
+                        styles.categoryChipText,
                         {
                           color: sel
                             ? colors.primary.main
                             : colors.text.primary,
+                          fontWeight: sel ? "600" : "400",
                         },
                       ]}
                       numberOfLines={1}
@@ -534,40 +382,59 @@ export default function TransactionsFilterModal({
           </>
         )}
 
-        <View style={styles.sectionLabelRow}>
-          <Text style={[styles.sectionLabel, { color: colors.text.secondary }]}>
-            AMOUNT RANGE
-          </Text>
-          {!amountIsDefault && (
-            <Text style={[styles.sectionCount, { color: colors.primary.main }]}>
-              {formatPrice(amountMin)} – {formatPrice(amountMax)}
+        {/* Amount Filter */}
+        <Text style={[styles.sectionLabel, { color: colors.text.secondary }]}>
+          AMOUNT
+        </Text>
+        <View style={styles.amountGrid}>
+          <View style={styles.amountField}>
+            <Text
+              style={[styles.amountLabel, { color: colors.text.secondary }]}
+            >
+              MIN
             </Text>
-          )}
-        </View>
-        <View
-          style={[
-            styles.amountCard,
-            {
-              backgroundColor: colors.background.surfaceAlt,
-              borderColor: colors.border.default,
-            },
-          ]}
-        >
-          <AmountRangeSlider
-            low={amountMin}
-            high={amountMax}
-            onChange={([a, b]) => {
-              setAmountMin(a);
-              setAmountMax(b);
-            }}
-            accent={colors.primary.main}
-            trackBg={colors.background.surface}
-            labelColor={colors.text.secondary}
-          />
+            <TextInput
+              style={[
+                styles.amountInput,
+                {
+                  borderColor: colors.border.default,
+                  backgroundColor: colors.background.surface,
+                  color: colors.text.primary,
+                },
+              ]}
+              value={amountMin}
+              onChangeText={setAmountMin}
+              placeholder="$0"
+              placeholderTextColor={colors.text.muted}
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.amountField}>
+            <Text
+              style={[styles.amountLabel, { color: colors.text.secondary }]}
+            >
+              MAX
+            </Text>
+            <TextInput
+              style={[
+                styles.amountInput,
+                {
+                  borderColor: colors.border.default,
+                  backgroundColor: colors.background.surface,
+                  color: colors.text.primary,
+                },
+              ]}
+              value={amountMax}
+              onChangeText={setAmountMax}
+              placeholder="$10,000"
+              placeholderTextColor={colors.text.muted}
+              keyboardType="numeric"
+            />
+          </View>
         </View>
       </BottomSheetScrollView>
 
-      {/* Sticky footer, visually separated from the scroll content */}
+      {/* Footer */}
       <View
         style={[
           styles.footer,
@@ -577,25 +444,34 @@ export default function TransactionsFilterModal({
           },
         ]}
       >
-        <View style={styles.buttonRow}>
-          <Button onPress={onClose} variant="ghost" style={{ flex: 1 }}>
-            <Text style={[styles.cancelText, { color: colors.text.secondary }]}>
-              Cancel
-            </Text>
-          </Button>
-          <Button variant="primary" onPress={apply} style={{ flex: 1.4 }}>
-            <Text
-              style={[
-                styles.applyBtnText,
-                { color: colors.primary.contrastText },
-              ]}
-            >
-              {activeFilterCount > 0
-                ? `Apply Filters (${activeFilterCount})`
-                : "Apply Filters"}
-            </Text>
-          </Button>
-        </View>
+        <Pressable
+          onPress={reset}
+          style={({ pressed }) => [
+            styles.resetBtn,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <Text style={[styles.resetBtnText, { color: colors.primary.main }]}>
+            Reset
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={apply}
+          style={({ pressed }) => [
+            styles.applyBtn,
+            { backgroundColor: colors.primary.main },
+            pressed && { opacity: 0.9 },
+          ]}
+        >
+          <Text
+            style={[
+              styles.applyBtnText,
+              { color: colors.primary.contrastText },
+            ]}
+          >
+            Apply filters
+          </Text>
+        </Pressable>
       </View>
     </BottomSheetModal>
   );
@@ -605,160 +481,169 @@ export default function TransactionsFilterModal({
 
 const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
   sheetBg: {
-    borderTopLeftRadius: radius.xl,
-    borderTopRightRadius: radius.xl,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: spacing[5],
-    paddingTop: spacing[3],
-    paddingBottom: spacing[2],
+    paddingBottom: spacing[4],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
   },
   title: {
     fontSize: typography.fontSize.xl,
     fontFamily: typography.fontFamily.Manrope.Bold,
-    textAlign: "center",
-    flex: 1,
+    color: colors.text.primary,
   },
-  headerReset: {
-    width: 56,
-    alignItems: "flex-end",
-  },
-  headerResetText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
+  closeBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.full,
+    alignItems: "center",
+    justifyContent: "center",
   },
   scrollContent: {
     paddingHorizontal: spacing[5],
-    paddingTop: spacing[2],
-    paddingBottom: spacing[6],
-  },
-  tabsWrapper: {
-    marginBottom: spacing[5],
-  },
-  sectionLabelRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: spacing[2.5],
-    marginTop: spacing[1],
+    paddingVertical: spacing[6],
+    gap: spacing[6],
   },
   sectionLabel: {
-    fontSize: 10,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
+    fontSize: 12,
+    fontFamily: typography.fontFamily.Manrope.Bold,
     letterSpacing: 0.6,
-    marginBottom: spacing[2.5],
-    marginTop: spacing[1],
+    textTransform: "uppercase",
+    marginBottom: spacing[3],
   },
-  sectionCount: {
-    fontSize: 11,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-  },
-  chipRow: {
+
+  // Date chips
+  dateGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: spacing[2],
-    marginBottom: spacing[3],
   },
-  customRangeBlock: {
-    marginBottom: spacing[5],
-  },
-  chip: {
+  dateChip: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing[4],
     paddingVertical: spacing[2.5],
-    paddingHorizontal: spacing[3.5],
-    borderRadius: radius.full,
-    borderWidth: 1,
-  },
-  chipText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-  },
-  catGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing[2.5],
-    marginBottom: spacing[6],
-  },
-  catTile: {
-    width: "31%",
-    minWidth: "30%",
-    aspectRatio: 1,
-    maxHeight: 96,
     borderRadius: radius.lg,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing[1.5],
-    padding: spacing[2],
-    position: "relative",
+    borderWidth: 1,
+    width: "48%",
   },
-  catCheck: {
-    position: "absolute",
-    top: 6,
-    right: 6,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
+  dateChipFull: {
+    width: "100%",
   },
-  catLabel: {
-    fontSize: 11,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
+  dateChipText: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.Manrope.Regular,
     textAlign: "center",
   },
-  amountCard: {
+  customRangeBlock: {
+    marginTop: spacing[3],
+  },
+
+  // Type segment
+  typeSegment: {
+    flexDirection: "row",
+    borderRadius: radius.lg,
+    padding: 3,
+    borderWidth: 1,
+  },
+  typeSegmentItem: {
+    flex: 1,
+    paddingVertical: spacing[2],
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.md,
+  },
+  typeSegmentItemActive: {
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  typeSegmentText: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.Manrope.Regular,
+  },
+
+  // Category chips
+  categoryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing[2],
+  },
+  categoryChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2.5],
     borderRadius: radius.lg,
     borderWidth: 1,
-    padding: spacing[4],
+    gap: spacing[1.5],
+    width: "48%",
   },
-  sliderTrack: {
-    height: THUMB,
-    borderRadius: THUMB / 2,
-    justifyContent: "center",
-    marginBottom: spacing[2],
-    position: "relative",
+  categoryChipText: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.Manrope.Regular,
   },
-  sliderFill: {
-    position: "absolute",
-    height: 6,
-    top: (THUMB - 6) / 2,
-    borderRadius: 3,
-  },
-  sliderThumb: {
-    position: "absolute",
-    width: THUMB,
-    height: THUMB,
-    borderRadius: THUMB / 2,
-    backgroundColor: colors.background.surface,
-    borderWidth: 3,
-    top: 0,
-  },
-  sliderEnds: {
+
+  // Amount inputs
+  amountGrid: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: spacing[4],
   },
-  sliderEndText: {
-    fontSize: 10,
-    fontFamily: typography.fontFamily.Manrope.Medium,
+  amountField: {
+    flex: 1,
+    gap: spacing[1.5],
   },
+  amountLabel: {
+    fontSize: 12,
+    fontFamily: typography.fontFamily.Manrope.Bold,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  amountInput: {
+    width: "100%",
+    paddingHorizontal: spacing[4],
+    paddingVertical: spacing[2.5],
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.Manrope.Regular,
+  },
+
+  // Footer
   footer: {
-    paddingHorizontal: spacing[5],
-    paddingTop: spacing[4],
-    paddingBottom: spacing[8],
-    borderTopWidth: 1,
-  },
-  buttonRow: {
     flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing[5],
+    paddingVertical: spacing[5],
+    borderTopWidth: 1,
     gap: spacing[3],
   },
-  cancelText: {
+  resetBtn: {
+    flex: 1,
+    paddingVertical: spacing[4],
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.lg,
+  },
+  resetBtnText: {
     fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
+    fontFamily: typography.fontFamily.Manrope.Bold,
+  },
+  applyBtn: {
+    flex: 2,
+    paddingVertical: spacing[4],
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.lg,
   },
   applyBtnText: {
     fontSize: typography.fontSize.md,

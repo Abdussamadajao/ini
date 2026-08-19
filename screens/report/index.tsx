@@ -1,7 +1,7 @@
 import { useInsights } from "@/actions";
 import { InlineError } from "@/components/shared/error";
 import { Header } from "@/components/shared/header";
-import Skeleton from "@/components/shared/skeleton";
+import { Skeleton } from "@/components/shared";
 import { formatPrice } from "@/lib/custom";
 import { makeStyles, useTheme } from "@/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -10,7 +10,6 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle, G } from "react-native-svg";
 
-const PURPLE_ACCENT = "#8B5CF6";
 const DONUT_TRANSPORT = "#5DADE2";
 const DONUT_SHOPPING = "#95A5A6";
 const DONUT_BILLS = "#566573";

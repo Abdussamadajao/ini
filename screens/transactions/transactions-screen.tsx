@@ -1,22 +1,23 @@
-import { Header } from "@/components/shared/header";
-import SearchBar from "@/components/shared/search-bar";
-import { useTransactionsUIStore } from "@/stores";
 import { useTheme } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useMemo } from "react";
-import { Pressable, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { defaultTransactionFilter } from "./transactions-filter-modal";
-import TransactionsFilterModal from "./transactions-filter-modal";
+
+import { SegmentedTabs } from "@/components/shared";
+import { useTransactionsUIStore } from "@/stores";
+import TransactionsFilterModal, {
+  defaultTransactionFilter,
+} from "./transactions-filter-modal";
+
 import { TransactionsList } from "./transactions-list";
 import { useTransactionsStyles } from "./styles";
+import { TABS } from "./types";
 
 export function TransactionsScreen() {
   const { colors } = useTheme();
   const styles = useTransactionsStyles();
 
-  const search = useTransactionsUIStore((s) => s.search);
-  const setSearch = useTransactionsUIStore((s) => s.setSearch);
   const activeTab = useTransactionsUIStore((s) => s.activeTab);
   const setActiveTab = useTransactionsUIStore((s) => s.setActiveTab);
   const filterOpen = useTransactionsUIStore((s) => s.filterOpen);
@@ -24,6 +25,10 @@ export function TransactionsScreen() {
   const appliedFilter = useTransactionsUIStore((s) => s.appliedFilter);
   const setAppliedFilter = useTransactionsUIStore((s) => s.setAppliedFilter);
   const filterCategories = useTransactionsUIStore((s) => s.filterCategories);
+  const search = useTransactionsUIStore((s) => s.search);
+  const setSearch = useTransactionsUIStore((s) => s.setSearch);
+
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
   const filterActive = useMemo(() => {
     const d = defaultTransactionFilter;
@@ -39,28 +44,99 @@ export function TransactionsScreen() {
     return false;
   }, [appliedFilter]);
 
+  const exitSearch = () => {
+    setIsSearchActive(false);
+    setSearch("");
+  };
+
+  if (isSearchActive) {
+    return (
+      <SafeAreaView edges={["top"]} style={styles.safeArea}>
+        {/* Search Header */}
+        <View style={styles.searchHeader}>
+          <View
+            style={[
+              styles.searchBar,
+              { backgroundColor: colors.background.surfaceAlt },
+            ]}
+          >
+            <Pressable
+              onPress={exitSearch}
+              style={styles.searchIconBtn}
+              hitSlop={8}
+            >
+              <MaterialIcons
+                name="arrow-back"
+                size={24}
+                color={colors.text.secondary}
+              />
+            </Pressable>
+            <TextInput
+              style={[styles.searchInput, { color: colors.text.primary }]}
+              placeholder="Search transactions"
+              placeholderTextColor={colors.text.muted}
+              value={search}
+              onChangeText={setSearch}
+              autoFocus
+              returnKeyType="search"
+            />
+            {search.length > 0 && (
+              <Pressable
+                onPress={() => setSearch("")}
+                style={styles.searchIconBtn}
+                hitSlop={8}
+              >
+                <MaterialIcons
+                  name="close"
+                  size={20}
+                  color={colors.text.secondary}
+                />
+              </Pressable>
+            )}
+          </View>
+        </View>
+
+        {/* Transaction List */}
+        <TransactionsList />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
-      <Header title="Transactions" />
-
-      <View style={styles.searchRow}>
-        <SearchBar search={search} setSearch={setSearch} />
-        <View style={styles.filterBtnWrap}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>History</Text>
+        <View style={styles.headerActions}>
           <Pressable
-            onPress={() => setFilterOpen(true)}
-            style={styles.filterBtn}
-            hitSlop={8}
+            style={styles.iconBtn}
+            onPress={() => setIsSearchActive(true)}
           >
             <MaterialIcons
-              name="tune"
-              size={22}
-              color={colors.primary.contrastText}
+              name="search"
+              size={24}
+              color={colors.primary.main}
             />
           </Pressable>
-          {filterActive ? <View style={styles.filterActiveDot} /> : null}
+          <Pressable style={styles.iconBtn} onPress={() => setFilterOpen(true)}>
+            <MaterialIcons
+              name="filter-list"
+              size={24}
+              color={colors.primary.main}
+            />
+            {filterActive && <View style={styles.filterDot} />}
+          </Pressable>
         </View>
       </View>
 
+      {/* Tabs */}
+      <SegmentedTabs
+        tabs={TABS}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+
+      {/* Transaction List */}
       <TransactionsList />
 
       <TransactionsFilterModal

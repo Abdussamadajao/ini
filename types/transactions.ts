@@ -126,6 +126,7 @@ export interface CreateExpenseBody {
   amount: number;
   category_id: string;
   income_id?: string;
+  budget_id?: string;
   source_name?: string;
   notes?: string;
   receipt_url?: string;
@@ -134,6 +135,10 @@ export interface CreateExpenseBody {
 }
 
 export type CreateTransactionBody = CreateIncomeBody | CreateExpenseBody;
+
+export type CreateBatchTransactionBody = {
+  transactions: CreateTransactionBody[];
+};
 
 export interface UpdateTransactionBody {
   amount?: number;

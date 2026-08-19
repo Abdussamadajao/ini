@@ -1,14 +1,9 @@
-import { useDeleteTransaction, useInfiniteTransactions } from "@/actions";
-import { EmptySearchIllustration } from "@/assets/icons";
+import { useInfiniteTransactions, useTransactionMutation } from "@/actions";
 import { ErrorState } from "@/components/shared";
 import BlurBackdrop, {
   BlurBackdropProps,
 } from "@/components/shared/blur-backdrop";
-import {
-  Skeleton,
-  SkeletonList,
-  SkeletonTransaction,
-} from "@/components/shared/skeleton";
+import { Skeleton, SkeletonList } from "@/components/shared/skeleton";
 import { useToast } from "@/components/toasts";
 import {
   formatAmount,
@@ -18,12 +13,18 @@ import {
 } from "@/lib";
 import { useTransactionsUIStore } from "@/stores";
 import { useSpacing, useTheme } from "@/theme";
-import type { Transaction } from "@/types";
+import type { Transaction } from "@/types/index";
 import { MaterialIcons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { endOfDay, isWithinInterval, startOfDay, subDays } from "date-fns";
 import { router } from "expo-router";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -49,9 +50,10 @@ export function TransactionsList() {
   const [selectedTransaction, setSelectedTransaction] =
     useState<UiTransaction | null>(null);
   const modalRef = useRef<BottomSheetModal>(null);
+  const { deleteTransaction: deleteTransactionMutation } =
+    useTransactionMutation();
   const { mutateAsync: deleteTransaction, isPending: isDeleting } =
-    useDeleteTransaction();
-
+    deleteTransactionMutation;
   const {
     data,
     isLoading,
@@ -170,9 +172,9 @@ export function TransactionsList() {
     }));
   }, [allTransactions, activeTab, search, appliedFilter]);
 
-  const hasAnyData = allTransactions.length > 0;
   const hasResults = filteredSections.some((s) => s.data.length > 0);
-  const searchQuery = search.trim();
+  const isSearching = search.trim().length > 0;
+  // const hasTransactions = allTransactions.length > 0;
 
   const handleLongPress = useCallback((transaction: UiTransaction) => {
     setSelectedTransaction(transaction);
@@ -195,10 +197,10 @@ export function TransactionsList() {
   const handleDelete = useCallback(async () => {
     if (!selectedTransaction) return;
     try {
-      await deleteTransaction(selectedTransaction.id);
+      await deleteTransaction({ id: selectedTransaction.id });
       toast.success("Transaction deleted successfully");
       modalRef.current?.dismiss();
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete transaction");
     }
   }, [selectedTransaction, deleteTransaction, toast]);
@@ -218,27 +220,20 @@ export function TransactionsList() {
 
   if (isLoading) {
     return (
-      <View style={[styles.scroll, { paddingHorizontal: spacing[4] }]}>
+      <View style={[styles.scrollContent, { paddingTop: spacing[4] }]}>
         <View style={styles.section}>
           <Skeleton width={72} height={11} style={{ marginBottom: 12 }} />
           <SkeletonList
             count={4}
-            gap={10}
+            gap={0}
             renderItem={() => (
-              <View style={styles.card}>
-                <SkeletonTransaction />
-              </View>
-            )}
-          />
-        </View>
-        <View style={styles.section}>
-          <Skeleton width={88} height={11} style={{ marginBottom: 12 }} />
-          <SkeletonList
-            count={3}
-            gap={10}
-            renderItem={() => (
-              <View style={styles.card}>
-                <SkeletonTransaction />
+              <View style={styles.transactionRow}>
+                <Skeleton width={40} height={40} borderRadius={20} />
+                <View style={{ flex: 1, marginLeft: spacing[4], gap: 4 }}>
+                  <Skeleton width="60%" height={14} />
+                  <Skeleton width="40%" height={12} />
+                </View>
+                <Skeleton width={70} height={18} />
               </View>
             )}
           />
@@ -268,231 +263,273 @@ export function TransactionsList() {
           styles.scrollContent,
           !hasResults && styles.scrollContentEmpty,
         ]}
-      showsVerticalScrollIndicator={false}
-      stickySectionHeadersEnabled={false}
-      onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      }}
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={
-        isFetchingNextPage ? (
-          <View style={{ paddingVertical: 20 }}>
-            <ActivityIndicator size="small" color={colors.primary.main} />
-          </View>
-        ) : null
-      }
-      renderSectionHeader={({ section }) => (
-        <View style={styles.section}>
-          <Text style={[styles.sectionLabel, { color: colors.text.secondary }]}>
-            {section.label}
-          </Text>
-        </View>
-      )}
-      renderItem={({ item }) => (
-        <Pressable
-          onPress={() =>
-            router.push({
-              pathname: "/transactions/[id]",
-              params: {
-                id: item.id,
-              },
-            })
+        showsVerticalScrollIndicator={false}
+        stickySectionHeadersEnabled={false}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
           }
-          onLongPress={() => handleLongPress(item)}
-          delayLongPress={300}
-          style={({ pressed }) => [styles.card, pressed && { opacity: 0.88 }]}
-        >
-          <View
-            style={[styles.txIconWrap, { backgroundColor: item.iconBg + "30" }]}
-          >
-            <View
-              style={[styles.txIconInner, { backgroundColor: item.iconBg }]}
-            >
-              <MaterialIcons name={item.icon} size={18} color="#fff" />
+        }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <View style={{ paddingVertical: 20 }}>
+              <ActivityIndicator size="small" color={colors.primary.main} />
             </View>
+          ) : null
+        }
+        renderSectionHeader={({ section }) => (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>{section.label}</Text>
           </View>
+        )}
+        renderItem={({ item, index, section }) => (
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/transactions/[id]",
+                params: {
+                  id: item.id,
+                },
+              })
+            }
+            onLongPress={() => handleLongPress(item)}
+            delayLongPress={300}
+            style={({ pressed }) => [
+              styles.transactionRow,
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <View style={styles.transactionLeft}>
+              <View
+                style={[
+                  styles.txIconWrap,
+                  { backgroundColor: item.iconBg + "20" },
+                ]}
+              >
+                <MaterialIcons name={item.icon} size={20} color={item.iconBg} />
+              </View>
 
-          <View style={styles.txBody}>
-            <Text
-              style={[styles.txTitle, { color: colors.text.primary }]}
-              numberOfLines={1}
-            >
-              {item.title}
-            </Text>
-            <Text
-              style={[styles.txSubtitle, { color: colors.text.secondary }]}
-              numberOfLines={1}
-            >
-              {item.subtitle}
-            </Text>
-          </View>
+              <View style={styles.txInfo}>
+                <Text style={styles.txTitle} numberOfLines={1}>
+                  {item.title}
+                </Text>
+                <Text style={styles.txSubtitle} numberOfLines={1}>
+                  {item.subtitle} • {item.time}
+                </Text>
+              </View>
+            </View>
 
-          <View style={styles.amountWrap}>
             <Text
               style={[
                 styles.txAmount,
                 {
                   color: item.isIncome
-                    ? colors.status.success.main
-                    : colors.status.error.main,
+                    ? colors.primary.main
+                    : colors.text.primary,
                 },
               ]}
             >
               {formatAmount(item.amount, item.isIncome)}
             </Text>
-            <Text style={[styles.txTime, { color: colors.text.muted }]}>
-              {item.time}
+
+            {index < section.data.length - 1 && (
+              <View
+                style={[
+                  styles.divider,
+                  {
+                    position: "absolute",
+                    bottom: 0,
+                    left: 40 + spacing[4],
+                    right: 0,
+                  },
+                ]}
+              />
+            )}
+          </Pressable>
+        )}
+        ListEmptyComponent={
+          <View style={styles.emptyState}>
+            <View style={styles.emptyIconWrap}>
+              <MaterialIcons
+                name={isSearching ? "search-off" : "receipt-long"}
+                size={40}
+                color={colors.text.secondary}
+              />
+            </View>
+            <Text style={styles.emptyTitle}>
+              {isSearching ? "No transactions found" : "No transactions yet"}
             </Text>
+            <Text style={styles.emptySubtitle}>
+              {isSearching
+                ? `We couldn't find anything matching "${search}".`
+                : "Your income and expenses will appear here once you start tracking them."}
+            </Text>
+            {isSearching ? (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.emptyBtn,
+                  {
+                    backgroundColor: "transparent",
+                    borderWidth: 1,
+                    borderColor: colors.primary.main,
+                  },
+                  pressed && { opacity: 0.7 },
+                ]}
+                // onPress={() => {
+                //   setSearch("");
+                // }}
+              >
+                <Text
+                  style={[styles.emptyBtnText, { color: colors.primary.main }]}
+                >
+                  Clear search
+                </Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={({ pressed }) => [
+                  styles.emptyBtn,
+                  pressed && { opacity: 0.9 },
+                ]}
+                onPress={() => router.push("/add-income")}
+              >
+                <MaterialIcons
+                  name="add"
+                  size={18}
+                  color={colors.primary.contrastText}
+                />
+                <Text style={styles.emptyBtnText}>Add transaction</Text>
+              </Pressable>
+            )}
           </View>
-        </Pressable>
-      )}
-      ListEmptyComponent={
-        <View style={styles.emptyState}>
-          <View style={styles.emptyIllustrationWrap}>
-            <EmptySearchIllustration />
-          </View>
-          <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-            {!hasAnyData ? "No transactions yet" : "No transactions found"}
-          </Text>
-          <Text
-            style={[styles.emptySubtitle, { color: colors.text.secondary }]}
-          >
-            {!hasAnyData
-              ? "When you add income or expenses, they will show up here."
-              : searchQuery
-                ? `Nothing matches "${searchQuery}". Try another search.`
-                : "Nothing matches your filters or tab. Try adjusting them."}
-          </Text>
-        </View>
-      }
-    />
+        }
+      />
 
-    <BottomSheetModal
-      ref={modalRef}
-      snapPoints={["30%"]}
-      enablePanDownToClose
-      enableDismissOnClose
-      enableContentPanningGesture={false}
-      enableHandlePanningGesture={false}
-      enableDynamicSizing={false}
-      backgroundStyle={{
-        backgroundColor: colors.background.surface,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-      }}
-      handleIndicatorStyle={{
-        backgroundColor: colors.text.muted,
-        width: 40,
-        height: 4,
-        marginTop: 10,
-      }}
-      backdropComponent={renderBackdrop}
-    >
-      <View style={{ padding: 24 }}>
-        <Text
-          style={{
-            fontSize: 18,
-            fontFamily: "Manrope-Bold",
-            color: colors.text.primary,
-            marginBottom: 20,
-            textAlign: "center",
-          }}
-        >
-          {selectedTransaction?.title}
-        </Text>
-
-        <Pressable
-          onPress={handleEdit}
-          style={({ pressed }) => [
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 16,
-              paddingHorizontal: 20,
-              borderRadius: 12,
-              backgroundColor: pressed
-                ? colors.background.surfaceAlt
-                : colors.background.surface,
-              marginBottom: 12,
-            },
-          ]}
-        >
-          <View
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              backgroundColor: colors.primary.main + "14",
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 16,
-            }}
-          >
-            <MaterialIcons
-              name="edit"
-              size={20}
-              color={colors.primary.main}
-            />
-          </View>
+      <BottomSheetModal
+        ref={modalRef}
+        snapPoints={["30%"]}
+        enablePanDownToClose
+        enableDismissOnClose
+        enableContentPanningGesture={false}
+        enableHandlePanningGesture={false}
+        enableDynamicSizing={false}
+        backgroundStyle={{
+          backgroundColor: colors.background.surface,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+        }}
+        handleIndicatorStyle={{
+          backgroundColor: colors.text.muted,
+          width: 40,
+          height: 4,
+          marginTop: 10,
+        }}
+        backdropComponent={renderBackdrop}
+      >
+        <View style={{ padding: 24 }}>
           <Text
             style={{
-              fontSize: 16,
-              fontFamily: "Manrope-SemiBold",
+              fontSize: 18,
+              fontFamily: "Manrope-Bold",
               color: colors.text.primary,
+              marginBottom: 20,
+              textAlign: "center",
             }}
           >
-            Edit Transaction
+            {selectedTransaction?.title}
           </Text>
-        </Pressable>
 
-        <Pressable
-          onPress={handleDelete}
-          disabled={isDeleting}
-          style={({ pressed }) => [
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 16,
-              paddingHorizontal: 20,
-              borderRadius: 12,
-              backgroundColor: pressed
-                ? colors.background.surfaceAlt
-                : colors.background.surface,
-              opacity: isDeleting ? 0.5 : 1,
-            },
-          ]}
-        >
-          <View
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              backgroundColor: colors.status.error.main + "14",
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 16,
-            }}
+          <Pressable
+            onPress={handleEdit}
+            style={({ pressed }) => [
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 16,
+                paddingHorizontal: 20,
+                borderRadius: 12,
+                backgroundColor: pressed
+                  ? colors.background.surfaceAlt
+                  : colors.background.surface,
+                marginBottom: 12,
+              },
+            ]}
           >
-            <MaterialIcons
-              name="delete"
-              size={20}
-              color={colors.status.error.main}
-            />
-          </View>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: "Manrope-SemiBold",
-              color: colors.status.error.main,
-            }}
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: colors.primary.main + "14",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 16,
+              }}
+            >
+              <MaterialIcons
+                name="edit"
+                size={20}
+                color={colors.primary.main}
+              />
+            </View>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "Manrope-SemiBold",
+                color: colors.text.primary,
+              }}
+            >
+              Edit Transaction
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={handleDelete}
+            disabled={isDeleting}
+            style={({ pressed }) => [
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 16,
+                paddingHorizontal: 20,
+                borderRadius: 12,
+                backgroundColor: pressed
+                  ? colors.background.surfaceAlt
+                  : colors.background.surface,
+                opacity: isDeleting ? 0.5 : 1,
+              },
+            ]}
           >
-            Delete Transaction
-          </Text>
-        </Pressable>
-      </View>
-    </BottomSheetModal>
-  </>
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: colors.status.error.main + "14",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 16,
+              }}
+            >
+              <MaterialIcons
+                name="delete"
+                size={20}
+                color={colors.status.error.main}
+              />
+            </View>
+            <Text
+              style={{
+                fontSize: 16,
+                fontFamily: "Manrope-SemiBold",
+                color: colors.status.error.main,
+              }}
+            >
+              Delete Transaction
+            </Text>
+          </Pressable>
+        </View>
+      </BottomSheetModal>
+    </>
   );
 }

@@ -13,3 +13,5 @@ export { default as SegmentedTabs } from "./segmented-tabs";
 export * from "./skeleton";
 export * from "./switch";
 export * from "./themed-keyboard-avoiding-view";
+export { default as SafeArea } from "./safe-area-view";
+export * from "./onscreen-keyboard";

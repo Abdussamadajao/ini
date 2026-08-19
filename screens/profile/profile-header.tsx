@@ -1,9 +1,8 @@
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles } from "@/theme";
 import React from "react";
 import { Text, View } from "react-native";
 
 export function ProfileHeader() {
-  const { colors } = useTheme();
   const styles = useStyles();
 
   return (

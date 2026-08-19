@@ -92,6 +92,7 @@ export const FormSwitch = ({
   const switchValue = useSharedValue(!!value);
   useEffect(() => {
     switchValue.value = !!value;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
   return (
     <Switch

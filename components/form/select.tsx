@@ -135,6 +135,10 @@ type BaseSelectProps = {
   size?: SelectSize;
   /** Escape hatch for full manual control over the trigger's height/padding, overriding `size`. */
   triggerStyle?: StyleProp<ViewStyle>;
+  /** Disable the select entirely (prevents opening) */
+  disabled?: boolean;
+  /** Optional disabled style override */
+  disabledStyle?: StyleProp<ViewStyle>;
 };
 
 export type SelectProps = BaseSelectProps & {
@@ -172,6 +176,8 @@ const SelectUI: React.FC<SelectProps> = ({
   emptyStateIcon = "tray-remove",
   size = "md",
   triggerStyle,
+  disabled = false,
+  disabledStyle,
 }) => {
   const colors = useColors();
   const isDark = useIsDark();
@@ -202,9 +208,11 @@ const SelectUI: React.FC<SelectProps> = ({
   );
 
   const openModal = useCallback(() => {
+    if (disabled || listDisabled) return; // Prevent opening when disabled
     setSearchQuery("");
     modalRef.current?.present();
-  }, []);
+  }, [disabled, listDisabled]);
+
   const closeModal = useCallback(() => {
     setSearchQuery("");
     modalRef.current?.dismiss();
@@ -233,10 +241,18 @@ const SelectUI: React.FC<SelectProps> = ({
     [onChange, closeModal],
   );
 
-  const selectedLabel = value
-    ? (items.find((i) => i.value === value)?.label ?? value)
-    : null;
+  // Get the selected label - returns null if no value or value doesn't exist in options
+  const selectedLabel = useMemo(() => {
+    if (!value) return null;
+    const found = items.find((i) => i.value === value);
+    return found ? found.label : null;
+  }, [value, items]);
+
+  // Display value: selected label if exists, otherwise placeholder
   const displayValue = selectedLabel ?? placeholder;
+
+  // Check if the select should be disabled
+  const isDisabled = disabled || listDisabled;
 
   const renderItem = useCallback(
     ({ item }: { item: ListItem }) => {
@@ -313,7 +329,7 @@ const SelectUI: React.FC<SelectProps> = ({
           </View>
           <Text style={styles.emptyTitle}>No matches</Text>
           <Text style={styles.emptyMessage}>
-            Nothing found for "{searchQuery.trim()}".
+            Nothing found for &quot;{searchQuery.trim()}&quot;.
           </Text>
           <Pressable onPress={clearSearch} style={styles.emptyClearBtn}>
             <Text style={styles.emptyClearBtnText}>Clear search</Text>
@@ -348,7 +364,11 @@ const SelectUI: React.FC<SelectProps> = ({
   return (
     <>
       <View style={[styles.wrapper, style]}>
-        {label ? <Text style={styles.label}>{label}</Text> : null}
+        {label ? (
+          <Text style={[styles.label, isDisabled && styles.labelDisabled]}>
+            {label}
+          </Text>
+        ) : null}
         <Pressable
           style={[
             styles.select,
@@ -361,9 +381,15 @@ const SelectUI: React.FC<SelectProps> = ({
                 : colors.background.surfaceAlt,
             },
             error && styles.selectError,
+            isDisabled && styles.selectDisabled,
             triggerStyle,
+            isDisabled && disabledStyle,
           ]}
           onPress={openModal}
+          disabled={isDisabled}
+          accessibilityRole="button"
+          accessibilityLabel={label || "Select"}
+          accessibilityState={{ disabled: isDisabled }}
         >
           {leftIcon ? (
             <View
@@ -379,7 +405,8 @@ const SelectUI: React.FC<SelectProps> = ({
             style={[
               styles.value,
               { fontSize: sizeConfig.fontSize },
-              !value && styles.valuePlaceholder,
+              !selectedLabel && styles.valuePlaceholder,
+              isDisabled && styles.valueDisabled,
             ]}
             numberOfLines={1}
           >
@@ -393,9 +420,9 @@ const SelectUI: React.FC<SelectProps> = ({
           >
             {rightIcon ?? (
               <MaterialCommunityIcons
-                name="chevron-down"
+                name={isDisabled ? "lock" : "chevron-down"}
                 size={18}
-                color={colors.text.secondary}
+                color={isDisabled ? colors.text.muted : colors.text.secondary}
               />
             )}
           </View>
@@ -545,21 +572,31 @@ const useSelectStyles = makeStyles(
       marginBottom: spacing[2],
       paddingHorizontal: spacing[1],
     },
+    labelDisabled: {
+      color: colors.text.muted,
+    },
     select: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       borderRadius: radius.sm,
       borderWidth: 1,
-      borderColor: colors.border.subtle,
+      borderColor: colors.border.default,
       height: 56,
     },
     selectError: { borderColor: colors.status.error.main },
+    selectDisabled: {
+      opacity: 0.6,
+      backgroundColor: colors.background.surfaceAlt,
+    },
     value: {
       flex: 1,
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
       marginRight: 10,
+    },
+    valueDisabled: {
+      color: colors.text.secondary,
     },
     leftIconBadge: {
       borderRadius: radius.full,
@@ -570,13 +607,12 @@ const useSelectStyles = makeStyles(
     },
     rightIconBadge: {
       borderRadius: radius.full,
-      backgroundColor: colors.background.screen,
       alignItems: "center",
       justifyContent: "center",
     },
     valuePlaceholder: {
       fontFamily: typography.fontFamily.Manrope.Medium,
-      color: colors.text.secondary,
+      color: colors.text.muted,
     },
     errorText: {
       color: colors.status.error.main,

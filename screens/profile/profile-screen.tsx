@@ -1,7 +1,6 @@
 import { useToast } from "@/components/toasts";
 import { useAuthStore } from "@/stores";
 import { ThemeMode, makeStyles, useThemeMode, useToggleTheme } from "@/theme";
-import Constants from "expo-constants";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
@@ -26,10 +25,6 @@ export function ProfileScreen() {
   const styles = useStyles();
   const [transactionAlerts, setTransactionAlerts] = useState(true);
   const [budgetAlerts, setBudgetAlerts] = useState(false);
-  const version = useMemo(
-    () => `v${Constants.expoConfig?.version ?? "1.0.0"}`,
-    [],
-  );
 
   const onThemeSelect = useCallback(
     (next: ThemeMode) => {

@@ -197,5 +197,39 @@ export const useCategoriesStyles = makeStyles(
     fabIcon: {
       color: colors.primary.contrastText,
     },
+    // ── Skeleton ──────────────────────────────────────────
+    skeletonTile: {
+      width: "31%",
+      alignItems: "center",
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: `${colors.border.default}66`,
+      backgroundColor: colors.background.surfaceAlt,
+      paddingVertical: spacing[3],
+      paddingHorizontal: spacing[1.5],
+      position: "relative",
+    },
+    skeletonIconWrap: {
+      alignItems: "center",
+      borderRadius: radius.full,
+      height: 44,
+      width: 44,
+      justifyContent: "center",
+      marginBottom: spacing[2],
+      backgroundColor: colors.background.surfaceAlt,
+    },
+    skeletonText: {
+      height: 12,
+      width: "60%",
+      borderRadius: radius.sm,
+      backgroundColor: colors.background.surfaceAlt,
+      marginBottom: spacing[1.5],
+    },
+    skeletonDot: {
+      height: 6,
+      width: 6,
+      borderRadius: radius.full,
+      backgroundColor: colors.background.surfaceAlt,
+    },
   }),
 );

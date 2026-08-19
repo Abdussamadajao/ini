@@ -32,10 +32,7 @@ export function ProfileUserCard({
       ]}
     >
       <View
-        style={[
-          styles.avatarRing,
-          { borderColor: `${colors.primary.main}33` },
-        ]}
+        style={[styles.avatarRing, { borderColor: `${colors.primary.main}33` }]}
       >
         {isPending ? (
           <Skeleton width={92} height={92} borderRadius={46} />

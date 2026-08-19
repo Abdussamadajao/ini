@@ -32,6 +32,7 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
@@ -44,3 +45,6 @@ app-example
 /android
 .claude/
 .vscode/
+
+AGENTS.md
+ClAUDE.md

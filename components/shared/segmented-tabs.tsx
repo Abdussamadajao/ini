@@ -1,80 +1,88 @@
 import { makeStyles } from "@/theme";
 import React from "react";
-import { Pressable, StyleProp, Text, View, ViewStyle } from "react-native";
+import { Pressable, Text, View, ViewStyle } from "react-native";
 
 type SegmentedTabsProps<T extends string> = {
   tabs: readonly T[];
   activeTab: T;
-  style?: StyleProp<ViewStyle>;
-  onChange: (tab: T) => void;
+  onTabChange: (tab: T) => void;
+  style?: ViewStyle;
 };
 
-export default function SegmentedTabs<T extends string>({
+export function SegmentedTabs<T extends string>({
   tabs,
   activeTab,
+  onTabChange,
   style,
-  onChange,
 }: SegmentedTabsProps<T>) {
   const styles = useStyles();
 
   return (
-    <View style={[styles.row, style]}>
-      {tabs.map((tab) => {
-        const selected = activeTab === tab;
-        return (
-          <Pressable
-            key={tab}
-            onPress={() => onChange(tab)}
-            style={[
-              styles.tab,
-              selected ? styles.activeTab : styles.inactiveTab,
-            ]}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                selected ? styles.activeTabText : styles.inactiveTabText,
-              ]}
+    <View style={[styles.tabsWrapper, style]}>
+      <View style={styles.tabsRow}>
+        {tabs.map((tab) => {
+          const isActive = activeTab === tab;
+          return (
+            <Pressable
+              key={tab}
+              style={[styles.tab, isActive && styles.tabActive]}
+              onPress={() => onTabChange(tab)}
             >
-              {tab}
-            </Text>
-          </Pressable>
-        );
-      })}
+              <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                {tab}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
-// ─── Theme‑aware styles (at the very bottom) ────────────────────────────
+export default SegmentedTabs;
 
 const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  row: {
+  tabsWrapper: {
+    paddingHorizontal: spacing[2],
+    paddingVertical: spacing[4],
+    backgroundColor: colors.background.screen,
+    width: "100%",
+  },
+  tabsRow: {
     flexDirection: "row",
-    gap: spacing[2.5],
-    paddingHorizontal: spacing[6],
-    marginBottom: spacing[6],
+    backgroundColor: colors.background.surfaceAlt,
+    borderRadius: radius.sm,
+    padding: spacing[2],
+    borderWidth: 1,
+    borderColor: `${colors.border.default}33`,
   },
   tab: {
-    paddingVertical: spacing[2.5],
-    paddingHorizontal: spacing[4],
-    borderRadius: radius.full,
+    flex: 1,
+    paddingVertical: spacing[3],
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: radius.sm,
+    backgroundColor: "transparent",
+  },
+  tabActive: {
+    backgroundColor: colors.primary.main,
+    shadowColor: colors.palette.black,
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: `${colors.border.default}33`,
   },
   tabText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
+    fontSize: 12,
+    fontFamily: typography.fontFamily.Manrope.Bold,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    color: colors.text.secondary,
+    fontWeight: "bold",
   },
-  activeTab: {
-    backgroundColor: colors.primary.main,
-  },
-  inactiveTab: {
-    backgroundColor: colors.background.surfaceAlt,
-  },
-  activeTabText: {
-    color: colors.primary.contrastText,
-  },
-  inactiveTabText: {
-    color: colors.text.primary,
+  tabTextActive: {
+    color: colors.text.inverse,
   },
 }));

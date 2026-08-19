@@ -5,7 +5,7 @@ import { Avatar } from "@/components/shared/avatar";
 import { useToast } from "@/components/toasts";
 import { authClient } from "@/lib/auth-client";
 import { makeStyles, typography, useTheme } from "@/theme";
-import { User } from "@/types";
+import { User } from "@/types/index";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";

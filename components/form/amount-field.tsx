@@ -13,7 +13,7 @@ export type AmountFieldProps = {
   accentColor?: string;
 };
 
-const AMOUNT_FONT_SIZE = 44;
+const AMOUNT_FONT_SIZE = 50;
 const MAX_AMOUNT = 100_000_000_000;
 
 function sanitizeRaw(text: string, maxRawLen: number): string {
@@ -110,9 +110,6 @@ export function AmountField({
           placeholderTextColor={tint + "55"}
         />
       </View>
-      <Text style={[styles.amountHint, { color: colors.text.secondary }]}>
-        ENTER AMOUNT
-      </Text>
     </View>
   );
 }
@@ -190,11 +187,11 @@ const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
     gap: 2,
   },
   currencySymbol: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
+    fontFamily: typography.fontFamily.Manrope.Medium,
     marginBottom: 2,
   },
   amountDisplay: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
+    fontFamily: typography.fontFamily.Manrope.Medium,
     letterSpacing: -1,
     minWidth: 20,
     padding: 0,

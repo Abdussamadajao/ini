@@ -1,6 +1,6 @@
 import { VARIANT_META, variantFromError } from "@/lib/error-utils";
 import { makeStyles, useColors, useTheme } from "@/theme";
-import { ErrorVariant } from "@/types";
+import { ErrorVariant } from "@/types/index";
 import React from "react";
 import {
   Pressable,

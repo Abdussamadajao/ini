@@ -1,61 +1,68 @@
-import { useDashboard } from "@/actions";
+import { useDashboard } from "@/actions/dashboard";
+import { PeriodTab } from "@/types";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import React from "react";
-import { ScrollView, View } from "react-native";
+import React, { useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Budgets } from "./budgets";
 import HomeChart from "./chart";
 import { HomeHeader } from "./home-header";
-import Income from "./income";
 import { NetWorthCard } from "./net-worth-card";
-import { RecentTransactions } from "./recent-transaction";
+import { RecentTransactions } from "./recent-transactions";
 import { useHomeScreenStyles } from "./styles";
 
-const HomeScreen = () => {
+export default function HomeScreen() {
   const styles = useHomeScreenStyles();
   const tabBarHeight = useBottomTabBarHeight();
-  const { data: dashboard, isPending } = useDashboard();
+  const [activePeriod, setActivePeriod] = useState<PeriodTab>("Month");
+  const { data: dashboard, isPending } = useDashboard(activePeriod);
+
+  const netWorth = dashboard?.net_worth;
+  const trendLabel = dashboard?.period
+    ? `${dashboard.period.savings_rate}% savings rate`
+    : undefined;
 
   return (
-    <SafeAreaView edges={["top"]} style={[styles.safeArea]}>
+    <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={[
-          styles.content,
-          { paddingBottom: tabBarHeight + 56 },
+          styles.contentContainer,
+          { paddingBottom: tabBarHeight + 16 },
         ]}
         showsVerticalScrollIndicator={false}
         stickyHeaderIndices={[0]}
       >
         <HomeHeader />
-
         <View style={styles.sectionBlock}>
           <NetWorthCard
-            amount={dashboard?.net_worth.total}
-            trendLabel={
-              dashboard?.period
-                ? `${dashboard.period.savings_rate}% savings rate`
-                : undefined
-            }
+            amount={netWorth?.total ?? 0}
+            totalIncome={netWorth?.total_income ?? 0}
+            totalExpenses={netWorth?.total_expenses ?? 0}
+            trendLabel={trendLabel}
           />
-        </View>
-
-        <View style={styles.sectionBlock}>
-          <Income />
-        </View>
-
-        <View style={styles.sectionBlock}>
-          <HomeChart chart={dashboard?.chart} period={dashboard?.period} />
-        </View>
-
-        <View style={styles.sectionBlock}>
-          <RecentTransactions
-            transactions={dashboard?.recent}
-            isPending={isPending}
-          />
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Spending overview</Text>
+            </View>
+            <HomeChart
+              chart={dashboard?.chart}
+              period={dashboard?.period}
+              activePeriod={activePeriod}
+              onPeriodChange={setActivePeriod}
+            />
+          </View>
+          <View style={styles.section}>
+            <Budgets />
+          </View>
+          <View style={styles.section}>
+            <RecentTransactions
+              transactions={dashboard?.recent}
+              isPending={isPending}
+            />
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-};
-
-export default HomeScreen;
+}

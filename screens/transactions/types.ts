@@ -1,4 +1,4 @@
-import { type TransactionCategoryId } from "@/features/transactions/transactions-filter-modal";
+import { type TransactionCategoryId } from "./transactions-filter-modal";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export const TABS = ["All", "Income", "Expense"] as const;

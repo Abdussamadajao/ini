@@ -10,7 +10,6 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { ActivityIndicator, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import {
@@ -23,6 +22,7 @@ configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false, // Reanimated runs in strict mode by default
 });
+
 SplashScreen.preventAutoHideAsync();
 
 // export const unstable_settings = {
@@ -39,7 +39,6 @@ export default function RootLayout() {
     "Manrope-Light": require("@/assets/fonts/Manrope-Light.ttf"),
     "Manrope-ExtraLight": require("@/assets/fonts/Manrope-ExtraLight.ttf"),
   });
-
   const { isHydrated } = useAuthHydration();
   const isReady = fontsLoaded && isHydrated;
 
@@ -48,11 +47,7 @@ export default function RootLayout() {
   }, [isReady]);
 
   if (!isReady) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return null;
   }
 
   return (

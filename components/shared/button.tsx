@@ -9,48 +9,77 @@ import {
 } from "react-native";
 
 interface ButtonProps extends PressableProps {
-  variant?: "primary" | "secondary" | "tertiary" | "ghost";
+  variant?: "primary" | "secondary" | "tertiary" | "danger" | "ghost";
+  appearance?: "solid" | "outline";
   loading?: boolean;
   disabled?: boolean;
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  flex?: boolean;
+  width?: "small" | "medium" | "large";
 }
 
 const Button = ({
   variant = "primary",
+  appearance = "solid",
   loading = false,
   disabled = false,
   children,
   style,
+  flex,
+  width,
   ...props
 }: ButtonProps) => {
   const { colors } = useTheme();
   const styles = useStyles();
 
-  const backgroundColor =
+  const isGhost = variant === "ghost";
+  const isOutline = appearance === "outline" && !isGhost;
+  const isSolid = appearance === "solid" && !isGhost;
+
+  // Base color per variant (used for solid bg, outline border/text, and the spinner)
+  const variantColor =
     variant === "primary"
       ? colors.primary.main
       : variant === "secondary"
         ? colors.secondary.main
-        : variant === "tertiary"
-          ? colors.background.surfaceAlt
-          : "transparent";
+        : variant === "danger"
+          ? colors.status.error.main
+          : variant === "tertiary"
+            ? colors.text.primary
+            : colors.text.secondary; // ghost
 
-  const borderColor =
-    variant === "ghost"
-      ? colors.border.default
+  const backgroundColor = isSolid
+    ? variant === "tertiary"
+      ? colors.background.surfaceAlt
+      : variantColor
+    : "transparent";
+
+  const borderColor = isGhost
+    ? colors.border.default
+    : isOutline
+      ? variantColor
+      : "transparent";
+
+  const indicatorColor = isSolid
+    ? variant === "primary"
+      ? colors.primary.contrastText
       : variant === "secondary"
-        ? colors.border.default
-        : "transparent";
+        ? colors.secondary.contrastText
+        : variant === "danger"
+          ? colors.status.error.contrastText
+          : colors.text.primary // tertiary
+    : variantColor; // outline & ghost
 
-  const indicatorColor =
-    variant === "primary" ? colors.primary.contrastText : colors.primary.main;
-
+  const buttonWidth =
+    width === "small" ? 120 : width === "medium" ? 160 : "100%";
   return (
     <Pressable
       style={[
         styles.base,
         {
+          width: buttonWidth,
+          flex: flex ? 1 : undefined,
           backgroundColor,
           borderColor,
           borderWidth: borderColor === "transparent" ? 0 : 1,
@@ -73,12 +102,11 @@ const Button = ({
 export default Button;
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────
-
 const useStyles = makeStyles(({ colors, spacing, radius }) => ({
   base: {
     padding: spacing[3],
     height: 48,
-    borderRadius: radius.lg,
+    borderRadius: radius.sm,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

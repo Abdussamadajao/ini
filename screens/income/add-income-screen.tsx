@@ -1,7 +1,7 @@
-import { useCategories, useCreateTransaction } from "@/actions";
+import { useCategories, useTransactionMutation } from "@/actions";
 import {
-  FormikDatePicker,
   FormikAmountField,
+  FormikDatePicker,
   FormikTextfield,
 } from "@/components/form";
 import {
@@ -44,8 +44,12 @@ export function AddIncomeScreen() {
   const { toast } = useToast();
   const insets = useSafeAreaInsets();
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const { data: categories = [], isLoading: isCategoriesLoading } = useCategories();
-  const { mutateAsync: createTransaction, isPending } = useCreateTransaction();
+  const { data: categories = [], isLoading: isCategoriesLoading } =
+    useCategories();
+  const { createTransaction: createTransactionMutation } =
+    useTransactionMutation();
+  const { mutateAsync: createTransaction, isPending } =
+    createTransactionMutation;
   const incomeCategories = useMemo(
     () => categories.filter((category) => category.type === "INCOME"),
     [categories],
@@ -96,7 +100,8 @@ export function AddIncomeScreen() {
         toast.success("Income added successfully");
         router.back();
       } catch (error) {
-        toast.error("Failed to add income");
+        const message = error instanceof Error ? error.message : String(error);
+        toast.error(message);
       }
     },
     [createTransaction, toast],
@@ -220,7 +225,7 @@ export function AddIncomeScreen() {
                       <SegmentedTabs
                         tabs={TAG_TABS}
                         activeTab={values.tag}
-                        onChange={(tag) => setFieldValue("tag", tag)}
+                        onTabChange={(tag) => setFieldValue("tag", tag)}
                       />
                     </View>
 

@@ -10,12 +10,23 @@ const iconMap: Record<string, (c: string, s: number) => React.ReactNode> = {
   transactions: (c: string, s: number) => (
     <MaterialIcons name="wallet" size={s} color={c} />
   ),
+  budgets: (c: string, s: number) => (
+    <MaterialIcons name="analytics" size={s} color={c} />
+  ),
   report: (c: string, s: number) => (
     <MaterialIcons name="auto-graph" size={s} color={c} />
   ),
   profile: (c: string, s: number) => (
     <MaterialIcons name="person" size={s} color={c} />
   ),
+};
+
+const labelMap: Record<string, string> = {
+  dashboard: "Home",
+  transactions: "History",
+  budgets: "budgets",
+  report: "Reports",
+  profile: "Profile",
 };
 
 // ─── TabItem ──────────────────────────────────────────────────────────────────
@@ -28,31 +39,15 @@ interface TabItemProps {
 }
 
 export function TabItem({ name, color, focused, size = 24 }: TabItemProps) {
-  const { colors } = useTheme();
   const styles = useStyles();
 
-  const pillWidth = useRef(new Animated.Value(focused ? 52 : 0)).current;
-  const pillOpacity = useRef(new Animated.Value(focused ? 1 : 0)).current;
   const iconScale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(pillWidth, {
-        toValue: focused ? 52 : 0,
-        useNativeDriver: false,
-        damping: 18,
-        stiffness: 200,
-      }),
-      Animated.timing(pillOpacity, {
-        toValue: focused ? 1 : 0,
-        duration: 180,
-        useNativeDriver: false,
-      }),
-    ]).start();
     if (focused) {
       Animated.sequence([
         Animated.timing(iconScale, {
-          toValue: 0.8,
+          toValue: 0.95,
           duration: 70,
           useNativeDriver: true,
         }),
@@ -64,24 +59,23 @@ export function TabItem({ name, color, focused, size = 24 }: TabItemProps) {
         }),
       ]).start();
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focused]);
 
   const Icon = iconMap[name] ?? iconMap.dashboard;
-  const iconColor = focused ? colors.primary.contrastText : color;
+  const label = labelMap[name] ?? name;
 
   return (
-    <View style={styles.wrapper}>
-      <Animated.View
-        style={[styles.pill, { width: pillWidth, opacity: pillOpacity }]}
+    <Animated.View
+      style={[styles.wrapper, { transform: [{ scale: iconScale }] }]}
+    >
+      {Icon(color, size)}
+      <Animated.Text
+        style={[styles.label, { color, transform: [{ scale: iconScale }] }]}
       >
-        <View style={styles.pillSheen} />
-      </Animated.View>
-      <Animated.View
-        style={[styles.iconWrap, { transform: [{ scale: iconScale }] }]}
-      >
-        {Icon(iconColor, size)}
-      </Animated.View>
-    </View>
+        {label}
+      </Animated.Text>
+    </Animated.View>
   );
 }
 
@@ -89,41 +83,33 @@ export function TabItem({ name, color, focused, size = 24 }: TabItemProps) {
 
 interface FABTabProps {
   onPress?: () => void;
+  isOpen?: boolean;
 }
 
-export function FABTab({ onPress }: FABTabProps) {
+export function FABTab({ onPress, isOpen = false }: FABTabProps) {
   const { colors } = useTheme();
   const styles = useStyles();
-  const scale = useRef(new Animated.Value(1)).current;
+  const rotation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
 
-  const handlePress = () => {
-    Animated.sequence([
-      Animated.timing(scale, {
-        toValue: 0.85,
-        duration: 75,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scale, {
-        toValue: 1,
-        useNativeDriver: true,
-        damping: 8,
-        stiffness: 300,
-      }),
-    ]).start();
-    onPress?.();
-  };
+  useEffect(() => {
+    Animated.timing(rotation, {
+      toValue: isOpen ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const rotateInterpolation = rotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"],
+  });
 
   return (
     <View style={styles.fabOuter}>
-      <View
-        style={[
-          styles.fabGlow,
-          { backgroundColor: `${colors.primary.main}15` },
-        ]}
-      />
-      <Animated.View style={{ transform: [{ scale }] }}>
+      <Animated.View style={{ transform: [{ rotate: rotateInterpolation }] }}>
         <TouchableOpacity
-          onPress={handlePress}
+          onPress={onPress}
           activeOpacity={1}
           style={[
             styles.fab,
@@ -134,7 +120,7 @@ export function FABTab({ onPress }: FABTabProps) {
           ]}
         >
           <MaterialIcons
-            name="add"
+            name={isOpen ? "close" : "add"}
             size={24}
             color={colors.primary.contrastText}
           />
@@ -144,61 +130,35 @@ export function FABTab({ onPress }: FABTabProps) {
   );
 }
 
-// ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
-
-const useStyles = makeStyles(({ colors, radius }) => ({
-  // TabItem
+const useStyles = makeStyles(({ colors, radius, spacing, typography }) => ({
   wrapper: {
     alignItems: "center",
     justifyContent: "center",
     width: 60,
-    height: 48,
+    height: 56,
+    gap: spacing[0.5],
   },
-  pill: {
-    position: "absolute",
-    height: 46,
-    borderRadius: radius.full,
-    backgroundColor: colors.primary.main,
-    overflow: "hidden",
-  },
-  pillSheen: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: "50%",
-    backgroundColor: "rgba(255,255,255,0.14)",
-    borderRadius: radius.full,
-  },
-  iconWrap: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 44,
-    height: 44,
+  label: {
+    fontSize: 12,
+    fontFamily: typography.fontFamily.Manrope.Bold,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 
-  // FABTab
   fabOuter: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 28,
-  },
-  fabGlow: {
-    position: "absolute",
-    width: 74, // FAB_SIZE + 16
-    height: 74,
-    borderRadius: radius.full,
   },
   fab: {
-    width: 58,
-    height: 58,
+    width: 48,
+    height: 48,
     borderRadius: radius.full,
     alignItems: "center",
     justifyContent: "center",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 16,
-    elevation: 14,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
     zIndex: 1000,
   },
 }));

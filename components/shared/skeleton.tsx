@@ -55,6 +55,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     );
     loop.start();
     return () => loop.stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speed]);
 
   const bgColor = anim.interpolate({

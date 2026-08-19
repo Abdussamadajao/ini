@@ -1,10 +1,13 @@
 import { Platform } from "react-native";
 
-const spacingKeys = Array.from({ length: 233 }, (_, i) => i * 0.5) as number[];
+const spacingKeys = Array.from({ length: 233 }, (_, i) => i * 0.5);
 
-const spacing = Object.fromEntries(
+// Spacing scale: keys are multiples of 0.5, from 0 to 116, mapped to px (key * 4)
+export type SpacingScale = Record<number, number>;
+
+const spacing: SpacingScale = Object.fromEntries(
   spacingKeys.map((k) => [k, k * 4]),
-) as Record<number, number>;
+);
 
 // --- Font families ---
 export const fontFamily = {
@@ -29,7 +32,6 @@ export const fontFamily = {
 // --- Typography scale ---
 export const typography = {
   fontFamily,
-
   fontSize: {
     xs: 12,
     sm: 14,
@@ -46,14 +48,12 @@ export const typography = {
     "9xl": 52,
     "10xl": 56,
   },
-
   fontWeight: {
     regular: "400",
     medium: "500",
     semibold: "600",
     bold: "700",
   },
-
   lineHeight: {
     tight: 1.25,
     snug: 1.4,
@@ -77,7 +77,6 @@ export const keyboardAvoiding = {
 // --- Shared design tokens ---
 export const sharedTokens = {
   spacing,
-
   radius: {
     none: 0,
     xs: 4,
@@ -87,9 +86,7 @@ export const sharedTokens = {
     xl: 24,
     full: 999,
   },
-
   typography,
-
   shadow: {
     none: {
       shadowColor: "transparent",
@@ -98,7 +95,6 @@ export const sharedTokens = {
       shadowRadius: 0,
       elevation: 0,
     },
-
     // The Emerald Vault ambient glow.
     glow: {
       color: "rgba(16, 185, 129, 0.08)",
@@ -107,7 +103,6 @@ export const sharedTokens = {
       spread: -5,
     },
   },
-
   zIndex: {
     base: 0,
     raised: 1,

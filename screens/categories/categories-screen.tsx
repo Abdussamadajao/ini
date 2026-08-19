@@ -1,5 +1,4 @@
 import { useCategories } from "@/actions/categories";
-import { useTheme } from "@/theme";
 import { CategoryType } from "@/types/categories";
 import React, { useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,7 +7,6 @@ import { CategoriesHeader } from "./categories-header";
 import { useCategoriesStyles } from "./categories-styles";
 
 export function CategoriesScreen() {
-  const { colors } = useTheme();
   const styles = useCategoriesStyles();
   const [activeTab, setActiveTab] = useState<CategoryType>("INCOME");
   const {

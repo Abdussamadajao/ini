@@ -5,12 +5,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 type SafeAreaProps = {
   children?: React.ReactNode;
   style?: object;
+  edges?: ["top", "left", "right"];
 };
 
 const SafeArea: React.FC<SafeAreaProps> = (props) => {
   const styles = useStyles();
   return (
-    <SafeAreaView style={[styles.container, props.style]}>
+    <SafeAreaView edges={props.edges} style={[styles.container, props.style]}>
       {props.children ? props.children : null}
     </SafeAreaView>
   );

@@ -1,21 +1,14 @@
 import { images } from "@/constants";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles } from "@/theme";
 import React from "react";
 import { Image, View } from "react-native";
 
 const Logo = () => {
-  const { colors } = useTheme();
   const styles = useStyles();
 
   return (
     <View style={styles.headerContainer}>
-      <View />
-      <View style={styles.header}>
-        <Image source={images.logo} style={styles.headerIconImage} />
-        {/* <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
-          Ini
-        </Text> */}
-      </View>
+      <Image source={images.logo} style={styles.headerIconImage} />
     </View>
   );
 };
@@ -40,8 +33,8 @@ const useStyles = makeStyles(({ colors, spacing, typography }) => ({
     gap: spacing[1.25],
   },
   headerIconImage: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
   },
   headerTitle: {
     fontSize: typography.fontSize["2xl"],
