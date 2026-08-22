@@ -79,55 +79,56 @@ const InfoBanner = ({
 
 export default InfoBanner;
 
-const useStyles = makeStyles(({ colors, radius, spacing, typography }) => ({
-  container: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    gap: spacing[2],
-    borderWidth: 1,
-    // borderColor: colors.border.default,
-    borderRadius: radius.lg,
-    padding: spacing[3],
-    paddingRight: spacing[6],
-  },
-  infoContainer: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[1],
-  },
-  iconWrap: {
-    width: 30,
-    height: 30,
-    borderRadius: radius.full,
-    backgroundColor: colors.background.surface,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  icon: {
-    // color overridden via inline style
-  },
-  content: {
-    flex: 1,
-    gap: spacing[1],
-  },
-  title: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-    color: colors.text.primary,
-  },
-  description: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Regular,
-    color: colors.text.secondary,
-    width: "89%",
-  },
-  actionWrap: {
-    flexShrink: 0,
-  },
-  action: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    textAlign: "right",
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, radius, spacing, typography, textMetrics }) => ({
+    container: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      gap: spacing[2],
+      borderWidth: 1,
+      borderRadius: radius.lg,
+      padding: spacing[3],
+      paddingRight: spacing[6],
+    },
+    infoContainer: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[1],
+    },
+    iconWrap: {
+      width: 30,
+      height: 30,
+      borderRadius: radius.full,
+      backgroundColor: colors.background.surface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    icon: {
+      // color overridden via inline style
+    },
+    content: {
+      flex: 1,
+      gap: spacing[1],
+    },
+    title: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      color: colors.text.primary,
+    },
+    description: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      color: colors.text.secondary,
+      width: "89%",
+    },
+    actionWrap: {
+      flexShrink: 0,
+    },
+    action: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      textAlign: "right",
+    },
+  }),
+);

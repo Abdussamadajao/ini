@@ -45,20 +45,27 @@ function OtpDisplay() {
 
   return (
     <View style={styles.otpDisplay}>
-      {Array.from({ length: OTP_DIGITS }).map((_, index) => (
-        <View
-          key={index}
-          style={[
-            styles.otpDot,
-            {
-              backgroundColor:
-                code.length > index
+      {Array.from({ length: OTP_DIGITS }).map((_, index) => {
+        const digit = code[index];
+        const isFilled = digit !== undefined;
+        return (
+          <View
+            key={index}
+            style={[
+              styles.otpBox,
+              {
+                borderColor: isFilled
                   ? colors.primary.main
                   : colors.border.default,
-            },
-          ]}
-        />
-      ))}
+              },
+            ]}
+          >
+            <Text style={[styles.otpBoxText, { color: colors.text.primary }]}>
+              {digit ?? ""}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -112,14 +119,12 @@ export function VerifyEmailForm() {
             router.replace("/(auth)/login");
           },
           onError: (context) => {
-            console.log(context.error);
             toast.error(context.error.message ?? "Failed to verify email");
             setIsLoading(false);
           },
         },
       );
     } catch (error) {
-      console.error(error);
       toast.error("Something went wrong");
       setIsLoading(false);
     }
@@ -147,7 +152,6 @@ export function VerifyEmailForm() {
         },
       );
     } catch (error) {
-      console.error(error);
       toast.error("Failed to resend verification code");
     } finally {
       setIsResending(false);
@@ -219,19 +223,15 @@ export function VerifyEmailForm() {
 
             <View style={styles.bottomShell}>
               <Button
+                title="Verify"
                 onPress={() => handleSubmit()}
                 disabled={!canVerify || isSubmitting || isLoading}
                 loading={isSubmitting || isLoading}
-              >
-                <Text
-                  style={[
-                    styles.submitText,
-                    { color: colors.primary.contrastText },
-                  ]}
-                >
-                  Verify
-                </Text>
-              </Button>
+                // textStyle={[
+                //   styles.submitText,
+                //   { color: colors.primary.contrastText },
+                // ]}
+              />
             </View>
           </>
         );

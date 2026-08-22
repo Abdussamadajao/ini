@@ -7,6 +7,7 @@ import React from "react";
 import { Pressable } from "react-native";
 // Import the Header component
 import { useHomeHeaderStyles } from "./styles";
+import { router } from "expo-router";
 
 export function HomeHeader() {
   const colors = useColors();
@@ -32,7 +33,10 @@ export function HomeHeader() {
       <Pressable style={styles.searchBtn}>
         <MaterialIcons name="search" size={24} color={colors.text.secondary} />
       </Pressable>
-      <Pressable style={styles.searchBtn}>
+      <Pressable
+        onPress={() => router.push("/notifications")}
+        style={styles.searchBtn}
+      >
         <MaterialIcons
           name="notifications"
           size={24}

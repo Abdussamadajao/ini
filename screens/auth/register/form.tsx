@@ -8,7 +8,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { Formik, FormikHelpers } from "formik";
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import * as Yup from "yup";
 import { useStyles } from "./styles";
 
@@ -179,20 +179,15 @@ export function RegisterForm() {
           />
 
           <Button
-            style={styles.signUpBtn}
+            title="Create account"
             onPress={() => handleSubmit()}
             loading={isLoading || isSubmitting}
             disabled={!isValid || !dirty || isSubmitting || isLoading}
-          >
-            <Text
-              style={[
-                styles.signUpText,
-                { color: colors.primary.contrastText },
-              ]}
-            >
-              Create account
-            </Text>
-          </Button>
+            style={{
+              marginTop: 10,
+            }}
+          />
+
           {/*
           <View style={styles.divider}>
             <View
@@ -227,21 +222,23 @@ export function RegisterForm() {
             <Text style={[styles.googleText, { color: colors.text.primary }]}>
               Continue with Google
             </Text>
-          </Button>*/}
+          </Button>
+          */}
 
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: colors.text.secondary }]}>
               Already have an account?{" "}
             </Text>
-            <Button
-              style={styles.linkBtn}
-              onPress={() => router.replace("/(auth)/login")}
+
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/login")}
               disabled={isSubmitting || isLoading}
+              style={styles.linkBtn}
             >
               <Text style={[styles.footerLink, { color: colors.primary.main }]}>
                 Sign in
               </Text>
-            </Button>
+            </TouchableOpacity>
           </View>
         </>
       )}

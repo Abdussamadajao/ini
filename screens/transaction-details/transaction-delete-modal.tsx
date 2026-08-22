@@ -82,24 +82,20 @@ export function TransactionDeleteModal({
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <Button
+            title="Delete"
             onPress={onConfirmDelete}
             variant="danger"
             loading={isDeleting}
             disabled={isDeleting}
-            flex
-          >
-            <Text style={[styles.deletePrimaryBtnText]}>Delete</Text>
-          </Button>
+          />
 
           <Button
+            title="Cancel"
             onPress={onCancel}
             variant="tertiary"
             appearance="outline"
             disabled={isDeleting}
-            flex
-          >
-            <Text style={styles.deleteCancelBtnText}>Cancel</Text>
-          </Button>
+          />
         </View>
       </BottomSheetScrollView>
     </BottomSheetModal>

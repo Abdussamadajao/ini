@@ -4,7 +4,7 @@ import { Button } from "@/components/shared";
 import { Avatar } from "@/components/shared/avatar";
 import { useToast } from "@/components/toasts";
 import { authClient } from "@/lib/auth-client";
-import { makeStyles, typography, useTheme } from "@/theme";
+import { makeStyles, typography, useTheme, textMetrics } from "@/theme";
 import { User } from "@/types/index";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -180,7 +180,6 @@ export function EditProfileScreen() {
         toast.success("Profile updated successfully");
         router.back();
       } catch (error) {
-        console.error(error);
         toast.error("Failed to update profile");
       }
     },
@@ -345,21 +344,15 @@ export function EditProfileScreen() {
                 { backgroundColor: colors.background.screen },
               ]}
             >
-              <Button style={styles.saveBtn} onPress={() => submitForm()}>
-                <Text
-                  style={[
-                    styles.saveBtnText,
-                    { color: colors.primary.contrastText },
-                  ]}
-                >
-                  Save
-                </Text>
-                <MaterialIcons
-                  name="arrow-forward"
-                  size={22}
-                  color={colors.primary.contrastText}
-                />
-              </Button>
+              <Button
+                title="Save"
+                style={styles.saveBtn}
+                onPress={() => submitForm()}
+                textStyle={[
+                  styles.saveBtnText,
+                  { color: colors.primary.contrastText },
+                ]}
+              />
             </View>
           </KeyboardAvoidingView>
         </SafeAreaView>
@@ -370,84 +363,86 @@ export function EditProfileScreen() {
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  safe: { flex: 1 },
-  flex: { flex: 1 },
-  header: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    minHeight: 48,
-    paddingHorizontal: spacing[2],
-    paddingVertical: spacing[2],
-  },
-  headerSide: {
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 44,
-    paddingVertical: spacing[2],
-  },
-  headerCenter: {
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    fontSize: typography.fontSize.lg,
-  },
-  saveBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-  },
-  footer: {
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[4],
-    paddingBottom: spacing[8],
-  },
-  saveBtnText: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.md,
-  },
-  scroll: { flexGrow: 1 },
-  scrollContent: {
-    paddingBottom: spacing[12],
-    paddingHorizontal: spacing[4],
-  },
-  avatarBlock: {
-    alignItems: "center",
-    marginBottom: spacing[8],
-    marginTop: spacing[2],
-  },
-  avatarRing: {
-    borderRadius: radius.full,
-    borderWidth: 3,
-    elevation: 6,
-    marginBottom: spacing[4],
-    padding: 3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-  },
-  uploadingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[2],
-  },
-  changePhoto: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.xs,
-    letterSpacing: 1.2,
-    textTransform: "uppercase",
-  },
-  card: {
-    borderRadius: radius.lg,
-    marginBottom: spacing[5],
-    padding: spacing[4],
-  },
-  cardTitle: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    fontSize: typography.fontSize.md,
-    marginBottom: spacing[4],
-  },
-}));
+const useStyles = makeStyles(
+  ({ spacing, radius, typography, textMetrics }) => ({
+    safe: { flex: 1 },
+    flex: { flex: 1 },
+    header: {
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      minHeight: 48,
+      paddingHorizontal: spacing[2],
+      paddingVertical: spacing[2],
+    },
+    headerSide: {
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: 44,
+      paddingVertical: spacing[2],
+    },
+    headerCenter: {
+      alignItems: "center",
+    },
+    headerTitle: {
+      ...textMetrics("lg", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+    },
+    saveBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 8,
+    },
+    footer: {
+      paddingHorizontal: spacing[4],
+      paddingTop: spacing[4],
+      paddingBottom: spacing[8],
+    },
+    saveBtnText: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+    scroll: { flexGrow: 1 },
+    scrollContent: {
+      paddingBottom: spacing[12],
+      paddingHorizontal: spacing[4],
+    },
+    avatarBlock: {
+      alignItems: "center",
+      marginBottom: spacing[8],
+      marginTop: spacing[2],
+    },
+    avatarRing: {
+      borderRadius: radius.full,
+      borderWidth: 3,
+      elevation: 6,
+      marginBottom: spacing[4],
+      padding: 3,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.35,
+      shadowRadius: 14,
+    },
+    uploadingRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[2],
+    },
+    changePhoto: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+      letterSpacing: 1.2,
+      textTransform: "capitalize",
+    },
+    card: {
+      borderRadius: radius.lg,
+      marginBottom: spacing[5],
+      padding: spacing[4],
+    },
+    cardTitle: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      marginBottom: spacing[4],
+    },
+  }),
+);

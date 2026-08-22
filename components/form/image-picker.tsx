@@ -75,8 +75,7 @@ export function ImagePickerField({
   }, [onChange, onBlur, pickerOptions]);
 
   const pickLibrary = useCallback(async () => {
-    const { status } =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
       Alert.alert(
         "Photos access",
@@ -101,9 +100,7 @@ export function ImagePickerField({
 
   return (
     <View style={[styles.root, style]}>
-      {label ? (
-        <Text style={[styles.label, labelStyle]}>{label}</Text>
-      ) : null}
+      {label ? <Text style={[styles.label, labelStyle]}>{label}</Text> : null}
 
       <View style={styles.block}>
         <Pressable
@@ -183,8 +180,7 @@ export function FormikImagePicker({
   });
 
   const error =
-    errorOverride ??
-    (showFormikError && meta.touched ? meta.error : undefined);
+    errorOverride ?? (showFormikError && meta.touched ? meta.error : undefined);
 
   return (
     <ImagePickerField
@@ -200,69 +196,68 @@ export function FormikImagePicker({
   );
 }
 
-const useStyles = makeStyles(({ colors, spacing, typography, radius }) => ({
-  root: { gap: spacing[2] },
-  label: {
-    marginBottom: spacing[1],
-    marginLeft: spacing[1],
-    color: colors.text.secondary,
-    fontSize: typography.fontSize.xs,
-    lineHeight: 16,
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-  },
-  block: {
-    alignItems: "center",
-    gap: spacing[4],
-  },
-  drop: {
-    borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: colors.primary.main,
-    backgroundColor: colors.background.surface,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: spacing[3],
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
-  outlineBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[2],
-    paddingVertical: spacing[2],
-    paddingHorizontal: spacing[4],
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.primary.main,
-  },
-  outlineBtnText: {
-    fontSize: typography.fontSize.xs,
-    lineHeight: 16,
-    letterSpacing: 0.6,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-    textTransform: "uppercase",
-    color: colors.primary.main,
-  },
-  hint: {
-    fontSize: typography.fontSize.xs,
-    lineHeight: 16,
-    letterSpacing: 0.6,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-    textTransform: "uppercase",
-    color: colors.text.muted,
-    textAlign: "center",
-  },
-  errorText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    color: colors.status.error.main,
-    marginTop: spacing[1],
-    marginLeft: spacing[1],
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, typography, radius, textMetrics }) => ({
+    root: { gap: spacing[2] },
+    label: {
+      ...textMetrics("xs", "snug"),
+      marginBottom: spacing[1],
+      marginLeft: spacing[1],
+      color: colors.text.secondary,
+      letterSpacing: 0.8,
+      textTransform: "capitalize",
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+    },
+    block: {
+      alignItems: "center",
+      gap: spacing[4],
+    },
+    drop: {
+      borderWidth: 2,
+      borderStyle: "dashed",
+      borderColor: colors.primary.main,
+      backgroundColor: colors.background.surface,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    actions: {
+      flexDirection: "row",
+      gap: spacing[3],
+      flexWrap: "wrap",
+      justifyContent: "center",
+    },
+    outlineBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[2],
+      paddingVertical: spacing[2],
+      paddingHorizontal: spacing[4],
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      borderColor: colors.primary.main,
+    },
+    outlineBtnText: {
+      ...textMetrics("xs", "snug"),
+      letterSpacing: 0.6,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      textTransform: "capitalize",
+      color: colors.primary.main,
+    },
+    hint: {
+      ...textMetrics("xs", "snug"),
+      letterSpacing: 0.6,
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      textTransform: "capitalize",
+      color: colors.text.muted,
+      textAlign: "center",
+    },
+    errorText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.status.error.main,
+      marginTop: spacing[1],
+      marginLeft: spacing[1],
+    },
+  }),
+);

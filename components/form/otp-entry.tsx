@@ -80,46 +80,48 @@ export const FormikOtpEntry = ({
   );
 };
 
-const useStyles = makeStyles(({ colors, radius, spacing, typography }) => ({
-  wrapper: {
-    marginBottom: spacing[2],
-  },
-  label: {
-    marginBottom: spacing[2],
-    color: colors.text.secondary,
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    letterSpacing: 0.8,
-  },
-  containerStyle: {
-    width: "100%",
-  },
-  pinCodeContainerStyle: {
-    width: 44,
-    height: 48,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    borderRadius: radius.sm,
-    backgroundColor: colors.background.surface,
-  },
-  filledPinCodeContainerStyle: {
-    borderColor: colors.border.default,
-  },
-  focusedPinCodeContainerStyle: {
-    borderColor: colors.primary.main,
-  },
-  pinCodeTextStyle: {
-    color: colors.text.primary,
-    fontSize: typography.fontSize.xl,
-    fontFamily: typography.fontFamily.Manrope.Bold,
-  },
-  placeholderTextStyle: {
-    color: colors.text.secondary,
-  },
-  errorText: {
-    color: colors.status.error.main,
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    marginTop: spacing[2],
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, radius, spacing, typography, textMetrics }) => ({
+    wrapper: {
+      marginBottom: spacing[2],
+    },
+    label: {
+      ...textMetrics("xs", "snug"),
+      marginBottom: spacing[2],
+      color: colors.text.secondary,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      letterSpacing: 0.8,
+    },
+    containerStyle: {
+      width: "100%",
+    },
+    pinCodeContainerStyle: {
+      width: 44,
+      height: 48,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      borderRadius: radius.sm,
+      backgroundColor: colors.background.surface,
+    },
+    filledPinCodeContainerStyle: {
+      borderColor: colors.border.default,
+    },
+    focusedPinCodeContainerStyle: {
+      borderColor: colors.primary.main,
+    },
+    pinCodeTextStyle: {
+      ...textMetrics("xl", "snug"),
+      color: colors.text.primary,
+      fontFamily: typography.fontFamily.Manrope.Bold,
+    },
+    placeholderTextStyle: {
+      color: colors.text.secondary,
+    },
+    errorText: {
+      ...textMetrics("xs", "snug"),
+      color: colors.status.error.main,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      marginTop: spacing[2],
+    },
+  }),
+);

@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { ThemeColors } from "../types";
 import type { sharedTokens, SpacingScale } from "../typography";
+import { textMetrics } from "../typography";
 import { useColors } from "./theme";
 import {
   useRadius,
@@ -18,6 +19,7 @@ type Tokens = {
   typography: typeof sharedTokens.typography;
   shadow: typeof sharedTokens.shadow;
   zIndex: typeof sharedTokens.zIndex;
+  textMetrics: typeof textMetrics;
 };
 
 type SheetStyle<T> = StyleSheet.NamedStyles<T> | StyleSheet.NamedStyles<any>;
@@ -34,7 +36,15 @@ function useStyles<T extends SheetStyle<T>>(fn: StyleFn<T>): T {
   return useMemo(
     () =>
       StyleSheet.create(
-        fn({ colors, spacing, radius, typography, shadow, zIndex }),
+        fn({
+          colors,
+          spacing,
+          radius,
+          typography,
+          shadow,
+          zIndex,
+          textMetrics,
+        }),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [colors],

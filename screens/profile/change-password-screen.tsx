@@ -2,7 +2,7 @@ import { FormikTextfield } from "@/components/form";
 import { Button } from "@/components/shared";
 import { useToast } from "@/components/toasts";
 import { authClient } from "@/lib/auth-client";
-import { makeStyles, typography, useTheme } from "@/theme";
+import { makeStyles, typography, useTheme, textMetrics } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Formik, useFormikContext } from "formik";
@@ -248,6 +248,7 @@ export function ChangePasswordScreen() {
                   helperTextStyle={{
                     color: colors.text.secondary,
                     fontFamily: typography.fontFamily.Inter.Regular,
+                    fontSize: typography.fontSize.xs,
                   }}
                 />
                 <NewPasswordStrength />
@@ -287,24 +288,15 @@ export function ChangePasswordScreen() {
               ]}
             >
               <Button
+                title="Update Password"
                 style={styles.saveBtn}
                 loading={isPasswordChangeLoading}
                 onPress={() => handleSubmit()}
-              >
-                <Text
-                  style={[
-                    styles.saveBtnText,
-                    { color: colors.primary.contrastText },
-                  ]}
-                >
-                  Update Password
-                </Text>
-                <MaterialIcons
-                  name="refresh"
-                  size={22}
-                  color={colors.primary.contrastText}
-                />
-              </Button>
+                textStyle={[
+                  styles.saveBtnText,
+                  { color: colors.primary.contrastText },
+                ]}
+              />
             </View>
           </KeyboardAvoidingView>
         </SafeAreaView>
@@ -315,92 +307,93 @@ export function ChangePasswordScreen() {
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  safe: { flex: 1, backgroundColor: colors.background.screen },
-  flex: { flex: 1 },
-  header: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    minHeight: 48,
-    paddingHorizontal: spacing[2],
-    paddingVertical: spacing[2],
-  },
-  headerSide: {
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 44,
-    paddingVertical: spacing[2],
-  },
-  headerCenter: {
-    flex: 1,
-    alignItems: "center",
-  },
-  headerTitle: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    fontSize: typography.fontSize.lg,
-  },
-  subtitle: {
-    fontFamily: typography.fontFamily.Inter.Regular,
-    fontSize: typography.fontSize.sm,
-    lineHeight: 20,
-    marginBottom: spacing[6],
-  },
-  scroll: { flexGrow: 1 },
-  scrollContent: {
-    paddingBottom: spacing[12],
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[2],
-  },
-  card: {
-    borderRadius: radius.lg,
-    marginBottom: spacing[5],
-    padding: spacing[4],
-  },
-  forgotRow: {
-    alignSelf: "flex-start",
-    marginTop: spacing[2],
-  },
-  forgotLink: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.sm,
-  },
-  footer: {
-    paddingBottom: spacing[8],
-    paddingHorizontal: spacing[4],
-    paddingTop: spacing[4],
-  },
-  saveBtn: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
-    justifyContent: "center",
-  },
-  saveBtnText: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.md,
-  },
-  strengthBlock: {
-    marginBottom: spacing[3],
-    marginTop: -spacing[1],
-  },
-  strengthRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: spacing[2],
-  },
-  strengthText: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.sm,
-  },
-  strengthTrack: {
-    borderRadius: radius.full,
-    height: 4,
-    overflow: "hidden",
-    width: "100%",
-  },
-  strengthFill: {
-    borderRadius: radius.full,
-    height: "100%",
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    safe: { flex: 1, backgroundColor: colors.background.screen },
+    flex: { flex: 1 },
+    header: {
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      minHeight: 48,
+      paddingHorizontal: spacing[2],
+      paddingVertical: spacing[2],
+    },
+    headerSide: {
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: 44,
+      paddingVertical: spacing[2],
+    },
+    headerCenter: {
+      flex: 1,
+      alignItems: "center",
+    },
+    headerTitle: {
+      ...textMetrics("lg", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+    },
+    subtitle: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Inter.Regular,
+      marginBottom: spacing[6],
+    },
+    scroll: { flexGrow: 1 },
+    scrollContent: {
+      paddingBottom: spacing[12],
+      paddingHorizontal: spacing[4],
+      paddingTop: spacing[2],
+    },
+    card: {
+      borderRadius: radius.lg,
+      marginBottom: spacing[5],
+      padding: spacing[4],
+    },
+    forgotRow: {
+      alignSelf: "flex-start",
+      marginTop: spacing[2],
+    },
+    forgotLink: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+    footer: {
+      paddingBottom: spacing[8],
+      paddingHorizontal: spacing[4],
+      paddingTop: spacing[4],
+    },
+    saveBtn: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: 8,
+      justifyContent: "center",
+    },
+    saveBtnText: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+    strengthBlock: {
+      marginBottom: spacing[3],
+      marginTop: -spacing[1],
+    },
+    strengthRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: spacing[2],
+    },
+    strengthText: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+    strengthTrack: {
+      borderRadius: radius.full,
+      height: 4,
+      overflow: "hidden",
+      width: "100%",
+    },
+    strengthFill: {
+      borderRadius: radius.full,
+      height: "100%",
+    },
+  }),
+);

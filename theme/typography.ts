@@ -65,6 +65,34 @@ export const typography = {
 // Compatibility export matching the supplied theme code.
 export const fontSize = typography.fontSize;
 
+// --- Text metrics helper ---
+// RN doesn't derive lineHeight from fontSize automatically, and Manrope's
+// internal ascent/descent metrics run tighter than its glyphs need at these
+// sizes — any Text style that sets only fontSize (no lineHeight) risks
+// clipping ascenders/descenders, especially on Android and in release/preview
+// builds. Use this anywhere a style sets fontSize from the typography scale,
+// instead of setting fontSize alone.
+//
+// Usage:
+//   notificationTitle: {
+//     ...textMetrics("md", "snug"),
+//     fontFamily: typography.fontFamily.Manrope.Medium,
+//   },
+type FontSizeKey = keyof typeof typography.fontSize;
+type LineHeightKey = keyof typeof typography.lineHeight;
+
+export function textMetrics(
+  size: FontSizeKey,
+  leading: LineHeightKey = "snug",
+): { fontSize: number; lineHeight: number } {
+  const fontSizeValue = typography.fontSize[size];
+  const ratio = typography.lineHeight[leading];
+  return {
+    fontSize: fontSizeValue,
+    lineHeight: Math.round(fontSizeValue * ratio),
+  };
+}
+
 // Shared KeyboardAvoidingView defaults.
 export const keyboardAvoiding = {
   behavior: Platform.select<"padding" | "height" | undefined>({

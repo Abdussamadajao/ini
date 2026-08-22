@@ -294,7 +294,7 @@ export function QuickActionsModal({
   );
 }
 
-const useStyles = makeStyles(({ colors, radius, spacing }) => ({
+const useStyles = makeStyles(({ colors, radius, spacing, textMetrics }) => ({
   root: {
     // Must out-rank the FAB's own elevation/zIndex (10 / 1000) or Android
     // will draw the FAB on top of these bubbles regardless of JSX order.
@@ -353,8 +353,8 @@ const useStyles = makeStyles(({ colors, radius, spacing }) => ({
     elevation: 2,
   },
   labelText: {
+    ...textMetrics("xs", "snug"),
     color: colors.text.primary,
-    fontSize: 11,
     fontFamily: "Manrope-SemiBold",
   },
 }));

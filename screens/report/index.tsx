@@ -65,7 +65,6 @@ const ReportScreen = () => {
   const { colors } = useTheme();
   const styles = useStyles();
   const { data: insights, isPending, error, refetch } = useInsights();
-  console.log(insights);
   const donutSegments: DonutSeg[] = insights?.spending_by_category.map(
     (cat) => ({
       pct: cat.percentage / 100,

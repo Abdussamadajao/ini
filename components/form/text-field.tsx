@@ -14,7 +14,7 @@ import {
 } from "react-native";
 
 type BaseProps = TextInputProps & {
-  label: string;
+  label?: string;
   leftIcon?: React.ReactNode;
   leftIconRight?: boolean;
   secureTextEntry?: boolean;
@@ -188,10 +188,10 @@ export const FormikTextfield = ({
 };
 
 const useTextfieldStyles = makeStyles(
-  ({ colors, radius, typography, spacing }) => ({
+  ({ colors, radius, typography, spacing, textMetrics }) => ({
     wrapper: { marginBottom: 12, gap: 6 },
     label: {
-      fontSize: 15,
+      ...textMetrics("sm", "snug"),
       fontWeight: "600",
       marginBottom: 6,
       marginLeft: 4,
@@ -214,22 +214,20 @@ const useTextfieldStyles = makeStyles(
     rightIconWrap: { marginRight: 1 },
     input: {
       flex: 1,
-      lineHeight: 20,
       color: colors.text.primary,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
     },
     errorText: {
+      ...textMetrics("xs", "snug"),
       color: colors.status.error.main,
-      fontSize: 12,
       marginTop: 2,
       marginLeft: spacing[1],
       fontFamily: typography.fontFamily.Manrope.Medium,
     },
     helperText: {
+      ...textMetrics("xs", "snug"),
       color: colors.text.secondary,
-      fontSize: 12,
-      lineHeight: 16,
       marginTop: 1,
       marginLeft: 4,
       fontFamily: typography.fontFamily.Manrope.Medium,

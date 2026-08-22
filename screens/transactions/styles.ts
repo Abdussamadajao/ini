@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useTransactionsStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safeArea: {
       flex: 1,
       backgroundColor: colors.background.screen,
@@ -17,7 +17,7 @@ export const useTransactionsStyles = makeStyles(
       borderBottomColor: colors.border.default,
     },
     headerTitle: {
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -48,11 +48,11 @@ export const useTransactionsStyles = makeStyles(
       paddingVertical: spacing[3],
     },
     summaryText: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.5,
       color: colors.text.secondary,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
     },
     scroll: {
       flex: 1,
@@ -71,10 +71,10 @@ export const useTransactionsStyles = makeStyles(
       marginBottom: spacing[4],
     },
     sectionLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.5,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       color: colors.text.secondary,
       marginBottom: spacing[2],
       paddingHorizontal: spacing[1],
@@ -101,17 +101,17 @@ export const useTransactionsStyles = makeStyles(
       gap: 2,
     },
     txTitle: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     txSubtitle: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
     txAmount: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
     divider: {
@@ -136,14 +136,14 @@ export const useTransactionsStyles = makeStyles(
       marginBottom: spacing[6],
     },
     emptyTitle: {
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       textAlign: "center",
       marginBottom: spacing[2],
     },
     emptySubtitle: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
       textAlign: "center",
@@ -160,17 +160,16 @@ export const useTransactionsStyles = makeStyles(
       borderRadius: radius.full,
     },
     emptyBtnText: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.5,
       color: colors.primary.contrastText,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
     },
     // Search styles
     searchHeader: {
       paddingHorizontal: spacing[5],
       paddingVertical: spacing[3],
-      backgroundColor: colors.background.surface,
       borderBottomWidth: 1,
       borderBottomColor: colors.border.default,
     },
@@ -186,9 +185,28 @@ export const useTransactionsStyles = makeStyles(
     },
     searchInput: {
       flex: 1,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       paddingHorizontal: spacing[2],
+    },
+    actionRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: spacing[4],
+      paddingHorizontal: spacing[5],
+      borderRadius: radius.lg, // or whatever radius token you use
+    },
+    actionIconWrap: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: spacing[4],
+    },
+    actionLabel: {
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      ...textMetrics("md", "snug"),
     },
   }),
 );

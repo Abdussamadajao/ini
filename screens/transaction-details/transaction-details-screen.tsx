@@ -1,7 +1,7 @@
 import {
-  useDeleteTransaction,
   useIncomeSummary,
   useTransaction,
+  useTransactionMutation,
 } from "@/actions/transactions";
 import { ErrorState } from "@/components/shared/error";
 import { Skeleton } from "@/components/shared/skeleton";
@@ -68,7 +68,7 @@ export function TransactionDetailsScreen() {
     !!incomeId,
   );
 
-  const deleteMutation = useDeleteTransaction();
+  const { deleteTransaction: deleteMutation } = useTransactionMutation();
   const deleteModalRef = useRef<BottomSheetModal>(null);
 
   const amountNum = tx ? parseAmount(tx) : 0;
@@ -140,18 +140,7 @@ export function TransactionDetailsScreen() {
     if (!tx) return;
     const incomeIdForInvalidation =
       tx.type === "EXPENSE" ? (tx.income_id ?? undefined) : undefined;
-    deleteMutation.mutate(
-      { id: tx.id, incomeId: incomeIdForInvalidation },
-      {
-        onSuccess: () => {
-          toast.success("Transaction deleted successfully");
-          router.back();
-        },
-        onError: () => {
-          toast.error("Failed to delete transaction");
-        },
-      },
-    );
+    deleteMutation.mutate({ id: tx.id, incomeId: incomeIdForInvalidation });
   }, [tx, deleteMutation, toast]);
 
   const iconName = useMemo(() => {
@@ -529,17 +518,21 @@ export function TransactionDetailsScreen() {
       {/* Footer Actions */}
       <View style={styles.footer}>
         <Button
+          title="Delete"
           width="small"
           onPress={openDeleteModal}
           disabled={deleteMutation.isPending}
           variant="danger"
           appearance="outline"
-        >
-          <Text style={styles.deleteBtnText}>Delete</Text>
-        </Button>
-        <Button flex onPress={openEdit} disabled={deleteMutation.isPending}>
-          <Text style={styles.editBtnText}>Edit</Text>
-        </Button>
+          textStyle={styles.deleteBtnText}
+        />
+        <Button
+          title="Edit"
+          flex
+          onPress={openEdit}
+          disabled={deleteMutation.isPending}
+          textStyle={styles.editBtnText}
+        />
       </View>
 
       <TransactionDeleteModal

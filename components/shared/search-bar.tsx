@@ -29,24 +29,26 @@ export default function SearchBar({ search, setSearch }: SearchBarProps) {
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  searchWrap: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[2.5],
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[3],
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    paddingVertical: 0,
-    color: colors.text.primary,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    searchWrap: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[2.5],
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[3],
+      borderRadius: radius.lg,
+      borderWidth: 1,
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+    },
+    searchInput: {
+      flex: 1,
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      paddingVertical: 0,
+      color: colors.text.primary,
+    },
+  }),
+);

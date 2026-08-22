@@ -149,47 +149,49 @@ export const FormikTextArea = ({
   );
 };
 
-const useTextAreaStyles = makeStyles(({ colors, radius, typography }) => ({
-  wrapper: { marginBottom: 18 },
-  label: {
-    fontSize: 14,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    color: colors.text.primary,
-    marginBottom: 8,
-  },
-  input: {
-    padding: 14,
-    borderRadius: radius.lg,
-    borderWidth: 1.5,
-    fontSize: 16,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    textAlignVertical: "top",
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    color: colors.text.primary,
-  },
-  inputFocused: {
-    borderColor: colors.primary.main,
-  },
-  inputError: { borderColor: colors.status.error.main },
-  footerRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    marginTop: 4,
-  },
-  errorText: {
-    flex: 1,
-    color: colors.status.error.main,
-    fontSize: 12,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-  },
-  charCount: {
-    fontSize: 11,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    color: colors.text.secondary,
-    marginLeft: 8,
-  },
-}));
+const useTextAreaStyles = makeStyles(
+  ({ colors, radius, typography, textMetrics }) => ({
+    wrapper: { marginBottom: 18 },
+    label: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.text.primary,
+      marginBottom: 8,
+    },
+    input: {
+      padding: 14,
+      borderRadius: radius.lg,
+      borderWidth: 1.5,
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      textAlignVertical: "top",
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+      color: colors.text.primary,
+    },
+    inputFocused: {
+      borderColor: colors.primary.main,
+    },
+    inputError: { borderColor: colors.status.error.main },
+    footerRow: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      marginTop: 4,
+    },
+    errorText: {
+      flex: 1,
+      ...textMetrics("xs", "snug"),
+      color: colors.status.error.main,
+      fontFamily: typography.fontFamily.Manrope.Medium,
+    },
+    charCount: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.text.secondary,
+      marginLeft: 8,
+    },
+  }),
+);
 
 export default TextArea;

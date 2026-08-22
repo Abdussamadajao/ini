@@ -359,14 +359,14 @@ export function FormikPhoneNumberInput({
 }
 
 const useStyles = makeStyles(
-  ({ colors, spacing, radius, typography, shadow }) => ({
+  ({ colors, spacing, radius, typography, shadow, textMetrics }) => ({
     // ── Field ──
     wrapper: {
       gap: spacing[2],
       marginBottom: 12,
     },
     label: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
       textTransform: "capitalize",
@@ -397,7 +397,7 @@ const useStyles = makeStyles(
       fontSize: 20,
     },
     dialCode: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
       minWidth: 36,
@@ -412,7 +412,7 @@ const useStyles = makeStyles(
     phoneInput: {
       flex: 1,
       paddingHorizontal: spacing[3],
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
       height: "100%",
@@ -420,7 +420,7 @@ const useStyles = makeStyles(
 
     // ── Error ──
     errorText: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.status.error.main,
       marginTop: spacing[1],
@@ -450,7 +450,7 @@ const useStyles = makeStyles(
     },
     sheetScroll: { flex: 1 },
     sheetTitle: {
-      fontSize: typography.fontSize["2xl"],
+      ...textMetrics("2xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -472,7 +472,7 @@ const useStyles = makeStyles(
     },
     searchInput: {
       flex: 1,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.primary,
       height: "100%",
@@ -495,7 +495,6 @@ const useStyles = makeStyles(
     countryItemActive: {
       backgroundColor: colors.background.surfaceAlt,
       borderRadius: radius.lg,
-      // selected state communicated via check icon + name color
     },
     countryFlag: {
       fontSize: 24,
@@ -506,7 +505,7 @@ const useStyles = makeStyles(
       flex: 1,
     },
     countryName: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -514,7 +513,7 @@ const useStyles = makeStyles(
       color: colors.primary.main,
     },
     countryDial: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
       marginTop: 1,
@@ -526,9 +525,9 @@ const useStyles = makeStyles(
     },
     emptyText: {
       textAlign: "center",
-      color: colors.text.secondary,
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
+      color: colors.text.secondary,
       paddingVertical: spacing[4],
     },
   }),

@@ -16,6 +16,8 @@ import { OnscreenKeypad } from "@/components/shared";
 const OTP_DIGITS = 6;
 const OTP_RESEND_SECONDS = 10 * 60;
 
+type Step = "otp" | "password";
+
 function formatMMSS(totalSeconds: number) {
   const mm = Math.floor(totalSeconds / 60);
   const ss = totalSeconds % 60;
@@ -57,33 +59,160 @@ function OtpDisplay() {
 
   return (
     <View style={styles.otpDisplay}>
-      {Array.from({ length: OTP_DIGITS }).map((_, index) => (
-        <View
-          key={index}
-          style={[
-            styles.otpDot,
-            {
-              backgroundColor:
-                otp.length > index
+      {Array.from({ length: OTP_DIGITS }).map((_, index) => {
+        const digit = otp[index];
+        const isFilled = digit !== undefined;
+        return (
+          <View
+            key={index}
+            style={[
+              styles.otpBox,
+              {
+                borderColor: isFilled
                   ? colors.primary.main
                   : colors.border.default,
-            },
-          ]}
-        />
-      ))}
+              },
+            ]}
+          >
+            <Text style={[styles.otpBoxText, { color: colors.text.primary }]}>
+              {digit ?? ""}
+            </Text>
+          </View>
+        );
+      })}
     </View>
+  );
+}
+
+// --- Step 1: OTP entry ---
+function OtpStep({
+  onContinue,
+  onResend,
+  isResending,
+  secondsLeft,
+}: {
+  onContinue: () => void;
+  onResend: () => void;
+  isResending: boolean;
+  secondsLeft: number;
+}) {
+  const styles = useStyles();
+  const { colors } = useTheme();
+  const { values, setFieldValue } = useFormikContext<ResetPasswordValues>();
+  const otp = values.otp ?? "";
+
+  const handleKeyPress = (key: string) => {
+    setFieldValue("otp", (otp + key).slice(0, OTP_DIGITS));
+  };
+
+  const handleBackspace = () => {
+    setFieldValue("otp", otp.slice(0, -1));
+  };
+
+  const canContinue = /^\d{6}$/.test(otp);
+
+  return (
+    <>
+      <OtpDisplay />
+
+      <View style={styles.resendBlock}>
+        {secondsLeft > 0 ? (
+          <Text style={[styles.resendLabel, { color: colors.text.secondary }]}>
+            Resend code in{" "}
+            <Text style={[styles.resendTime, { color: colors.primary.main }]}>
+              {formatMMSS(secondsLeft)}
+            </Text>
+          </Text>
+        ) : (
+          <Pressable onPress={onResend} disabled={isResending}>
+            <Text style={[styles.resendLink, { color: colors.primary.main }]}>
+              Resend code
+            </Text>
+          </Pressable>
+        )}
+      </View>
+
+      <OnscreenKeypad
+        onKeyPress={handleKeyPress}
+        onBackspace={handleBackspace}
+      />
+
+      <View style={styles.bottomShell}>
+        <Button title="Continue" onPress={onContinue} disabled={!canContinue} />
+      </View>
+    </>
+  );
+}
+
+// --- Step 2: New password ---
+function PasswordStep({
+  onBack,
+  isSubmitting,
+}: {
+  onBack: () => void;
+  isSubmitting: boolean;
+}) {
+  const styles = useStyles();
+  const { colors } = useTheme();
+  const { values, handleSubmit } = useFormikContext<ResetPasswordValues>();
+
+  const canSubmit =
+    values.password.length >= 8 && values.password === values.confirmPassword;
+
+  return (
+    <>
+      <FormikTextfield
+        name="password"
+        label="New password"
+        placeholder="••••••••"
+        secureTextEntry
+        autoComplete="password-new"
+        leftIcon={
+          <MaterialIcons name="lock" size={22} color={colors.text.muted} />
+        }
+        containerStyle={styles.inputRow}
+      />
+      <FormikTextfield
+        name="confirmPassword"
+        label="Confirm password"
+        placeholder="••••••••"
+        secureTextEntry
+        autoComplete="password-new"
+        leftIcon={
+          <MaterialIcons
+            name="lock-outline"
+            size={22}
+            color={colors.text.muted}
+          />
+        }
+        containerStyle={styles.inputRow}
+      />
+
+      <View style={styles.bottomShell}>
+        <Button
+          title="Update password"
+          onPress={() => handleSubmit()}
+          disabled={!canSubmit || isSubmitting}
+          loading={isSubmitting}
+        />
+        <Pressable onPress={onBack} style={styles.backLink} hitSlop={12}>
+          <Text style={[styles.resendLink, { color: colors.text.secondary }]}>
+            Back
+          </Text>
+        </Pressable>
+      </View>
+    </>
   );
 }
 
 export function ResetPasswordForm() {
   const router = useRouter();
-  const { colors } = useTheme();
-  const styles = useStyles();
   const { toast } = useToast();
   const resetPasswordEmail = useAuthStore((s) => s.resetPasswordEmail);
   const setResetPasswordEmail = useAuthStore((s) => s.setResetPasswordEmail);
   const [isResending, setIsResending] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(OTP_RESEND_SECONDS);
+  const [step, setStep] = useState<Step>("otp");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // --- Effects ---
@@ -125,7 +254,6 @@ export function ResetPasswordForm() {
         },
       );
     } catch (error) {
-      console.error(error);
       toast.error("Something went wrong");
     }
   }
@@ -152,28 +280,11 @@ export function ResetPasswordForm() {
         },
       );
     } catch (error) {
-      console.error(error);
       toast.error("Failed to resend verification code");
     } finally {
       setIsResending(false);
     }
   }
-
-  // --- Keypad Handlers ---
-  const handleKeyPress = (
-    key: string,
-    setFieldValue: (field: string, value: string) => void,
-    otp: string,
-  ) => {
-    setFieldValue("otp", (otp + key).slice(0, OTP_DIGITS));
-  };
-
-  const handleBackspace = (
-    setFieldValue: (field: string, value: string) => void,
-    otp: string,
-  ) => {
-    setFieldValue("otp", otp.slice(0, -1));
-  };
 
   // --- Render ---
   return (
@@ -185,96 +296,23 @@ export function ResetPasswordForm() {
       validateOnBlur={true}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue, handleSubmit, isSubmitting }) => {
-        const canSubmit =
-          /^\d{6}$/.test(values.otp) &&
-          values.password.length >= 8 &&
-          values.password === values.confirmPassword;
-
-        return (
-          <>
-            <OtpDisplay />
-
-            <View style={styles.resendBlock}>
-              {secondsLeft > 0 ? (
-                <Text
-                  style={[styles.resendLabel, { color: colors.text.secondary }]}
-                >
-                  Resend code in{" "}
-                  <Text
-                    style={[styles.resendTime, { color: colors.primary.main }]}
-                  >
-                    {formatMMSS(secondsLeft)}
-                  </Text>
-                </Text>
-              ) : (
-                <Pressable onPress={handleResend}>
-                  <Text
-                    style={[styles.resendLink, { color: colors.primary.main }]}
-                  >
-                    Resend code
-                  </Text>
-                </Pressable>
-              )}
-            </View>
-
-            <OnscreenKeypad
-              onKeyPress={(key) =>
-                handleKeyPress(key, setFieldValue, values.otp)
-              }
-              onBackspace={() => handleBackspace(setFieldValue, values.otp)}
+      {({ isSubmitting }) => (
+        <>
+          {step === "otp" ? (
+            <OtpStep
+              onContinue={() => setStep("password")}
+              onResend={handleResend}
+              isResending={isResending}
+              secondsLeft={secondsLeft}
             />
-
-            <FormikTextfield
-              name="password"
-              label="New password"
-              placeholder="••••••••"
-              secureTextEntry
-              autoComplete="password-new"
-              leftIcon={
-                <MaterialIcons
-                  name="lock"
-                  size={22}
-                  color={colors.text.muted}
-                />
-              }
-              containerStyle={styles.inputRow}
+          ) : (
+            <PasswordStep
+              onBack={() => setStep("otp")}
+              isSubmitting={isSubmitting}
             />
-            <FormikTextfield
-              name="confirmPassword"
-              label="Confirm password"
-              placeholder="••••••••"
-              secureTextEntry
-              autoComplete="password-new"
-              leftIcon={
-                <MaterialIcons
-                  name="lock-outline"
-                  size={22}
-                  color={colors.text.muted}
-                />
-              }
-              containerStyle={styles.inputRow}
-            />
-
-            <View style={styles.bottomShell}>
-              <Button
-                onPress={() => handleSubmit()}
-                disabled={!canSubmit || isSubmitting}
-                loading={isSubmitting}
-              >
-                <Text
-                  style={[
-                    styles.submitText,
-                    { color: colors.primary.contrastText },
-                  ]}
-                >
-                  Update password
-                </Text>
-              </Button>
-            </View>
-          </>
-        );
-      }}
+          )}
+        </>
+      )}
     </Formik>
   );
 }

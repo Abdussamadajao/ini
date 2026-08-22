@@ -1,4 +1,4 @@
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, textMetrics } from "@/theme";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -33,33 +33,35 @@ export function ProfileAboutRow({
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  row: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing[3],
-    minHeight: 56,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
-  },
-  logo: {
-    alignItems: "center",
-    borderRadius: radius.full,
-    height: 40,
-    justifyContent: "center",
-    width: 40,
-  },
-  logoLetter: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    fontSize: typography.fontSize.lg,
-  },
-  name: {
-    flex: 1,
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.md,
-  },
-  version: {
-    fontFamily: typography.fontFamily.Inter.Regular,
-    fontSize: typography.fontSize.xs,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    row: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: spacing[3],
+      minHeight: 56,
+      paddingHorizontal: spacing[4],
+      paddingVertical: spacing[3],
+    },
+    logo: {
+      alignItems: "center",
+      borderRadius: radius.full,
+      height: 40,
+      justifyContent: "center",
+      width: 40,
+    },
+    logoLetter: {
+      ...textMetrics("lg", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+    },
+    name: {
+      ...textMetrics("md", "snug"),
+      flex: 1,
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+    version: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Inter.Regular,
+    },
+  }),
+);

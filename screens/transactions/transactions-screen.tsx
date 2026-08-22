@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { SegmentedTabs } from "@/components/shared";
+import { Header, SegmentedTabs } from "@/components/shared";
 import { useTransactionsUIStore } from "@/stores";
 import TransactionsFilterModal, {
   defaultTransactionFilter,
@@ -105,29 +105,35 @@ export function TransactionsScreen() {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>History</Text>
-        <View style={styles.headerActions}>
-          <Pressable
-            style={styles.iconBtn}
-            onPress={() => setIsSearchActive(true)}
-          >
-            <MaterialIcons
-              name="search"
-              size={24}
-              color={colors.primary.main}
-            />
-          </Pressable>
-          <Pressable style={styles.iconBtn} onPress={() => setFilterOpen(true)}>
-            <MaterialIcons
-              name="filter-list"
-              size={24}
-              color={colors.primary.main}
-            />
-            {filterActive && <View style={styles.filterDot} />}
-          </Pressable>
-        </View>
-      </View>
+      <Header
+        title="History"
+        titleSize="large"
+        rightContent={
+          <>
+            <Pressable
+              style={styles.iconBtn}
+              onPress={() => setIsSearchActive(true)}
+            >
+              <MaterialIcons
+                name="search"
+                size={24}
+                color={colors.primary.main}
+              />
+            </Pressable>
+            <Pressable
+              style={styles.iconBtn}
+              onPress={() => setFilterOpen(true)}
+            >
+              <MaterialIcons
+                name="filter-list"
+                size={24}
+                color={colors.primary.main}
+              />
+              {filterActive && <View style={styles.filterDot} />}
+            </Pressable>
+          </>
+        }
+      />
 
       {/* Tabs */}
       <SegmentedTabs

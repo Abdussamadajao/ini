@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useHomeScreenStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safeArea: {
       flex: 1,
       backgroundColor: colors.background.screen,
@@ -22,17 +22,27 @@ export const useHomeScreenStyles = makeStyles(
     netWorthSection: {
       alignItems: "center",
       paddingVertical: spacing[6],
+      paddingHorizontal: spacing[4],
       gap: spacing[2],
+      backgroundColor: colors.background.surface,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      shadowColor: colors.text.primary,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 8,
+      elevation: 2,
     },
     netWorthLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 1.5,
       color: colors.text.secondary,
     },
     netWorthAmount: {
-      fontSize: 40,
+      ...textMetrics("5xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.ExtraBold,
       letterSpacing: -0.8,
       color: colors.text.primary,
@@ -47,7 +57,7 @@ export const useHomeScreenStyles = makeStyles(
       marginTop: spacing[1],
     },
     trendChipText: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
     statsRow: {
@@ -59,7 +69,7 @@ export const useHomeScreenStyles = makeStyles(
     statsDivider: {
       width: 1,
       height: 16,
-      backgroundColor: colors.border.default,
+      backgroundColor: colors.border.subtle,
     },
     statItem: {
       flexDirection: "row",
@@ -67,12 +77,12 @@ export const useHomeScreenStyles = makeStyles(
       gap: spacing[1.5],
     },
     statLabel: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
     statValue: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -88,15 +98,15 @@ export const useHomeScreenStyles = makeStyles(
       alignItems: "center",
     },
     sectionTitle: {
-      fontSize: 20,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     viewAll: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.main,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
     },
     emptyWrap: {
@@ -106,12 +116,12 @@ export const useHomeScreenStyles = makeStyles(
       gap: spacing[2],
     },
     emptyTitle: {
-      fontSize: 16,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
     emptySubtitle: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Inter.Regular,
       textAlign: "center",
       color: colors.text.secondary,
@@ -121,7 +131,7 @@ export const useHomeScreenStyles = makeStyles(
 );
 
 export const useHomeHeaderStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     headerOuter: {
       backgroundColor: colors.background.screen,
       paddingHorizontal: spacing[4],
@@ -132,11 +142,10 @@ export const useHomeHeaderStyles = makeStyles(
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      // paddingHorizontal: spacing[2],
       paddingVertical: spacing[3],
     },
     title: {
-      fontSize: 20,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -165,9 +174,19 @@ export const useHomeHeaderStyles = makeStyles(
 // ─── Chart Styles ────────────────────────────────────────────────────────
 
 export const useChartStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     wrapper: {
       gap: spacing[4],
+      backgroundColor: colors.background.surface,
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      padding: spacing[4],
+      shadowColor: colors.palette.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 8,
+      elevation: 2,
     },
     periodTrack: {
       flexDirection: "row",
@@ -182,6 +201,7 @@ export const useChartStyles = makeStyles(
       paddingHorizontal: spacing[3],
       paddingVertical: spacing[1.5],
       borderRadius: radius.md,
+      width: 60,
     },
     periodBtnActive: {
       backgroundColor: colors.background.screen,
@@ -192,11 +212,12 @@ export const useChartStyles = makeStyles(
       elevation: 2,
     },
     periodBtnText: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
       color: colors.text.secondary,
+      textAlign: "center",
     },
     periodBtnTextActive: {
       color: colors.primary.main,
@@ -211,7 +232,7 @@ export const useChartStyles = makeStyles(
       marginTop: spacing[2],
     },
     chartLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.secondary,
       opacity: 0.5,
@@ -232,7 +253,7 @@ export const useChartStyles = makeStyles(
       borderRadius: 4,
     },
     legendLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.secondary,
     },
@@ -242,7 +263,7 @@ export const useChartStyles = makeStyles(
 // ─── Budgets Styles ──────────────────────────────────────────────────────
 
 export const useBudgetsStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     wrapper: {
       gap: spacing[4],
     },
@@ -263,7 +284,7 @@ export const useBudgetsStyles = makeStyles(
       color: colors.text.secondary,
     },
     budgetName: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.primary,
     },
@@ -272,14 +293,14 @@ export const useBudgetsStyles = makeStyles(
       alignItems: "center",
     },
     budgetAmount: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
     budgetPercent: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
       color: colors.text.secondary,
       marginLeft: spacing[2],
@@ -296,9 +317,9 @@ export const useBudgetsStyles = makeStyles(
       borderRadius: radius.full,
     },
     statusLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
     },
   }),
@@ -307,7 +328,7 @@ export const useBudgetsStyles = makeStyles(
 // ─── Recent Transactions Styles ──────────────────────────────────────────
 
 export const useRecentTransactionsStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     wrapper: {
       gap: spacing[3.5],
     },
@@ -317,15 +338,15 @@ export const useRecentTransactionsStyles = makeStyles(
       alignItems: "center",
     },
     sectionTitle: {
-      fontSize: 20,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     viewAll: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.main,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
     },
     viewAllPressed: {
@@ -356,19 +377,19 @@ export const useRecentTransactionsStyles = makeStyles(
       gap: 2,
     },
     rowTitle: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.primary,
     },
     rowMeta: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
       color: colors.text.secondary,
     },
     amount: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
     emptyWrap: {
@@ -392,12 +413,12 @@ export const useRecentTransactionsStyles = makeStyles(
       backgroundColor: `${colors.primary.main}14`,
     },
     emptyTitle: {
-      fontSize: 16,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
     emptySubtitle: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Inter.Regular,
       textAlign: "center",
       maxWidth: 240,

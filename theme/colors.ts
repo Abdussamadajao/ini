@@ -154,6 +154,7 @@ export const colorTokens = {
     secondary: {
       main: palette.indigo[500],
       contrastText: palette.white,
+      soft: palette.indigo[100],
     },
     escrow: {
       main: palette.sky[500],
@@ -207,6 +208,7 @@ export const colorTokens = {
     secondary: {
       main: palette.indigo[400],
       contrastText: palette.dark[900],
+      soft: "rgba(129, 140, 248, 0.15)",
     },
     escrow: {
       main: palette.sky[400],

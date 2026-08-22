@@ -1,25 +1,29 @@
 import { useAuthStore } from "@/stores";
-import { type Href, router, useSegments } from "expo-router";
+import {
+  type Href,
+  router,
+  useRootNavigationState,
+  useSegments,
+} from "expo-router";
 import { useEffect } from "react";
 
-// Adjust if your post-auth landing route is named differently
 const POST_AUTH_HREF = "/(tabs)" as Href;
 
-export function useAuthGuard() {
+export function useAuthGuard({ appReady }: { appReady: boolean }) {
   const segments = useSegments();
-  const isHydrated = useAuthStore((s) => s.isHydrated);
+  const navigationState = useRootNavigationState();
   const user = useAuthStore((s) => s.user);
   const hasSession = useAuthStore((s) => s.hasSession);
 
+  const navReady = appReady && !!navigationState?.key;
+
   useEffect(() => {
-    if (!isHydrated) return;
+    if (!navReady) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!hasSession) {
-      if (!inAuthGroup) {
-        router.replace("/(auth)/login" as Href);
-      }
+      if (!inAuthGroup) router.replace("/(auth)/login" as Href);
       return;
     }
 
@@ -34,9 +38,9 @@ export function useAuthGuard() {
       return;
     }
 
-    // Authenticated and verified - don't let them sit on an auth screen
-    if (inAuthGroup) {
-      router.replace(POST_AUTH_HREF);
-    }
-  }, [isHydrated, user, hasSession, segments]);
+    if (inAuthGroup) router.replace(POST_AUTH_HREF);
+  }, [navReady, user, hasSession, segments]);
+
+  // RootLayout uses this to decide when it's safe to hide the splash
+  return navReady;
 }

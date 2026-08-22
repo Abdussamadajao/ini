@@ -1,6 +1,5 @@
 import { useTheme, makeStyles } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
-// import { useFormikContext } from "formik";
 import React from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 
@@ -81,32 +80,33 @@ export function OnscreenKeypad({ onKeyPress, onBackspace }: KeypadProps) {
   );
 }
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  keypadContent: {
-    paddingHorizontal: spacing[2],
-  },
-  keypadRow: {
-    justifyContent: "space-between",
-    marginBottom: spacing[4],
-    gap: spacing[4],
-  },
-  keypadCell: {
-    flex: 1,
-    minHeight: 56,
-  },
-  keypadKey: {
-    flex: 1,
-    minHeight: 56,
-    borderRadius: radius.md,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  keypadKeyPressed: {
-    backgroundColor: colors.background.surfaceAlt,
-  },
-  keypadKeyText: {
-    fontSize: typography.fontSize["2xl"],
-    lineHeight: 28,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    keypadContent: {
+      paddingHorizontal: spacing[2],
+    },
+    keypadRow: {
+      justifyContent: "space-between",
+      marginBottom: spacing[4],
+      gap: spacing[4],
+    },
+    keypadCell: {
+      flex: 1,
+      minHeight: 56,
+    },
+    keypadKey: {
+      flex: 1,
+      minHeight: 56,
+      borderRadius: radius.md,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    keypadKeyPressed: {
+      backgroundColor: colors.background.surfaceAlt,
+    },
+    keypadKeyText: {
+      ...textMetrics("2xl", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+    },
+  }),
+);

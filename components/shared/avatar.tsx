@@ -249,7 +249,7 @@ export const AvatarGroup: React.FC<AvatarGroupProps> = ({
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────
 
-const useStyles = makeStyles(({ colors, typography }) => ({
+const useStyles = makeStyles(({ colors, typography, textMetrics }) => ({
   wrap: {
     borderWidth: 2,
     borderStyle: "solid",
@@ -262,11 +262,12 @@ const useStyles = makeStyles(({ colors, typography }) => ({
     alignItems: "center",
   },
   initialsText: {
+    ...textMetrics("sm", "snug"),
     color: colors.text.inverse,
     fontFamily: typography.fontFamily.Manrope.SemiBold,
     letterSpacing: 0.5,
     includeFontPadding: false,
-    textTransform: "uppercase",
+    textTransform: "capitalize",
   },
   badge: {
     position: "absolute",

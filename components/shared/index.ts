@@ -1,4 +1,3 @@
-export * from "./auth/auth-bg-decor";
 export * from "./avatar";
 export * from "./blur-backdrop";
 export { default as Button } from "./button";
@@ -15,3 +14,5 @@ export * from "./switch";
 export * from "./themed-keyboard-avoiding-view";
 export { default as SafeArea } from "./safe-area-view";
 export * from "./onscreen-keyboard";
+export * from "./income-select";
+export * from "./action-modal";

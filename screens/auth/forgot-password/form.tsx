@@ -70,7 +70,6 @@ export function ForgotPasswordForm() {
         router.push("/(auth)/reset-password");
       }
     } catch (error) {
-      console.error(error);
       toast.error("Something went wrong");
     } finally {
       setIsSubmitting(false);
@@ -104,20 +103,12 @@ export function ForgotPasswordForm() {
 
           <View style={styles.bottomShell}>
             <Button
-              style={styles.submitBtn}
+              title="Send verification code"
+              // style={styles.submitBtn}
               onPress={() => handleSubmit()}
               loading={isSubmitting || isFormSubmitting}
               disabled={!isValid || !dirty || isSubmitting || isFormSubmitting}
-            >
-              <Text
-                style={[
-                  styles.submitText,
-                  { color: colors.primary.contrastText },
-                ]}
-              >
-                Send verification code
-              </Text>
-            </Button>
+            />
           </View>
         </>
       )}

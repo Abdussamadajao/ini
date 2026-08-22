@@ -41,48 +41,49 @@ export function SegmentedTabs<T extends string>({
 
 export default SegmentedTabs;
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  tabsWrapper: {
-    paddingHorizontal: spacing[2],
-    paddingVertical: spacing[4],
-    backgroundColor: colors.background.screen,
-    width: "100%",
-  },
-  tabsRow: {
-    flexDirection: "row",
-    backgroundColor: colors.background.surfaceAlt,
-    borderRadius: radius.sm,
-    padding: spacing[2],
-    borderWidth: 1,
-    borderColor: `${colors.border.default}33`,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: spacing[3],
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: radius.sm,
-    backgroundColor: "transparent",
-  },
-  tabActive: {
-    backgroundColor: colors.primary.main,
-    shadowColor: colors.palette.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: `${colors.border.default}33`,
-  },
-  tabText: {
-    fontSize: 12,
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    color: colors.text.secondary,
-    fontWeight: "bold",
-  },
-  tabTextActive: {
-    color: colors.text.inverse,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    tabsWrapper: {
+      paddingHorizontal: spacing[2],
+      paddingVertical: spacing[4],
+      width: "100%",
+    },
+    tabsRow: {
+      flexDirection: "row",
+      backgroundColor: colors.background.surfaceAlt,
+      borderRadius: radius.sm,
+      padding: spacing[2],
+      borderWidth: 1,
+      borderColor: `${colors.border.default}33`,
+    },
+    tab: {
+      flex: 1,
+      paddingVertical: spacing[3],
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: radius.sm,
+      backgroundColor: "transparent",
+    },
+    tabActive: {
+      backgroundColor: colors.primary.main,
+      shadowColor: colors.palette.black,
+      shadowOpacity: 0.05,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 2,
+      borderWidth: 1,
+      borderColor: `${colors.border.default}33`,
+    },
+    tabText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      letterSpacing: 0.5,
+      textTransform: "capitalize",
+      color: colors.text.secondary,
+      fontWeight: "bold",
+    },
+    tabTextActive: {
+      color: colors.text.inverse,
+    },
+  }),
+);

@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useStyles = makeStyles(
-  ({ colors, spacing, radius, shadow, typography }) => ({
+  ({ colors, spacing, radius, shadow, typography, textMetrics }) => ({
     flex: { flex: 1 },
 
     blobTop: {
@@ -71,18 +71,16 @@ export const useStyles = makeStyles(
       marginBottom: spacing[4],
     },
     heroTitle: {
-      fontSize: typography.fontSize["3xl"],
-      lineHeight: 32,
+      ...textMetrics("3xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       textAlign: "center",
       marginBottom: spacing[2],
       color: colors.text.primary,
     },
     subtitle: {
-      textAlign: "center",
-      fontSize: typography.fontSize.md,
-      lineHeight: 24,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
+      textAlign: "center",
       maxWidth: 280,
       color: colors.text.secondary,
     },
@@ -90,7 +88,7 @@ export const useStyles = makeStyles(
       marginBottom: spacing[4],
     },
     bottomShell: {
-      paddingHorizontal: spacing[4],
+      paddingHorizontal: spacing[1],
       paddingTop: spacing[2],
       paddingBottom: spacing[10],
     },
@@ -99,7 +97,7 @@ export const useStyles = makeStyles(
       borderRadius: radius.full,
     },
     submitText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontWeight: "700",
       fontFamily: typography.fontFamily.Manrope.Bold,
     },

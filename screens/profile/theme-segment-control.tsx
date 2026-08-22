@@ -1,11 +1,15 @@
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, textMetrics } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 export type ThemeMode = "light" | "dark" | "system";
 
-const MODES: { mode: ThemeMode; label: string; icon: "dark-mode" | "light-mode" }[] = [
+const MODES: {
+  mode: ThemeMode;
+  label: string;
+  icon: "dark-mode" | "light-mode";
+}[] = [
   { mode: "dark", label: "Dark", icon: "dark-mode" },
   { mode: "light", label: "Light", icon: "light-mode" },
 ];
@@ -21,9 +25,7 @@ export function ThemeSegmentControl({
   const styles = useStyles();
 
   return (
-    <View
-      style={[styles.track, { backgroundColor: colors.background.screen }]}
-    >
+    <View style={[styles.track, { backgroundColor: colors.background.screen }]}>
       {MODES.map(({ mode: m, label, icon }) => {
         const selected = mode === m;
         return (
@@ -68,23 +70,25 @@ export function ThemeSegmentControl({
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  track: {
-    borderRadius: radius.full,
-    flexDirection: "row",
-    gap: spacing[1],
-    padding: spacing[1],
-  },
-  pill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[1.5],
-    borderRadius: radius.full,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1.5],
-  },
-  pillText: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.sm,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    track: {
+      borderRadius: radius.full,
+      flexDirection: "row",
+      gap: spacing[1],
+      padding: spacing[1],
+    },
+    pill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[1.5],
+      borderRadius: radius.full,
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[1.5],
+    },
+    pillText: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+  }),
+);

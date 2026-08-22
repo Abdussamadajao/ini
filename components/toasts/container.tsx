@@ -139,7 +139,7 @@ export const ToastContainer: React.FC<ToastProps> = ({
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const useToastStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     container: {
       borderRadius: radius.xl, // 24 — slightly rounder than before
       paddingVertical: spacing[3] + 2, // 14
@@ -182,13 +182,12 @@ const useToastStyles = makeStyles(
       alignItems: "center",
     },
     message: {
-      fontSize: Platform.select({
-        ios: typography.fontSize.md,
-        android: typography.fontSize.sm,
-      }),
+      ...textMetrics(
+        Platform.select({ ios: "md", android: "sm" }) as "md" | "sm",
+        "snug",
+      ),
       color: colors.text.primary,
       flexShrink: 1,
-      lineHeight: 22,
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
     closeBtn: {

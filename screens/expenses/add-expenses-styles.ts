@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useAddExpensesStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safeArea: {
       flex: 1,
       backgroundColor: colors.background.screen,
@@ -22,7 +22,7 @@ export const useAddExpensesStyles = makeStyles(
       padding: spacing[2],
     },
     headerTitle: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -35,6 +35,7 @@ export const useAddExpensesStyles = makeStyles(
     scrollContent: {
       paddingHorizontal: spacing[6],
       paddingBottom: spacing[6],
+      marginTop: spacing[3],
     },
 
     // ── Income Card ──────────────────────────────────────────────────────
@@ -58,19 +59,19 @@ export const useAddExpensesStyles = makeStyles(
       marginBottom: spacing[1.5],
     },
     incomeCardLabel: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       letterSpacing: 0.5,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       color: colors.text.secondary,
     },
     incomeCardTotal: {
-      fontSize: typography.fontSize["2xl"],
+      ...textMetrics("2xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     incomeCardTotalSuffix: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.secondary,
     },
@@ -102,12 +103,12 @@ export const useAddExpensesStyles = makeStyles(
       justifyContent: "space-between",
     },
     incomeCardRemaining: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.secondary,
     },
     incomeCardPercent: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.muted,
     },
@@ -128,11 +129,11 @@ export const useAddExpensesStyles = makeStyles(
       paddingVertical: spacing[3],
     },
     amountLabel: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.secondary,
       marginBottom: spacing[1],
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 0.5,
       textAlign: "center",
     },
@@ -142,7 +143,7 @@ export const useAddExpensesStyles = makeStyles(
       justifyContent: "center",
     },
     amountCurrency: {
-      fontSize: typography.fontSize["2xl"],
+      ...textMetrics("2xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       marginRight: spacing[1],
@@ -153,7 +154,7 @@ export const useAddExpensesStyles = makeStyles(
       width: 180,
     },
     amountInput: {
-      fontSize: typography.fontSize["5xl"],
+      ...textMetrics("5xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       textAlign: "center",
       color: colors.text.primary,
@@ -168,20 +169,20 @@ export const useAddExpensesStyles = makeStyles(
       gap: spacing[2],
     },
     fieldLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.6,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       color: colors.text.secondary,
     },
     errorText: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.status.error.main,
       marginTop: spacing[1],
     },
     hintText: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.secondary,
       marginTop: spacing[1],
@@ -212,7 +213,7 @@ export const useAddExpensesStyles = makeStyles(
       elevation: 2,
     },
     segmentedButtonText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
@@ -247,12 +248,12 @@ export const useAddExpensesStyles = makeStyles(
       gap: spacing[0.5],
     },
     budgetName: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     budgetMeta: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
@@ -288,7 +289,7 @@ export const useAddExpensesStyles = makeStyles(
       fontSize: 16,
     },
     categoryName: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.primary,
     },
@@ -315,7 +316,7 @@ export const useAddExpensesStyles = makeStyles(
       gap: spacing[4],
     },
     dateText: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.primary,
     },
@@ -335,7 +336,7 @@ export const useAddExpensesStyles = makeStyles(
       paddingVertical: spacing[4],
     },
     saveButtonText: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.contrastText,
       textAlign: "center",
@@ -352,7 +353,7 @@ export const useAddExpensesStyles = makeStyles(
       marginBottom: spacing[3],
     },
     viewAll: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.primary.main,
     },
@@ -379,7 +380,7 @@ export const useAddExpensesStyles = makeStyles(
       marginBottom: spacing[2],
     },
     categoryLabel: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       textAlign: "center",
     },
@@ -424,7 +425,7 @@ export const useAddExpensesStyles = makeStyles(
       padding: spacing[3.5],
       borderRadius: radius.md,
       borderWidth: 1,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       textAlignVertical: "top",
       backgroundColor: colors.background.surface,
@@ -459,14 +460,14 @@ export const useAddExpensesStyles = makeStyles(
       flex: 1,
     },
     summaryMeta: {
-      fontSize: 10,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       letterSpacing: 0.5,
       marginBottom: 2,
       color: colors.text.secondary,
     },
     summaryLine: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
     },
@@ -481,8 +482,8 @@ export const useAddExpensesStyles = makeStyles(
       paddingHorizontal: spacing[4],
     },
     saveBtnText: {
+      ...textMetrics("md", "snug"),
       color: colors.primary.contrastText,
-      fontSize: typography.fontSize.md,
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
 
@@ -504,7 +505,7 @@ export const useAddExpensesStyles = makeStyles(
       backgroundColor: colors.background.surface,
     },
     modalTitle: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       flex: 1,
@@ -530,7 +531,7 @@ export const useAddExpensesStyles = makeStyles(
     },
     categoryOptionLabel: {
       flex: 1,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -551,18 +552,17 @@ export const useAddExpensesStyles = makeStyles(
       marginBottom: spacing[4],
     },
     emptyTitle: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       marginBottom: spacing[1.5],
       textAlign: "center",
     },
     emptyMessage: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.secondary,
       textAlign: "center",
-      lineHeight: 20,
     },
 
     // ── Income Modal Styles ──────────────────────────────────────────────
@@ -596,18 +596,18 @@ export const useAddExpensesStyles = makeStyles(
       minWidth: 0,
     },
     incomeSourceLabel: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     incomeSourceRemaining: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       marginTop: spacing[0.5],
       color: colors.text.secondary,
     },
     incomeSourceTotal: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       marginTop: spacing[0.5],
       color: colors.text.muted,
@@ -628,7 +628,7 @@ export const useAddExpensesStyles = makeStyles(
       marginLeft: spacing[3],
     },
     incomeSourcePct: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       marginBottom: spacing[1.5],
       color: colors.text.secondary,
@@ -689,12 +689,12 @@ export const useAddExpensesStyles = makeStyles(
     budgetSheetLabel: {
       flex: 1,
       marginRight: spacing[2],
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
     budgetSheetAmount: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -704,7 +704,7 @@ export const useAddExpensesStyles = makeStyles(
       marginBottom: spacing[1.5],
     },
     budgetSheetMetaText: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
@@ -752,8 +752,8 @@ export const useAddExpensesStyles = makeStyles(
       backgroundColor: colors.primary.main,
     },
     incomeSourceConfirmBtnText: {
+      ...textMetrics("md", "snug"),
       color: colors.primary.contrastText,
-      fontSize: typography.fontSize.md,
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
     incomeSourceCancelBtn: {
@@ -764,7 +764,7 @@ export const useAddExpensesStyles = makeStyles(
       borderWidth: 1,
     },
     incomeSourceCancelBtnText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
     },
     budgetCreateNewBtn: {
@@ -778,7 +778,7 @@ export const useAddExpensesStyles = makeStyles(
       marginTop: spacing[2],
     },
     budgetCreateNewText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
 
@@ -792,15 +792,15 @@ export const useAddExpensesStyles = makeStyles(
       paddingVertical: spacing[1],
     },
     headerCountText: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.6,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       color: colors.text.primary,
     },
     headerSubtitle: {
       textAlign: "center",
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
       paddingBottom: spacing[2],
@@ -809,17 +809,32 @@ export const useAddExpensesStyles = makeStyles(
       borderBottomWidth: 1,
       borderBottomColor: colors.border.default,
     },
+
+    // Each entry is a ledger block separated by a dashed rule (matching the
+    // `divider` pattern used inside individual expense fields), rather than
+    // a boxed card — batch entries read as one continuous sheet of line
+    // items instead of stacked widgets.
     batchSection: {
-      marginVertical: spacing[3],
+      marginBottom: spacing[5],
     },
     batchSectionHeader: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      paddingBottom: spacing[2],
       marginBottom: spacing[4],
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border.default,
+    },
+    batchIndexBadge: {
+      width: 22,
+      height: 22,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.primary.main + "14",
+    },
+    batchIndexText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      color: colors.primary.main,
     },
     removeButton: {
       flexDirection: "row",
@@ -830,37 +845,58 @@ export const useAddExpensesStyles = makeStyles(
       borderRadius: radius.sm,
     },
     removeButtonText: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.status.error.main,
     },
+    batchDivider: {
+      borderBottomWidth: 1.5,
+      borderStyle: "dashed",
+      borderBottomColor: colors.border.default,
+      marginTop: spacing[5],
+    },
+
+    // Tinted pill, consistent with the categoryButton/segmentedControl
+    // fill treatment used elsewhere, instead of a bare dashed outline.
     addAnotherButton: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
       gap: spacing[2],
-      alignSelf: "center",
-      paddingVertical: spacing[2.5],
-      paddingHorizontal: spacing[4],
-      borderRadius: radius.full,
+      paddingVertical: spacing[3],
+      borderRadius: radius.lg,
       marginTop: spacing[2],
       marginBottom: spacing[6],
+      backgroundColor: colors.primary.main + "0F",
+      borderWidth: 1,
+      borderColor: colors.primary.main + "33",
     },
     addAnotherText: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.primary.main,
     },
+
+    // Reuses the left-accent-border language from summaryStrip; the accent
+    // color communicates whether the batch is ready to save.
     batchSummaryRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
+      paddingLeft: spacing[3],
+      borderLeftWidth: 2,
       marginBottom: spacing[4],
     },
+    batchSummaryRowReady: {
+      borderLeftColor: colors.status.success.main,
+    },
+    batchSummaryRowPending: {
+      borderLeftColor: colors.border.default,
+    },
     batchTotalText: {
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
-      color: colors.status.error.main,
+      color: colors.text.primary,
       textAlign: "right",
     },
 
@@ -882,7 +918,7 @@ export const useAddExpensesStyles = makeStyles(
       gap: spacing[0.5],
     },
     reviewTotalText: {
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.main,
     },
@@ -899,7 +935,7 @@ export const useAddExpensesStyles = makeStyles(
       borderBottomColor: colors.background.surfaceAlt,
     },
     numeralLg: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -919,7 +955,7 @@ export const useAddExpensesStyles = makeStyles(
       borderRadius: radius.lg,
     },
     editButtonText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.primary.main,
       textAlign: "center",

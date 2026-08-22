@@ -1,4 +1,5 @@
 import { useIncomeTransactions } from "@/actions";
+import { useBudgets } from "@/actions/budgets";
 import type { IncomeTransaction } from "@/types";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useMemo } from "react";
@@ -12,39 +13,24 @@ export type SourceItem = {
   total: number;
 };
 
-// Dummy placeholder data for the Budget tab. Swap this out once budgets are
-// wired to a real endpoint (e.g. useBudgets()) — shape matches SourceItem
-// so the rest of this screen doesn't need to change.
-export const DUMMY_BUDGETS: SourceItem[] = [
-  {
-    id: "budget-groceries",
-    label: "Groceries Budget",
-    icon: "shopping-cart",
-    categoryId: "cat-groceries",
-    remaining: 42000,
-    total: 80000,
-  },
-  {
-    id: "budget-transport",
-    label: "Transport Budget",
-    icon: "directions-car",
-    categoryId: "cat-transport",
-    remaining: 15000,
-    total: 30000,
-  },
-  {
-    id: "budget-entertainment",
-    label: "Entertainment Budget",
-    icon: "movie",
-    categoryId: "cat-entertainment",
-    remaining: 8000,
-    total: 20000,
-  },
-];
-
 export function useExpenseSources() {
-  const { data: incomeTxResponse } = useIncomeTransactions();
+  const { data: incomeTxResponse, isPending: isIncomeLoading } =
+    useIncomeTransactions();
+  const { data: budgetTxResponse, isPending: isBudgetLoading } = useBudgets();
 
+  const budgetSources: SourceItem[] = useMemo(() => {
+    if (!budgetTxResponse?.data) return [];
+    return budgetTxResponse.data.map((budget) => ({
+      id: budget.id,
+      label: budget.category.name,
+      icon: budget.category.icon as keyof typeof MaterialIcons.glyphMap,
+      categoryId: budget.category.id,
+      remaining: budget.remaining,
+      total: budget.amount,
+      spent: budget.spent,
+      color: budget.category.color,
+    }));
+  }, [budgetTxResponse]);
   const incomeSources: SourceItem[] = useMemo(() => {
     if (!incomeTxResponse?.data) return [];
     return incomeTxResponse.data
@@ -59,5 +45,5 @@ export function useExpenseSources() {
       }));
   }, [incomeTxResponse]);
 
-  return { incomeSources, budgetSources: DUMMY_BUDGETS };
+  return { incomeSources, budgetSources, isBudgetLoading, isIncomeLoading };
 }

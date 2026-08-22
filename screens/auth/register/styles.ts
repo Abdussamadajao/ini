@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safe: { flex: 1 },
     scroll: {
       flexGrow: 1,
@@ -30,22 +30,22 @@ export const useStyles = makeStyles(
       borderRadius: radius.full,
       backgroundColor: colors.secondary.main,
       opacity: 0.08,
-      zIndex: 0,
+      zIndex: -1,
     },
     header: {
       marginBottom: spacing[4],
       alignItems: "center",
     },
     title: {
-      fontSize: typography.fontSize["3xl"],
+      ...textMetrics("3xl", "tight"),
       fontWeight: "700",
-      marginBottom: spacing[2],
       fontFamily: typography.fontFamily.Manrope.Bold,
+      marginBottom: spacing[2],
       marginTop: spacing[2],
       color: colors.text.primary,
     },
     subtitle: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
@@ -53,12 +53,13 @@ export const useStyles = makeStyles(
       marginBottom: spacing[0.25],
     },
     signUpBtn: {
-      height: 54,
-      marginVertical: spacing[4],
-      borderRadius: radius.full,
+      // height: 54,
+      // marginVertical: spacing[4],
+      // borderRadius: radius.full,
+      zIndex: 20,
     },
     signUpText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontWeight: "700",
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
@@ -73,9 +74,9 @@ export const useStyles = makeStyles(
       height: 1,
     },
     dividerText: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontWeight: "500",
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       letterSpacing: 1,
       fontFamily: typography.fontFamily.Manrope.Medium,
     },
@@ -95,7 +96,7 @@ export const useStyles = makeStyles(
       resizeMode: "cover",
     },
     googleText: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontWeight: "500",
       fontFamily: typography.fontFamily.Manrope.Medium,
     },
@@ -107,7 +108,7 @@ export const useStyles = makeStyles(
       marginTop: spacing[6],
     },
     footerText: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
     },
     linkBtn: {
@@ -117,7 +118,7 @@ export const useStyles = makeStyles(
       paddingHorizontal: 0,
     },
     footerLink: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontWeight: "700",
       fontFamily: typography.fontFamily.Manrope.Bold,
     },

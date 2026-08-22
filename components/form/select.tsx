@@ -1,4 +1,4 @@
-import { makeStyles, useColors, useIsDark } from "@/theme";
+import { makeStyles, useColors, useIsDark, textMetrics } from "@/theme";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import {
   BottomSheetModal,
@@ -208,7 +208,7 @@ const SelectUI: React.FC<SelectProps> = ({
   );
 
   const openModal = useCallback(() => {
-    if (disabled || listDisabled) return; // Prevent opening when disabled
+    if (disabled || listDisabled) return;
     setSearchQuery("");
     modalRef.current?.present();
   }, [disabled, listDisabled]);
@@ -241,17 +241,13 @@ const SelectUI: React.FC<SelectProps> = ({
     [onChange, closeModal],
   );
 
-  // Get the selected label - returns null if no value or value doesn't exist in options
   const selectedLabel = useMemo(() => {
     if (!value) return null;
     const found = items.find((i) => i.value === value);
     return found ? found.label : null;
   }, [value, items]);
 
-  // Display value: selected label if exists, otherwise placeholder
   const displayValue = selectedLabel ?? placeholder;
-
-  // Check if the select should be disabled
   const isDisabled = disabled || listDisabled;
 
   const renderItem = useCallback(
@@ -561,14 +557,14 @@ export const FormikSelect: React.FC<FormikSelectProps> = ({
 };
 
 const useSelectStyles = makeStyles(
-  ({ colors, radius, typography, spacing }) => ({
+  ({ colors, radius, typography, spacing, textMetrics }) => ({
     wrapper: { marginBottom: spacing[4] },
     label: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.secondary,
       letterSpacing: 0.8,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       marginBottom: spacing[2],
       paddingHorizontal: spacing[1],
     },
@@ -615,8 +611,8 @@ const useSelectStyles = makeStyles(
       color: colors.text.muted,
     },
     errorText: {
+      ...textMetrics("xs", "snug"),
       color: colors.status.error.main,
-      fontSize: typography.fontSize.xs,
       marginTop: spacing[1],
       fontFamily: typography.fontFamily.Manrope.Medium,
       paddingHorizontal: spacing[1],
@@ -646,7 +642,7 @@ const useSelectStyles = makeStyles(
     modalTitle: {
       flex: 1,
       marginRight: spacing[3],
-      fontSize: typography.fontSize["2xl"],
+      ...textMetrics("2xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -675,7 +671,7 @@ const useSelectStyles = makeStyles(
     searchInput: {
       flex: 1,
       minHeight: 46,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       color: colors.text.primary,
       fontFamily: typography.fontFamily.Manrope.Medium,
     },
@@ -703,7 +699,7 @@ const useSelectStyles = makeStyles(
       backgroundColor: colors.primary.main + "14",
     },
     sectionHeaderText: {
-      fontSize: 10,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.6,
       color: colors.primary.main,
@@ -735,7 +731,7 @@ const useSelectStyles = makeStyles(
     optionItemContent: { flex: 1, minWidth: 0 },
     optionItemText: {
       flex: 1,
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -770,18 +766,17 @@ const useSelectStyles = makeStyles(
       marginBottom: spacing[4],
     },
     emptyTitle: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       marginBottom: spacing[1.5],
       textAlign: "center",
     },
     emptyMessage: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.secondary,
       textAlign: "center",
-      lineHeight: 20,
     },
     emptyClearBtn: {
       marginTop: spacing[4],
@@ -791,7 +786,7 @@ const useSelectStyles = makeStyles(
       backgroundColor: colors.primary.main + "14",
     },
     emptyClearBtnText: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.main,
     },

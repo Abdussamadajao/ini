@@ -108,12 +108,18 @@ export default function TabLayout() {
         <Tabs.Screen
           name="report"
           options={{
+            href: null,
+          }}
+        />
+        {/* <Tabs.Screen
+          name="report"
+          options={{
             title: "Reports",
             tabBarIcon: ({ color, focused }) => (
               <TabItem name="report" color={color} focused={focused} />
             ),
           }}
-        />
+        /> */}
         <Tabs.Screen
           name="profile"
           options={{
@@ -149,13 +155,9 @@ const useStyles = makeStyles(({ colors, spacing, radius }) => ({
     backgroundColor: colors.background.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border.default,
-    height: 90,
+    height: 80,
     paddingBottom: spacing[6],
     paddingTop: spacing[1],
-    position: "absolute",
-    bottom: spacing[0],
-    left: 0,
-    right: 0,
     shadowColor: colors.palette.black,
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.02,

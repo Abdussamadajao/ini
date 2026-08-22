@@ -17,7 +17,7 @@ import {
   useQueryClient,
   type UseQueryOptions,
 } from "@tanstack/react-query";
-import { dashboardKeys, transactionKeys } from "./key";
+import { dashboardKeys, transactionKeys, userKeys } from "./key";
 
 // ─── Build query string ───────────────────────────────────────────────────
 
@@ -30,6 +30,7 @@ function buildParams(filters: TransactionFilters): string {
   if (filters.amountMin) p.set("amountMin", String(filters.amountMin));
   if (filters.amountMax) p.set("amountMax", String(filters.amountMax));
   if (filters.income_id) p.set("income_id", filters.income_id);
+  if (filters.budget_id) p.set("budget_id", filters.budget_id);
   if (filters.q) p.set("q", filters.q);
   if (filters.page) p.set("page", String(filters.page));
   if (filters.pageSize) p.set("pageSize", String(filters.pageSize));
@@ -168,7 +169,7 @@ export function useTransactionMutation() {
       // invalidate all lists
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
-
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       // if expense tied to income — invalidate that income's summary + detail
       if (data.type === "EXPENSE" && data.income_id) {
         queryClient.invalidateQueries({
@@ -209,7 +210,7 @@ export function useTransactionMutation() {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       queryClient.invalidateQueries({ queryKey: transactionKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
-
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       // re-fetch summary if income amount or expenses changed
       if (data.type === "INCOME") {
         queryClient.invalidateQueries({
@@ -252,6 +253,7 @@ export function useTransactionMutation() {
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       queryClient.removeQueries({ queryKey: transactionKeys.detail(id) });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
 
       // if expense — update linked income summary
       if (incomeId) {
@@ -282,7 +284,7 @@ export function useTransactionMutation() {
       // invalidate all lists + dashboard summary
       queryClient.invalidateQueries({ queryKey: transactionKeys.lists() });
       queryClient.invalidateQueries({ queryKey: dashboardKeys.summary() });
-
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       // invalidate any income summaries/details linked to expenses in this batch
       const linkedIncomeIds = data
         .filter((t) => t.type === "EXPENSE" && t.income_id)
@@ -306,7 +308,6 @@ export function useTransactionMutation() {
     onError: (error: any) => {
       const errorMessage = error?.message || "Failed to create transactions";
       toast.error(errorMessage);
-      console.log(error);
     },
   });
 

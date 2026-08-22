@@ -49,12 +49,14 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       hydrate: async () => {
         set({ isHydrating: true, isHydrated: false });
         try {
-          const { data, error } = await authClient.getSession();
+          let data, error;
+          for (let attempt = 0; attempt < 3; attempt++) {
+            ({ data, error } = await authClient.getSession());
+            if (data?.session) break;
+            await new Promise((r) => setTimeout(r, 200));
+          }
           if (error) throw error;
           if (data?.user && data?.session) {
-            // authClient only returns the core better-auth user fields.
-            // Merge onto whatever profile fields we already have locally
-            // rather than overwriting them with undefined.
             const mergedUser = { ...get().user, ...data.user } as User;
             set({
               user: mergedUser,
@@ -110,7 +112,6 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       },
 
       logout: async () => {
-        await authClient.signOut();
         set({
           user: null,
           session: null,

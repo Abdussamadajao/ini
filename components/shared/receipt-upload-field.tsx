@@ -145,55 +145,57 @@ export default function ReceiptUploadField({
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  field: {
-    marginBottom: spacing[4.5],
-    marginTop: spacing[9.5],
-  },
-  fieldLabel: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-    marginBottom: spacing[2],
-  },
-  uploadArea: {
-    minHeight: 140,
-    borderRadius: radius.md,
-    borderWidth: 2,
-    borderStyle: "dashed",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing[6],
-    overflow: "hidden",
-  },
-  uploadAreaWithImage: {
-    height: 160,
-    padding: 0,
-  },
-  receiptImage: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  },
-  removeReceipt: {
-    position: "absolute",
-    top: spacing[2],
-    right: spacing[2],
-    width: 28,
-    height: 28,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  uploadText: {
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    marginTop: spacing[2],
-  },
-  uploadHint: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    marginTop: spacing[1],
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    field: {
+      marginBottom: spacing[4.5],
+      marginTop: spacing[9.5],
+    },
+    fieldLabel: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      marginBottom: spacing[2],
+    },
+    uploadArea: {
+      minHeight: 140,
+      borderRadius: radius.md,
+      borderWidth: 2,
+      borderStyle: "dashed",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: spacing[6],
+      overflow: "hidden",
+    },
+    uploadAreaWithImage: {
+      height: 160,
+      padding: 0,
+    },
+    receiptImage: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
+    removeReceipt: {
+      position: "absolute",
+      top: spacing[2],
+      right: spacing[2],
+      width: 28,
+      height: 28,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    uploadText: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      marginTop: spacing[2],
+    },
+    uploadHint: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      marginTop: spacing[1],
+    },
+  }),
+);

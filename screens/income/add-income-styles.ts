@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useAddIncomeStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safeArea: {
       flex: 1,
       backgroundColor: colors.background.screen,
@@ -19,7 +19,7 @@ export const useAddIncomeStyles = makeStyles(
       padding: spacing[2],
     },
     headerTitle: {
-      fontSize: typography.fontSize["2xl"],
+      ...textMetrics("2xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -53,10 +53,10 @@ export const useAddIncomeStyles = makeStyles(
       marginBottom: spacing[3],
     },
     typeChipText: {
-      fontSize: 11,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.8,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       color: colors.primary.main,
     },
 
@@ -88,7 +88,7 @@ export const useAddIncomeStyles = makeStyles(
       backgroundColor: colors.primary.main + "14",
     },
     upperLabel: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       letterSpacing: 0.5,
       color: colors.text.secondary,
@@ -119,14 +119,14 @@ export const useAddIncomeStyles = makeStyles(
       flex: 1,
     },
     summaryMeta: {
-      fontSize: 10,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       letterSpacing: 0.5,
       marginBottom: 2,
       color: colors.text.secondary,
     },
     summaryLine: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
     },
@@ -143,7 +143,7 @@ export const useAddIncomeStyles = makeStyles(
       backgroundColor: colors.primary.main,
     },
     saveBtnText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.contrastText,
     },

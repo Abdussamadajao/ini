@@ -2,82 +2,83 @@ import { useIncomeTransactions } from "@/actions";
 import { FormikAmountField, FormikDatePicker } from "@/components/form";
 import {
   Button,
+  ErrorState,
   FormHeader,
   FormikCategorySelect,
   SafeArea,
   SegmentedTabs,
 } from "@/components/shared";
+import { Skeleton } from "@/components/shared/skeleton";
 import { FormikIncomeSourceSelect } from "@/components/shared/income-select";
-import { IncomeTransaction, SourceItem } from "@/types";
+import {
+  BudgetRequestItem,
+  BudgetsRequest,
+  IncomeTransaction,
+  SourceItem,
+} from "@/types";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import React, { useMemo } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity } from "react-native";
 import * as Yup from "yup";
 import { useBudgetFormStyles } from "./styles";
 
-export interface BudgetFormData {
-  id?: string;
-  category: string;
-  categoryIcon: string;
-  incomeSource: string;
-  incomeSourceId?: string;
-  amount: string;
-  period: "Monthly" | "Weekly" | "Custom";
-  startDate: Date;
-  isEditing?: boolean;
-}
-
 interface BudgetFormProps {
-  initialData?: Partial<BudgetFormData>;
-  onSubmit: (data: BudgetFormData) => void;
+  initialData?: BudgetRequestItem[];
+  onSubmit: (data: BudgetsRequest) => void;
   onCancel?: () => void;
   isLoading?: boolean;
+  isFetching?: boolean;
+  error?: unknown;
+  onRetry?: () => void;
   submitButtonText?: string;
   title?: string;
   mode?: "create" | "edit";
 }
 
-// Yup Validation Schema
-const BudgetValidationSchema = Yup.object().shape({
-  category: Yup.string().required("Category is required"),
-  incomeSource: Yup.string().required("Income source is required"),
-  incomeSourceId: Yup.string(),
-  amount: Yup.string()
-    .required("Budget amount is required")
-    .test("is-valid-amount", "Please enter a valid amount", (value) => {
-      if (!value) return false;
-      const numericValue = parseFloat(value.replace(/,/g, ""));
-      return numericValue > 0;
-    }),
-  period: Yup.string()
-    .oneOf(["Monthly", "Weekly", "Custom"] as const, "Invalid period")
-    .required("Period is required"),
-  startDate: Yup.date().required("Start date is required"),
-  isEditing: Yup.boolean(),
+// Yup Validation Schema for array of budgets
+const BudgetValidationSchema = Yup.array().of(
+  Yup.object().shape({
+    category_id: Yup.string().required("Category is required"),
+    income_id: Yup.string().required("Income source is required"),
+    amount: Yup.number()
+      .required("Budget amount is required")
+      .positive("Amount must be greater than 0"),
+    period: Yup.string()
+      .oneOf(
+        ["MONTHLY", "WEEKLY", "YEARLY", "CUSTOM"] as const,
+        "Invalid period",
+      )
+      .required("Period is required"),
+    start_date: Yup.string().required("Start date is required"),
+  }),
+);
+
+const createEmptyBudget = (): BudgetRequestItem => ({
+  category_id: "",
+  income_id: "",
+  amount: 0,
+  period: "MONTHLY",
+  start_date: new Date().toISOString(),
 });
 
-const initialValues: BudgetFormData = {
-  category: "Food",
-  categoryIcon: "🍔",
-  incomeSource: "",
-  incomeSourceId: "",
-  amount: "0",
-  period: "Monthly",
-  startDate: new Date(),
-  isEditing: false,
-};
+const initialValues: BudgetRequestItem[] = [createEmptyBudget()];
 
 export function BudgetForm({
   initialData,
   onSubmit,
   isLoading = false,
+  isFetching = false,
+  error,
+  onRetry,
   submitButtonText,
   title,
   mode = "create",
 }: BudgetFormProps) {
   const styles = useBudgetFormStyles();
   const { data: incomeTxResponse } = useIncomeTransactions();
+
+  const isCreateMode = mode === "create";
 
   const getTitle = () => {
     if (title) return title;
@@ -107,107 +108,225 @@ export function BudgetForm({
       });
   }, [incomeTxResponse]);
 
+  // Error State — data (e.g. the budget being edited) failed to load
+  if (error) {
+    return (
+      <SafeArea>
+        <FormHeader title={getTitle()} />
+        <ErrorState
+          error={error}
+          title="Could not load budget"
+          message="Please check your connection and try again."
+          onRetry={onRetry}
+        />
+      </SafeArea>
+    );
+  }
+
+  if (isFetching) {
+    return (
+      <SafeArea>
+        <FormHeader title={getTitle()} />
+        <ScrollView
+          style={styles.container}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <View style={styles.budgetCard}>
+            <View style={styles.section}>
+              <Skeleton width={140} height={40} borderRadius={8} />
+            </View>
+
+            <View style={styles.section}>
+              <Skeleton width={90} height={11} />
+              <Skeleton
+                width="100%"
+                height={56}
+                borderRadius={12}
+                style={{ marginTop: 8 }}
+              />
+            </View>
+
+            <View style={styles.section}>
+              <Skeleton width={110} height={11} />
+              <Skeleton
+                width="100%"
+                height={56}
+                borderRadius={12}
+                style={{ marginTop: 8 }}
+              />
+            </View>
+
+            <View style={styles.section}>
+              <Skeleton width={60} height={11} />
+              <Skeleton
+                width="100%"
+                height={44}
+                borderRadius={12}
+                style={{ marginTop: 8 }}
+              />
+            </View>
+
+            <View style={styles.section}>
+              <Skeleton width={80} height={11} />
+              <Skeleton
+                width="100%"
+                height={44}
+                borderRadius={12}
+                style={{ marginTop: 8 }}
+              />
+            </View>
+          </View>
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <Skeleton width="100%" height={48} borderRadius={12} />
+        </View>
+      </SafeArea>
+    );
+  }
+
   return (
     <SafeArea>
       <Formik
-        initialValues={{ ...initialValues, ...initialData }}
+        enableReinitialize
+        initialValues={
+          isCreateMode
+            ? initialData || initialValues
+            : (initialData?.slice(0, 1) ?? initialValues)
+        }
         validationSchema={BudgetValidationSchema}
-        onSubmit={onSubmit}
+        onSubmit={(values) => {
+          onSubmit({ budgets: values });
+        }}
         validateOnChange={true}
         validateOnBlur={true}
       >
         {({
           handleSubmit,
           setFieldValue,
+          setValues,
           values,
           errors,
           touched,
           isValid,
           dirty,
-        }) => (
+        }: FormikProps<BudgetRequestItem[]>) => (
           <>
             <FormHeader title={getTitle()} />
-
             <ScrollView
               style={styles.container}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.contentContainer}
             >
-              {/* Amount */}
-              <View style={styles.section}>
-                <FormikAmountField
-                  name="amount"
-                  //   label="Budget Amount"
-                />
-              </View>
+              {values.map((budget, index) => (
+                <View key={index} style={styles.budgetCard}>
+                  {isCreateMode && (
+                    <View style={styles.budgetHeader}>
+                      <Text style={styles.budgetTitle}>Budget {index + 1}</Text>
+                      {index > 0 && (
+                        <TouchableOpacity
+                          onPress={() => {
+                            const newValues = [...values];
+                            newValues.splice(index, 1);
+                            setValues(newValues);
+                          }}
+                          style={styles.removeButton}
+                        >
+                          <MaterialIcons
+                            name="delete"
+                            size={24}
+                            color="#ef4444"
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
 
-              {/* Category */}
-              <View style={styles.section}>
-                <FormikCategorySelect
-                  name="category"
-                  categoryType="EXPENSE"
-                  placeholder="Select a category"
-                  required={true}
-                />
-              </View>
+                  <View style={styles.section}>
+                    <FormikAmountField name={`${index}.amount`} />
+                    {touched[index]?.amount && (
+                      <Text style={styles.errorText}>
+                        {errors[index]?.amount}
+                      </Text>
+                    )}
+                  </View>
 
-              {/* Income Source */}
-              <View style={styles.section}>
-                <FormikIncomeSourceSelect
-                  name="incomeSourceId"
-                  label="Income Source"
-                  placeholder="Select income source"
-                  modalTitle="Choose Income Source"
-                  required={true}
-                  sources={incomeSources}
-                  showProgress={true}
-                  onIncomeChange={(source) => {
-                    if (source) {
-                      setFieldValue("incomeSource", source.label);
-                    }
-                  }}
-                  onAddCustom={() => {
-                    // Navigate to add income source
-                    console.log("Add new income source");
-                  }}
-                />
-              </View>
+                  <View style={styles.section}>
+                    <FormikCategorySelect
+                      name={`${index}.category_id`}
+                      categoryType="EXPENSE"
+                      placeholder="Select a category"
+                      required={true}
+                    />
+                  </View>
 
-              {/* Period */}
-              <View style={styles.section}>
-                <Text style={styles.sectionLabel}>Period</Text>
-                <SegmentedTabs
-                  tabs={["Monthly", "Weekly", "Custom"] as const}
-                  activeTab={values.period}
-                  onTabChange={(tab) => {
-                    setFieldValue("period", tab);
-                  }}
-                  style={{
-                    paddingHorizontal: 1,
-                  }}
-                />
-                {errors.period && touched.period && (
-                  <Text style={styles.errorText}>{errors.period}</Text>
-                )}
-              </View>
+                  <View style={styles.section}>
+                    <FormikIncomeSourceSelect
+                      name={`${index}.income_id`}
+                      label="Income Source"
+                      placeholder="Select income source"
+                      modalTitle="Choose Income Source"
+                      required={true}
+                      sources={incomeSources}
+                      showProgress={true}
+                    />
+                  </View>
 
-              {/* Start Date */}
-              <View style={styles.section}>
-                <FormikDatePicker name="startDate" label="Start Date" />
-              </View>
+                  <View style={styles.section}>
+                    <Text style={styles.sectionLabel}>Period</Text>
+                    <SegmentedTabs
+                      tabs={["MONTHLY", "WEEKLY", "YEARLY"] as const}
+                      activeTab={budget.period}
+                      onTabChange={(tab) => {
+                        setFieldValue(`${index}.period`, tab);
+                      }}
+                      style={{
+                        paddingHorizontal: 1,
+                      }}
+                    />
+                    {touched[index]?.period && (
+                      <Text style={styles.errorText}>
+                        {errors[index]?.period}
+                      </Text>
+                    )}
+                  </View>
+
+                  <View style={styles.section}>
+                    <FormikDatePicker
+                      name={`${index}.start_date`}
+                      label="Start Date"
+                    />
+                    {touched[index]?.start_date && (
+                      <Text style={styles.errorText}>
+                        {errors[index]?.start_date}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              ))}
+
+              {isCreateMode && (
+                <TouchableOpacity
+                  style={styles.addBudgetButton}
+                  onPress={() => {
+                    const newValues = [...values, createEmptyBudget()];
+                    setValues(newValues);
+                  }}
+                >
+                  <MaterialIcons name="add-circle" size={24} color="#3b82f6" />
+                  <Text style={styles.addBudgetText}>Add Another Budget</Text>
+                </TouchableOpacity>
+              )}
             </ScrollView>
 
-            {/* Footer */}
             <View style={styles.footer}>
               <Button
+                title={getSubmitButtonText()}
                 onPress={handleSubmit as any}
                 disabled={isLoading || !isValid || !dirty}
                 loading={isLoading}
-              >
-                <Text style={styles.submitButtonText}>
-                  {getSubmitButtonText()}
-                </Text>
-              </Button>
+              />
             </View>
           </>
         )}

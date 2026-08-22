@@ -188,74 +188,75 @@ export const InlineError: React.FC<InlineErrorProps> = ({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background.screen,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: spacing[6],
-    gap: spacing[3],
-  },
-  iconBadge: {
-    width: 72,
-    height: 72,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: spacing[2],
-  },
-  emoji: {
-    fontSize: 32,
-  },
-  title: {
-    fontSize: typography.fontSize.lg,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-    textAlign: "center",
-  },
-  message: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.Regular,
-    textAlign: "center",
-    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
-    maxWidth: 280,
-  },
-  actions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing[3],
-    justifyContent: "center",
-    marginTop: spacing[2],
-  },
-  retryBtn: {
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[6],
-    borderRadius: radius.md,
-  },
-  retryText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-  },
-  secondaryBtn: {
-    paddingVertical: spacing[3],
-    paddingHorizontal: spacing[5],
-    borderRadius: radius.md,
-    borderWidth: 1,
-  },
-  secondaryText: {
-    fontSize: typography.fontSize.sm,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background.screen,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: spacing[6],
+      gap: spacing[3],
+    },
+    iconBadge: {
+      width: 72,
+      height: 72,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: spacing[2],
+    },
+    emoji: {
+      fontSize: 32,
+    },
+    title: {
+      ...textMetrics("lg", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      textAlign: "center",
+    },
+    message: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      textAlign: "center",
+      maxWidth: 280,
+    },
+    actions: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: spacing[3],
+      justifyContent: "center",
+      marginTop: spacing[2],
+    },
+    retryBtn: {
+      paddingVertical: spacing[3],
+      paddingHorizontal: spacing[6],
+      borderRadius: radius.md,
+    },
+    retryText: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+    },
+    secondaryBtn: {
+      paddingVertical: spacing[3],
+      paddingHorizontal: spacing[5],
+      borderRadius: radius.md,
+      borderWidth: 1,
+    },
+    secondaryText: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+    },
+  }),
+);
 
 const useInlineStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     container: {
       flexDirection: "row",
       alignItems: "center",
@@ -281,13 +282,12 @@ const useInlineStyles = makeStyles(
       gap: spacing[1],
     },
     title: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
     message: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
-      lineHeight: typography.fontSize.xs * typography.lineHeight.normal,
     },
     retryBtn: {
       paddingVertical: spacing[1.5],
@@ -296,7 +296,7 @@ const useInlineStyles = makeStyles(
       flexShrink: 0,
     },
     retryText: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
   }),

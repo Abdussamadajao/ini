@@ -9,9 +9,10 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { Formik, FormikHelpers } from "formik";
 import React, { useState } from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import * as Yup from "yup";
 import { useStyles } from "./styles";
+import { Session } from "better-auth";
 
 // --- Types ---
 type LoginValues = {
@@ -43,10 +44,9 @@ export default function LoginForm() {
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const { colors } = useTheme();
   const styles = useStyles();
-  const { setUser } = useAuthStore();
+  const { setUser, hydrate } = useAuthStore();
   const { setUnverifiedEmail: setUnverifiedEmailStore } = useAuthStore();
 
-  // --- Handlers ---
   async function handleResendVerification() {
     if (!unverifiedEmail) return;
     setIsResending(true);
@@ -62,7 +62,7 @@ export default function LoginForm() {
           toast.success("Verification email sent successfully");
           setIsResending(false);
         },
-        onError: () => {
+        onError: (error) => {
           toast.error("Failed to send verification email");
           setIsResending(false);
         },
@@ -70,53 +70,41 @@ export default function LoginForm() {
     );
   }
 
-  async function handleSubmit(
-    values: LoginValues,
-    { setSubmitting, setFieldError }: FormikHelpers<LoginValues>,
-  ) {
+  async function onSubmit({ email, password }: LoginValues) {
     setIsLoading(true);
     setUnverifiedEmail(null);
     setUnverifiedEmailStore(null);
 
     await authClient.signIn.email(
-      { email: values.email, password: values.password },
+      { email, password },
       {
         onSuccess: (context) => {
+          const { user, token } = context.data;
+
           setUser({
             user: context.data.user,
-            session: context.data.session,
+            session: { token, userId: user.id } as Session,
           });
+          hydrate();
 
           setIsLoading(false);
-          setSubmitting(false);
-          router.replace("/(tabs)");
         },
         onError: (context) => {
           if (context.error.status === 403) {
-            setUnverifiedEmail(values.email);
-            setUnverifiedEmailStore(values.email);
+            setUnverifiedEmail(email);
+            setUnverifiedEmailStore(email);
             toast.error(
               "Please verify your email address to be able to login.",
             );
             setIsLoading(false);
-            setSubmitting(false);
             return;
           }
-
-          // Set form field error if it's a field-specific error
-          if (context.error.field === "email") {
-            setFieldError("email", context.error.message);
-          } else if (context.error.field === "password") {
-            setFieldError("password", context.error.message);
-          } else {
-            toast.error(context.error.message);
-          }
-
+          toast.error(context.error.message);
           setIsLoading(false);
-          setSubmitting(false);
         },
       },
     );
+    setIsLoading(false);
   }
 
   return (
@@ -126,9 +114,11 @@ export default function LoginForm() {
       validateOnMount={false}
       validateOnChange={true}
       validateOnBlur={true}
-      onSubmit={handleSubmit}
+      onSubmit={(values) => {
+        onSubmit(values);
+      }}
     >
-      {({ handleSubmit, isSubmitting, isValid, dirty, errors, touched }) => (
+      {({ handleSubmit, isValid, dirty }) => (
         <>
           <FormikTextfield
             name="email"
@@ -152,14 +142,14 @@ export default function LoginForm() {
             }
           />
 
-          <Button
+          <TouchableOpacity
             style={[styles.forgotWrap, styles.linkBtn]}
             onPress={() => router.push("/(auth)/forgot-password")}
           >
             <Text style={[styles.forgot, { color: colors.primary.main }]}>
               Forgot Password?
             </Text>
-          </Button>
+          </TouchableOpacity>
 
           {unverifiedEmail && (
             <View style={styles.unverifiedEmailContainer}>
@@ -172,41 +162,33 @@ export default function LoginForm() {
                 Please verify your email address to be able to login.
               </Text>
               <Button
+                title="Resend verification email"
+                variant="secondary"
+                appearance="outline"
                 style={[
                   styles.unverifiedEmailButton,
                   { borderColor: colors.primary.main },
                 ]}
                 onPress={handleResendVerification}
                 loading={isResending}
-                variant="secondary"
-              >
-                <Text
-                  style={[
-                    styles.unverifiedEmailButtonText,
-                    { color: colors.primary.main },
-                  ]}
-                >
-                  Resend verification email
-                </Text>
-              </Button>
+                textStyle={[
+                  styles.unverifiedEmailButtonText,
+                  { color: colors.primary.main },
+                ]}
+              />
             </View>
           )}
 
           <Button
-            style={styles.signInBtn}
+            title="Sign In"
             onPress={() => handleSubmit()}
-            loading={isLoading || isSubmitting}
-            disabled={!isValid || !dirty || isSubmitting || isLoading}
-          >
-            <Text
-              style={[
-                styles.signInText,
-                { color: colors.primary.contrastText },
-              ]}
-            >
-              Sign In
-            </Text>
-          </Button>
+            loading={isLoading}
+            disabled={!isValid || !dirty || isLoading}
+            textStyle={[
+              styles.signInText,
+              { color: colors.primary.contrastText },
+            ]}
+          />
 
           {/*<View style={styles.divider}>
             <View
@@ -247,15 +229,15 @@ export default function LoginForm() {
             <Text style={[styles.footerText, { color: colors.text.secondary }]}>
               Don&apos;t have an account?{" "}
             </Text>
-            <Button
-              style={styles.linkBtn}
+            <TouchableOpacity
               onPress={() => router.push("/(auth)/register")}
-              disabled={isSubmitting || isLoading}
+              disabled={isLoading}
+              style={styles.linkBtn}
             >
               <Text style={[styles.footerLink, { color: colors.primary.main }]}>
                 Sign up
               </Text>
-            </Button>
+            </TouchableOpacity>
           </View>
         </>
       )}

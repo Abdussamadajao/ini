@@ -1,4 +1,5 @@
 import { useIncomeTransactions } from "@/actions";
+import { useBudgets } from "@/actions/budgets";
 import {
   FormikAmountField,
   FormikDatePicker,
@@ -7,41 +8,41 @@ import {
 import {
   Button,
   CategoryIcon,
+  ErrorState,
+  FormHeader,
   FormikCategorySelect,
   ReceiptUploadField,
   SafeArea,
   SegmentedTabs,
 } from "@/components/shared";
-import { formatPrice } from "@/lib";
+import { Skeleton } from "@/components/shared/skeleton";
+import { FormikIncomeSourceSelect } from "@/components/shared/income-select";
 import { useTheme } from "@/theme";
 import { IncomeTransaction } from "@/types";
 import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
 import { Formik } from "formik";
-import React, { useMemo, useRef } from "react";
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useMemo } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useAddExpensesStyles } from "./add-expenses-styles";
-import { IncomeSourcesModal } from "./income-sources-modal";
-import { DUMMY_BUDGETS, ExpenseFormProps, SourceItem } from "./type";
+import { ExpenseFormProps, SourceItem, expenseFormSchema } from "./type";
 
 const ExpensesForm = ({
   title,
   submitLabel,
   initialValues,
   onSubmit,
+  loading,
+  isEdit = false,
+  error,
+  refreshing,
+  onRefresh,
 }: ExpenseFormProps) => {
   const { colors } = useTheme();
   const styles = useAddExpensesStyles();
-  const { data: incomeTxResponse } = useIncomeTransactions();
-
-  const sourceModalRef = useRef<BottomSheetModal>(null);
+  const { data: incomeTxResponse, isPending: isIncomeLoading } =
+    useIncomeTransactions();
+  const { data: budgetTxResponse, isPending: isBudgetLoading } = useBudgets();
 
   const incomeSources: SourceItem[] = useMemo(() => {
     if (!incomeTxResponse?.data) return [];
@@ -55,55 +56,156 @@ const ExpensesForm = ({
           categoryId: tx.category.id,
           remaining: Number(tx.summary.remaining),
           total: Number(tx.amount),
+          spent: tx.summary?.spent ? Number(tx.summary.spent) : undefined,
+          color: tx.category.color,
         };
       });
   }, [incomeTxResponse]);
+
+  // Budget sources from API
+  const budgetSources: SourceItem[] = useMemo(() => {
+    if (!budgetTxResponse?.data) return [];
+    return budgetTxResponse.data.map((budget) => ({
+      id: budget.id,
+      label: budget.category.name,
+      icon: budget.category.icon as keyof typeof MaterialIcons.glyphMap,
+      categoryId: budget.category.id,
+      remaining: budget.remaining,
+      total: budget.amount,
+      spent: budget.spent,
+      color: budget.category.color,
+    }));
+  }, [budgetTxResponse]);
+
+  if (isEdit) {
+    return (
+      <SafeArea>
+        <View style={{ flex: 1 }}>
+          <View style={styles.header}>
+            <Pressable
+              onPress={() => router.back()}
+              style={styles.headerBtn}
+              hitSlop={8}
+            >
+              <MaterialIcons
+                name="arrow-back"
+                size={24}
+                color={colors.text.secondary}
+              />
+            </Pressable>
+            <Text style={styles.headerTitle}>{title}</Text>
+            <View style={styles.headerBtn} />
+          </View>
+
+          <ScrollView
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.amountSection}>
+              <Skeleton width={160} height={40} borderRadius={8} />
+            </View>
+
+            <View style={styles.formContent}>
+              <View style={styles.fieldGroup}>
+                <Skeleton width={100} height={11} />
+                <Skeleton
+                  width="100%"
+                  height={44}
+                  borderRadius={12}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Skeleton width={90} height={11} />
+                <Skeleton
+                  width="100%"
+                  height={56}
+                  borderRadius={12}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Skeleton width={80} height={11} />
+                <Skeleton
+                  width="100%"
+                  height={56}
+                  borderRadius={12}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Skeleton width={70} height={11} />
+                <Skeleton
+                  width="100%"
+                  height={80}
+                  borderRadius={12}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Skeleton width={100} height={11} />
+                <Skeleton
+                  width="100%"
+                  height={48}
+                  borderRadius={12}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Skeleton width={70} height={11} />
+                <Skeleton
+                  width="100%"
+                  height={120}
+                  borderRadius={12}
+                  style={{ marginTop: 8 }}
+                />
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      </SafeArea>
+    );
+  }
+
+  // Error State
+  if (error) {
+    return (
+      <SafeArea>
+        <FormHeader title={title} />
+        <ErrorState
+          error={error}
+          title="Could not load Transaction"
+          message="Please check your connection and try again."
+          refreshing={refreshing}
+          onRetry={onRefresh!}
+        />
+      </SafeArea>
+    );
+  }
   return (
     <SafeArea>
       <Formik
         initialValues={initialValues}
+        validationSchema={expenseFormSchema}
+        enableReinitialize
         onSubmit={onSubmit}
-        validate={(values) => {
-          const errors: any = {};
-          if (!values.amount || parseFloat(values.amount) <= 0) {
-            errors.amount = "Amount is required";
-          }
-          if (values.trackMode === "income" && !values.categoryId) {
-            errors.categoryId = "Category is required";
-          }
-          if (!values.sourceId) {
-            errors.sourceId =
-              values.trackMode === "income"
-                ? "Income source is required"
-                : "Budget is required";
-          }
-          return errors;
-        }}
       >
         {({ handleSubmit, setFieldValue, values, errors, touched }) => {
           const activeSources =
-            values.trackMode === "income" ? incomeSources : DUMMY_BUDGETS;
+            values.trackMode === "income" ? incomeSources : budgetSources;
           const selectedSource = activeSources.find(
             (s) => s.id === values.sourceId,
           );
 
           return (
             <View style={{ flex: 1 }}>
-              <View style={styles.header}>
-                <Pressable
-                  onPress={() => router.back()}
-                  style={styles.headerBtn}
-                  hitSlop={8}
-                >
-                  <MaterialIcons
-                    name="arrow-back"
-                    size={24}
-                    color={colors.text.secondary}
-                  />
-                </Pressable>
-                <Text style={styles.headerTitle}>{title}</Text>
-                <View style={styles.headerBtn} />
-              </View>
+              <FormHeader title={title} />
               <ScrollView
                 style={styles.scroll}
                 contentContainerStyle={styles.scrollContent}
@@ -140,53 +242,53 @@ const ExpensesForm = ({
                         ? "INCOME SOURCE"
                         : "BUDGET"}
                     </Text>
-                    <TouchableOpacity
-                      style={styles.budgetButton}
-                      onPress={() => sourceModalRef.current?.present()}
-                    >
-                      <View style={styles.budgetButtonLeft}>
-                        <CategoryIcon
-                          style={styles.budgetIcon}
-                          withBackground
-                          size={24}
-                          icon={selectedSource?.icon || ""}
-                          color={colors.primary.main}
-                        />
-                        <View style={styles.budgetInfo}>
-                          <Text style={styles.budgetName}>
-                            {selectedSource?.label ||
-                              (values.trackMode === "income"
-                                ? "Select income source"
-                                : "Select budget")}
-                          </Text>
-                          {selectedSource && (
-                            <Text style={styles.budgetMeta}>
-                              {formatPrice(selectedSource.remaining)} remaining
-                            </Text>
-                          )}
-                        </View>
-                      </View>
-                      <MaterialIcons
-                        name="chevron-right"
-                        size={24}
-                        color={colors.text.secondary}
+
+                    {values.trackMode === "income" ? (
+                      <FormikIncomeSourceSelect
+                        name="sourceId"
+                        label=""
+                        placeholder="Select income source"
+                        modalTitle="Choose Income Source"
+                        required={true}
+                        sources={incomeSources}
+                        showProgress={false}
+                        isLoading={isIncomeLoading}
                       />
-                    </TouchableOpacity>
+                    ) : (
+                      <FormikIncomeSourceSelect
+                        name="sourceId"
+                        label=""
+                        placeholder="Select budget"
+                        modalTitle="Choose Budget"
+                        required={true}
+                        sources={budgetSources}
+                        showProgress={true}
+                        onIncomeChange={(source) => {
+                          if (source) {
+                            setFieldValue(
+                              "categoryId",
+                              source.categoryId || "",
+                            );
+                          }
+                        }}
+                        isLoading={isBudgetLoading}
+                      />
+                    )}
+
                     {touched.sourceId && errors.sourceId && (
                       <Text style={styles.errorText}>{errors.sourceId}</Text>
                     )}
                   </View>
 
-                  {/* Category — only shown for Income. Budget already implies its own category. */}
                   {values.trackMode === "income" && (
                     <FormikCategorySelect
                       name="categoryId"
                       categoryType="EXPENSE"
                       required
+                      placeholder="Select category"
                     />
                   )}
 
-                  {/* Note */}
                   <View style={styles.fieldGroup}>
                     <FormikTextfield
                       labelStyle={styles.fieldLabel}
@@ -199,12 +301,10 @@ const ExpensesForm = ({
                     />
                   </View>
 
-                  {/* Date & Time */}
                   <View style={styles.fieldGroup}>
                     <FormikDatePicker label="Date & Time" name="date" />
                   </View>
 
-                  {/* Receipt */}
                   <View style={styles.fieldGroup}>
                     <Text style={styles.fieldLabel}>RECEIPT</Text>
                     <ReceiptUploadField
@@ -214,25 +314,15 @@ const ExpensesForm = ({
                   </View>
                 </View>
               </ScrollView>
+
               <View style={styles.footer}>
-                <Button onPress={() => handleSubmit()}>
-                  <Text style={styles.saveButtonText}>{submitLabel}</Text>
-                </Button>
+                <Button
+                  title={submitLabel}
+                  loading={loading}
+                  onPress={() => handleSubmit()}
+                  textStyle={styles.saveButtonText}
+                />
               </View>
-              <IncomeSourcesModal
-                title={
-                  values.trackMode === "income"
-                    ? "Select Income Source"
-                    : "Select Budget"
-                }
-                modalRef={sourceModalRef}
-                sources={activeSources}
-                selectedIncomeId={values.sourceId}
-                onSelectIncome={(id) => {
-                  setFieldValue("sourceId", id);
-                }}
-                onConfirm={() => sourceModalRef.current?.dismiss()}
-              />
             </View>
           );
         }}

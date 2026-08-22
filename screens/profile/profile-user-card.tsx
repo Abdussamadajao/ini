@@ -106,59 +106,61 @@ const radiusFull = 999;
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  card: {
-    alignItems: "center",
-    borderRadius: radius.xl,
-    borderWidth: 1,
-    marginBottom: spacing[6],
-    paddingHorizontal: spacing[6],
-    paddingVertical: spacing[7],
-  },
-  avatarRing: {
-    borderRadius: radius.full,
-    borderWidth: 2,
-    padding: 4,
-  },
-  name: {
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    fontSize: typography.fontSize.xl,
-    marginTop: spacing[4],
-  },
-  emailPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[1.5],
-    borderRadius: radius.full,
-    marginTop: spacing[2],
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1.5],
-    maxWidth: "100%",
-  },
-  email: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.sm,
-    flexShrink: 1,
-  },
-  divider: {
-    alignSelf: "stretch",
-    height: 1,
-    marginTop: spacing[5],
-    marginBottom: spacing[4],
-    backgroundColor: `${colors.border.default}40`,
-  },
-  badgeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[1.5],
-  },
-  badgeText: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.xs,
-    letterSpacing: 0.8,
-    textTransform: "uppercase",
-  },
-  skeletonLg: {
-    borderRadius: radius.lg,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    card: {
+      alignItems: "center",
+      borderRadius: radius.xl,
+      borderWidth: 1,
+      marginBottom: spacing[6],
+      paddingHorizontal: spacing[6],
+      paddingVertical: spacing[7],
+    },
+    avatarRing: {
+      borderRadius: radius.full,
+      borderWidth: 2,
+      padding: 4,
+    },
+    name: {
+      ...textMetrics("xl", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      marginTop: spacing[4],
+    },
+    emailPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[1.5],
+      borderRadius: radius.full,
+      marginTop: spacing[2],
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[1.5],
+      maxWidth: "100%",
+    },
+    email: {
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+      flexShrink: 1,
+    },
+    divider: {
+      alignSelf: "stretch",
+      height: 1,
+      marginTop: spacing[5],
+      marginBottom: spacing[4],
+      backgroundColor: `${colors.border.default}40`,
+    },
+    badgeRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[1.5],
+    },
+    badgeText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+      letterSpacing: 0.8,
+      textTransform: "capitalize",
+    },
+    skeletonLg: {
+      borderRadius: radius.lg,
+    },
+  }),
+);

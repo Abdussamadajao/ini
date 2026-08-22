@@ -7,13 +7,9 @@ import { Animated, View, ViewStyle } from "react-native";
 export interface SkeletonProps {
   width?: number | `${number}%`;
   height?: number;
-  /** Defaults to radius.md (8) */
   borderRadius?: number;
-  /** Override the base colour (defaults to background.surfaceAlt) */
   baseColor?: string;
-  /** Override the shimmer highlight (defaults to background.elevated) */
   highlightColor?: string;
-  /** Pulse speed in ms — default 1100 */
   speed?: number;
   style?: ViewStyle;
 }

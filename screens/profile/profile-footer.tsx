@@ -1,4 +1,4 @@
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, textMetrics } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -22,7 +22,11 @@ export function ProfileFooter({ onLogout }: { onLogout?: () => void }) {
         accessibilityRole="button"
         accessibilityLabel="Log out"
       >
-        <MaterialIcons name="logout" size={18} color={colors.status.error.main} />
+        <MaterialIcons
+          name="logout"
+          size={18}
+          color={colors.status.error.main}
+        />
         <Text style={[styles.logoutText, { color: colors.status.error.main }]}>
           Log Out
         </Text>
@@ -33,22 +37,24 @@ export function ProfileFooter({ onLogout }: { onLogout?: () => void }) {
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  wrap: {
-    marginTop: spacing[2],
-    paddingBottom: spacing[8],
-  },
-  logout: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing[2],
-    borderRadius: radius.full,
-    borderWidth: 1.5,
-    paddingVertical: spacing[4],
-  },
-  logoutText: {
-    fontFamily: typography.fontFamily.Inter.SemiBold,
-    fontSize: typography.fontSize.md,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    wrap: {
+      marginTop: spacing[2],
+      paddingBottom: spacing[8],
+    },
+    logout: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing[2],
+      borderRadius: radius.md,
+      borderWidth: 1.5,
+      paddingVertical: spacing[4],
+    },
+    logoutText: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Inter.SemiBold,
+    },
+  }),
+);

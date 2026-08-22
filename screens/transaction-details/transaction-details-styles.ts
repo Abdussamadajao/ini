@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useTransactionDetailsStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safeArea: {
       flex: 1,
       backgroundColor: colors.background.surface,
@@ -26,7 +26,7 @@ export const useTransactionDetailsStyles = makeStyles(
     headerTitle: {
       flex: 1,
       textAlign: "center",
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.main,
     },
@@ -44,15 +44,15 @@ export const useTransactionDetailsStyles = makeStyles(
       marginBottom: spacing[6],
     },
     typeLabel: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 1.5,
-      textTransform: "uppercase",
+      textTransform: "capitalize",
       color: colors.text.secondary,
       marginBottom: spacing[2],
     },
     amount: {
-      fontSize: typography.fontSize["6xl"],
+      ...textMetrics("6xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: -0.8,
     },
@@ -83,12 +83,12 @@ export const useTransactionDetailsStyles = makeStyles(
       alignItems: "flex-start",
     },
     detailLabel: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
     detailValue: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
     },
@@ -100,11 +100,10 @@ export const useTransactionDetailsStyles = makeStyles(
 
     // Notes and Tags
     notesText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.primary,
       marginTop: spacing[1.5],
-      lineHeight: 22,
     },
     tagsContainer: {
       flexDirection: "row",
@@ -119,7 +118,7 @@ export const useTransactionDetailsStyles = makeStyles(
       backgroundColor: colors.background.surfaceAlt,
     },
     tagPillText: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       letterSpacing: 0.5,
       color: colors.text.secondary,
@@ -135,7 +134,7 @@ export const useTransactionDetailsStyles = makeStyles(
       marginBottom: spacing[6],
     },
     impactTitle: {
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       marginBottom: spacing[4],
@@ -156,7 +155,7 @@ export const useTransactionDetailsStyles = makeStyles(
       marginTop: spacing[1],
     },
     impactLabel: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
       color: colors.text.secondary,
     },
@@ -165,7 +164,7 @@ export const useTransactionDetailsStyles = makeStyles(
       color: colors.text.primary,
     },
     impactValue: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
     },
@@ -181,7 +180,7 @@ export const useTransactionDetailsStyles = makeStyles(
       marginBottom: spacing[6],
     },
     receiptTitle: {
-      fontSize: typography.fontSize.xl,
+      ...textMetrics("xl", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       marginBottom: spacing[3],
@@ -225,12 +224,12 @@ export const useTransactionDetailsStyles = makeStyles(
       elevation: 4,
     },
     deleteBtnText: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.status.error.main,
     },
     editBtnText: {
-      fontSize: typography.fontSize.lg,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.primary.contrastText,
     },
@@ -243,12 +242,12 @@ export const useTransactionDetailsStyles = makeStyles(
       justifyContent: "center",
     },
     metaLine: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Inter.Medium,
       color: colors.text.secondary,
     },
     sourceAccent: {
-      fontSize: typography.fontSize.sm,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.primary.main,
     },

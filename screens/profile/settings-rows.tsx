@@ -1,5 +1,5 @@
 import { FormSwitch } from "@/components/shared/switch";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, textMetrics } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
@@ -11,13 +11,7 @@ function RowDivider() {
   return <View style={styles.divider} />;
 }
 
-function IconBadge({
-  icon,
-  tint,
-}: {
-  icon: IconName;
-  tint: string;
-}) {
+function IconBadge({ icon, tint }: { icon: IconName; tint: string }) {
   const styles = useStyles();
   return (
     <View style={[styles.iconBadge, { backgroundColor: `${tint}14` }]}>
@@ -231,52 +225,54 @@ export function SettingsActionRow({
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  row: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing[3],
-    minHeight: 58,
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2.5],
-  },
-  rowPressed: {
-    backgroundColor: colors.background.screen,
-  },
-  iconBadge: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 34,
-    height: 34,
-    borderRadius: radius.full,
-  },
-  themeRow: {
-    justifyContent: "space-between",
-  },
-  accentRow: {
-    alignItems: "center",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  rowLabel: {
-    flex: 1,
-    fontFamily: typography.fontFamily.Inter.Medium,
-    fontSize: typography.fontSize.md,
-  },
-  valueText: {
-    flexShrink: 1,
-    fontFamily: typography.fontFamily.Inter.Medium,
-    fontSize: typography.fontSize.sm,
-    marginLeft: spacing[2],
-    textAlign: "right",
-  },
-  accentDots: {
-    flexDirection: "row",
-    gap: spacing[3],
-  },
-  divider: {
-    height: 1,
-    marginLeft: spacing[4] + 34 + spacing[3],
-    backgroundColor: `${colors.border.default}33`,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    row: {
+      alignItems: "center",
+      flexDirection: "row",
+      gap: spacing[3],
+      minHeight: 58,
+      paddingHorizontal: spacing[4],
+      paddingVertical: spacing[2.5],
+    },
+    rowPressed: {
+      backgroundColor: colors.background.screen,
+    },
+    iconBadge: {
+      alignItems: "center",
+      justifyContent: "center",
+      width: 34,
+      height: 34,
+      borderRadius: radius.full,
+    },
+    themeRow: {
+      justifyContent: "space-between",
+    },
+    accentRow: {
+      alignItems: "center",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+    },
+    rowLabel: {
+      flex: 1,
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Inter.Medium,
+    },
+    valueText: {
+      flexShrink: 1,
+      ...textMetrics("sm", "snug"),
+      fontFamily: typography.fontFamily.Inter.Medium,
+      marginLeft: spacing[2],
+      textAlign: "right",
+    },
+    accentDots: {
+      flexDirection: "row",
+      gap: spacing[3],
+    },
+    divider: {
+      height: 1,
+      marginLeft: spacing[4] + 34 + spacing[3],
+      backgroundColor: `${colors.border.default}33`,
+    },
+  }),
+);

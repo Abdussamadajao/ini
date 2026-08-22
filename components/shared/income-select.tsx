@@ -1,4 +1,3 @@
-import { IncomeSourcesModal } from "@/screens/expenses/income-sources-modal";
 import { makeStyles, useIsDark, useTheme } from "@/theme";
 import { SourceItem } from "@/types";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -7,6 +6,7 @@ import { useField } from "formik";
 import React, { useMemo, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { InlineError } from "./error";
+import { IncomeSourcesModal } from "./income-sources-modal";
 
 type FormikIncomeSourceSelectProps = {
   name: string;
@@ -248,73 +248,75 @@ const formatPrice = (amount: number) => {
 
 // ─── Theme‑aware styles ────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  container: {
-    marginBottom: spacing[4],
-  },
-  label: {
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.bold,
-    textTransform: "uppercase" as const,
-    letterSpacing: 0.5,
-    marginBottom: spacing[2],
-    fontFamily: typography.fontFamily.Manrope.Bold,
-  },
-  requiredStar: {
-    color: colors.status.error.main,
-  },
-  selectTrigger: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[3],
-    borderRadius: radius.md,
-    borderWidth: 1,
-    height: 56,
-  },
-  selectTriggerDisabled: {
-    opacity: 0.6,
-  },
-  triggerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    flex: 1,
-  },
-  triggerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[2],
-    flex: 1,
-  },
-  selectedIconWrap: {
-    width: 28,
-    height: 28,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  selectedEmoji: {
-    fontSize: 16,
-  },
-  triggerText: {
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.Manrope.Regular,
-    flex: 1,
-  },
-  triggerPlaceholder: {
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.Manrope.Regular,
-  },
-  remainingText: {
-    fontSize: typography.fontSize.xs,
-    fontFamily: typography.fontFamily.Manrope.Regular,
-    marginLeft: spacing[1],
-  },
-  errorText: {
-    fontSize: typography.fontSize.sm,
-    marginTop: spacing[1],
-    fontFamily: typography.fontFamily.Manrope.Regular,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    container: {
+      marginBottom: spacing[4],
+    },
+    label: {
+      ...textMetrics("xs", "snug"),
+      fontWeight: typography.fontWeight.bold,
+      textTransform: "uppercase" as const,
+      letterSpacing: 0.5,
+      marginBottom: spacing[2],
+      fontFamily: typography.fontFamily.Manrope.Bold,
+    },
+    requiredStar: {
+      color: colors.status.error.main,
+    },
+    selectTrigger: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[3],
+      borderRadius: radius.md,
+      borderWidth: 1,
+      height: 56,
+    },
+    selectTriggerDisabled: {
+      opacity: 0.6,
+    },
+    triggerContent: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      flex: 1,
+    },
+    triggerLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[2],
+      flex: 1,
+    },
+    selectedIconWrap: {
+      width: 28,
+      height: 28,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    selectedEmoji: {
+      fontSize: 16,
+    },
+    triggerText: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      flex: 1,
+    },
+    triggerPlaceholder: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Regular,
+    },
+    remainingText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Regular,
+      marginLeft: spacing[1],
+    },
+    errorText: {
+      ...textMetrics("sm", "snug"),
+      marginTop: spacing[1],
+      fontFamily: typography.fontFamily.Manrope.Regular,
+    },
+  }),
+);

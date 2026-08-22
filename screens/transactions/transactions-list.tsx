@@ -1,8 +1,5 @@
 import { useInfiniteTransactions, useTransactionMutation } from "@/actions";
-import { ErrorState } from "@/components/shared";
-import BlurBackdrop, {
-  BlurBackdropProps,
-} from "@/components/shared/blur-backdrop";
+import { ActionModal, Button, ErrorState } from "@/components/shared";
 import { Skeleton, SkeletonList } from "@/components/shared/skeleton";
 import { useToast } from "@/components/toasts";
 import {
@@ -174,7 +171,6 @@ export function TransactionsList() {
 
   const hasResults = filteredSections.some((s) => s.data.length > 0);
   const isSearching = search.trim().length > 0;
-  // const hasTransactions = allTransactions.length > 0;
 
   const handleLongPress = useCallback((transaction: UiTransaction) => {
     setSelectedTransaction(transaction);
@@ -196,27 +192,10 @@ export function TransactionsList() {
 
   const handleDelete = useCallback(async () => {
     if (!selectedTransaction) return;
-    try {
-      await deleteTransaction({ id: selectedTransaction.id });
-      toast.success("Transaction deleted successfully");
-      modalRef.current?.dismiss();
-    } catch {
-      toast.error("Failed to delete transaction");
-    }
-  }, [selectedTransaction, deleteTransaction, toast]);
 
-  const renderBackdrop = useCallback(
-    (props: BlurBackdropProps) => (
-      <BlurBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={1}
-        pressBehavior="close"
-      />
-    ),
-    [],
-  );
+    await deleteTransaction({ id: selectedTransaction.id });
+    modalRef.current?.dismiss();
+  }, [selectedTransaction, deleteTransaction, toast]);
 
   if (isLoading) {
     return (
@@ -326,7 +305,7 @@ export function TransactionsList() {
                 {
                   color: item.isIncome
                     ? colors.primary.main
-                    : colors.text.primary,
+                    : colors.status.error.main,
                 },
               ]}
             >
@@ -365,171 +344,37 @@ export function TransactionsList() {
                 ? `We couldn't find anything matching "${search}".`
                 : "Your income and expenses will appear here once you start tracking them."}
             </Text>
-            {isSearching ? (
-              <Pressable
-                style={({ pressed }) => [
-                  styles.emptyBtn,
-                  {
-                    backgroundColor: "transparent",
-                    borderWidth: 1,
-                    borderColor: colors.primary.main,
-                  },
-                  pressed && { opacity: 0.7 },
-                ]}
-                // onPress={() => {
-                //   setSearch("");
-                // }}
-              >
-                <Text
-                  style={[styles.emptyBtnText, { color: colors.primary.main }]}
-                >
-                  Clear search
-                </Text>
-              </Pressable>
-            ) : (
-              <Pressable
-                style={({ pressed }) => [
-                  styles.emptyBtn,
-                  pressed && { opacity: 0.9 },
-                ]}
-                onPress={() => router.push("/add-income")}
-              >
-                <MaterialIcons
-                  name="add"
-                  size={18}
-                  color={colors.primary.contrastText}
-                />
-                <Text style={styles.emptyBtnText}>Add transaction</Text>
-              </Pressable>
-            )}
           </View>
         }
       />
 
-      <BottomSheetModal
-        ref={modalRef}
-        snapPoints={["30%"]}
-        enablePanDownToClose
-        enableDismissOnClose
-        enableContentPanningGesture={false}
-        enableHandlePanningGesture={false}
-        enableDynamicSizing={false}
-        backgroundStyle={{
-          backgroundColor: colors.background.surface,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-        }}
-        handleIndicatorStyle={{
-          backgroundColor: colors.text.muted,
-          width: 40,
-          height: 4,
-          marginTop: 10,
-        }}
-        backdropComponent={renderBackdrop}
+      <ActionModal
+        modalRef={modalRef}
+        title={selectedTransaction?.title ?? "Transaction"}
+        message={
+          selectedTransaction
+            ? `${formatAmount(
+                selectedTransaction.amount,
+                selectedTransaction.isIncome,
+              )} • ${selectedTransaction.subtitle}`
+            : ""
+        }
+        icon={selectedTransaction?.icon ?? "receipt-long"}
+        iconColor={selectedTransaction?.iconBg}
+        iconBackgroundColor={
+          selectedTransaction ? selectedTransaction.iconBg + "1A" : undefined
+        }
+        snapPoint="38%"
       >
-        <View style={{ padding: 24 }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontFamily: "Manrope-Bold",
-              color: colors.text.primary,
-              marginBottom: 20,
-              textAlign: "center",
-            }}
-          >
-            {selectedTransaction?.title}
-          </Text>
-
-          <Pressable
-            onPress={handleEdit}
-            style={({ pressed }) => [
-              {
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: 16,
-                paddingHorizontal: 20,
-                borderRadius: 12,
-                backgroundColor: pressed
-                  ? colors.background.surfaceAlt
-                  : colors.background.surface,
-                marginBottom: 12,
-              },
-            ]}
-          >
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: colors.primary.main + "14",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 16,
-              }}
-            >
-              <MaterialIcons
-                name="edit"
-                size={20}
-                color={colors.primary.main}
-              />
-            </View>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: "Manrope-SemiBold",
-                color: colors.text.primary,
-              }}
-            >
-              Edit Transaction
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={handleDelete}
-            disabled={isDeleting}
-            style={({ pressed }) => [
-              {
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: 16,
-                paddingHorizontal: 20,
-                borderRadius: 12,
-                backgroundColor: pressed
-                  ? colors.background.surfaceAlt
-                  : colors.background.surface,
-                opacity: isDeleting ? 0.5 : 1,
-              },
-            ]}
-          >
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: colors.status.error.main + "14",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 16,
-              }}
-            >
-              <MaterialIcons
-                name="delete"
-                size={20}
-                color={colors.status.error.main}
-              />
-            </View>
-            <Text
-              style={{
-                fontSize: 16,
-                fontFamily: "Manrope-SemiBold",
-                color: colors.status.error.main,
-              }}
-            >
-              Delete Transaction
-            </Text>
-          </Pressable>
-        </View>
-      </BottomSheetModal>
+        <Button title="Edit Transaction" onPress={handleEdit} />
+        <Button
+          onPress={handleDelete}
+          loading={isDeleting}
+          variant="danger"
+          appearance="outline"
+          title="  Delete Transaction"
+        />
+      </ActionModal>
     </>
   );
 }

@@ -286,18 +286,13 @@ export function CategoryForm({
 
             <View style={styles.footer}>
               <Button
+                title={submitButtonText}
                 onPress={() => handleSubmit()}
                 style={styles.saveBtn}
                 disabled={!values.name.trim()}
                 loading={isLoading}
-              >
-                <Text style={styles.saveBtnText}>{submitButtonText}</Text>
-                <MaterialIcons
-                  name="add"
-                  size={22}
-                  color={colors.primary.contrastText}
-                />
-              </Button>
+                textStyle={styles.saveBtnText}
+              />
             </View>
           </KeyboardAvoidingView>
         );

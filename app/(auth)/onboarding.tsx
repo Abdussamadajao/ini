@@ -48,15 +48,12 @@ export default function Onboarding() {
                 </Text>
               </View>
               <Button
+                title="Skip"
                 onPress={() => router.replace("/(auth)/login")}
+                variant="ghost"
                 style={styles.skipBtn}
-              >
-                <Text
-                  style={[styles.skipBtnText, { color: colors.primary.main }]}
-                >
-                  Skip
-                </Text>
-              </Button>
+                textStyle={[styles.skipBtnText, { color: colors.primary.main }]}
+              />
             </View>
 
             <View style={styles.container}>
@@ -105,13 +102,15 @@ export default function Onboarding() {
             />
           ))}
         </View>
-        <Button onPress={gotoNext} style={styles.nextBtn}>
-          <Text
-            style={[styles.nextBtnText, { color: colors.primary.contrastText }]}
-          >
-            {isLastSlide ? "Get Started" : "Next"}
-          </Text>
-        </Button>
+        <Button
+          title={isLastSlide ? "Get Started" : "Next"}
+          onPress={gotoNext}
+          style={styles.nextBtn}
+          textStyle={[
+            styles.nextBtnText,
+            { color: colors.primary.contrastText },
+          ]}
+        />
       </View>
     </SafeAreaView>
   );
@@ -148,6 +147,7 @@ const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
     height: undefined,
     paddingVertical: spacing[2],
     paddingHorizontal: spacing[3],
+    borderWidth: 0,
   },
   skipBtnText: {
     fontSize: typography.fontSize.sm,

@@ -130,35 +130,36 @@ export function FABTab({ onPress, isOpen = false }: FABTabProps) {
   );
 }
 
-const useStyles = makeStyles(({ colors, radius, spacing, typography }) => ({
-  wrapper: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-    height: 56,
-    gap: spacing[0.5],
-  },
-  label: {
-    fontSize: 12,
-    fontFamily: typography.fontFamily.Manrope.Bold,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
+const useStyles = makeStyles(
+  ({ colors, radius, spacing, typography, textMetrics }) => ({
+    wrapper: {
+      alignItems: "center",
+      width: 60,
+      height: 56,
+      gap: spacing[0.5],
+    },
+    label: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Bold,
+      letterSpacing: 0.5,
+      textTransform: "capitalize",
+    },
 
-  fabOuter: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fab: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-    zIndex: 1000,
-  },
-}));
+    fabOuter: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    fab: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 4,
+      zIndex: 1000,
+    },
+  }),
+);

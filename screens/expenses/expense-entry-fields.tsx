@@ -1,19 +1,16 @@
 import { FormikDatePicker, FormikTextfield } from "@/components/form";
 import {
-  CategoryIcon,
   FormikCategorySelect,
+  FormikIncomeSourceSelect,
   ReceiptUploadField,
   SegmentedTabs,
 } from "@/components/shared";
-import { formatPrice } from "@/lib/custom";
 import { useTheme } from "@/theme";
 import { MaterialIcons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import React, { useRef } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { Text, View } from "react-native";
 import { useAddExpensesStyles } from "./add-expenses-styles";
-import { SourceItem, useExpenseSources } from "./hooks";
-import { IncomeSourcesModal } from "./income-sources-modal";
+import { useExpenseSources } from "./hooks";
 import { TrackMode } from "./type";
 
 type ExpenseEntryFieldsProps = {
@@ -30,29 +27,27 @@ type ExpenseEntryFieldsProps = {
 export function ExpenseEntryFields({
   namePrefix,
   trackMode,
-  sourceId,
   categoryId,
   receiptUrl,
-  sourceError,
-  sourceTouched,
   setFieldValue,
 }: ExpenseEntryFieldsProps) {
   const { colors } = useTheme();
   const styles = useAddExpensesStyles();
-  const { incomeSources, budgetSources } = useExpenseSources();
-  const sourceModalRef = useRef<BottomSheetModal>(null);
+  const { incomeSources, budgetSources, isBudgetLoading, isIncomeLoading } =
+    useExpenseSources();
 
   const field = (name: string) => (namePrefix ? `${namePrefix}.${name}` : name);
 
-  const activeSources: SourceItem[] =
-    trackMode === "income" ? incomeSources : budgetSources;
-  const selectedSource = activeSources.find((s) => s.id === sourceId);
-
+  let sourceLabel = trackMode === "income" ? "INCOME SOURCE" : "BUDGET";
+  let sourcePlaceholder =
+    trackMode === "income" ? "Select income source" : "Select budget";
+  let sourceTitle =
+    trackMode === "income" ? "Select Income Source" : "Select Budget";
+  let source = trackMode === "income" ? incomeSources : budgetSources;
   return (
     <>
       {/* Track Against */}
       <View style={styles.fieldGroup}>
-        <Text style={styles.fieldLabel}>TRACK AGAINST</Text>
         <SegmentedTabs
           tabs={["income", "budget"] as const}
           activeTab={trackMode}
@@ -65,63 +60,43 @@ export function ExpenseEntryFields({
         />
       </View>
 
-      {/* Source Selection */}
-      <View style={styles.fieldGroup}>
-        <Text style={styles.fieldLabel}>
-          {trackMode === "income" ? "INCOME SOURCE" : "BUDGET"}
-        </Text>
-        <TouchableOpacity
-          style={styles.budgetButton}
-          onPress={() => sourceModalRef.current?.present()}
-        >
-          <View style={styles.budgetButtonLeft}>
-            <CategoryIcon
-              style={styles.budgetIcon}
-              withBackground
-              size={24}
-              icon={selectedSource?.icon || ""}
-              color={colors.primary.main}
-            />
-            <View style={styles.budgetInfo}>
-              <Text style={styles.budgetName}>
-                {selectedSource?.label ||
-                  (trackMode === "income"
-                    ? "Select income source"
-                    : "Select budget")}
-              </Text>
-              {selectedSource && (
-                <Text style={styles.budgetMeta}>
-                  {formatPrice(selectedSource.remaining)} remaining
-                </Text>
-              )}
-            </View>
-          </View>
-          <MaterialIcons
-            name="chevron-right"
-            size={24}
-            color={colors.text.secondary}
-          />
-        </TouchableOpacity>
-        {sourceTouched && sourceError && (
-          <Text style={styles.errorText}>{sourceError}</Text>
-        )}
-      </View>
+      <View style={styles.divider} />
+
+      <FormikIncomeSourceSelect
+        name={field("sourceId")}
+        label={sourceLabel}
+        placeholder={sourcePlaceholder}
+        modalTitle={sourceTitle}
+        sources={source}
+        required
+        showProgress={trackMode === "budget"}
+        onIncomeChange={() => {
+          // clear the dependent category whenever the source changes
+          setFieldValue(field("categoryId"), "");
+        }}
+      />
 
       {/* Category — Income only */}
       {trackMode === "income" && (
-        <FormikCategorySelect
-          name={field("categoryId")}
-          categoryType="EXPENSE"
-          required
-        />
+        <>
+          <View style={styles.divider} />
+          <View style={styles.fieldGroup}>
+            <FormikCategorySelect
+              name={field("categoryId")}
+              categoryType="EXPENSE"
+              required
+            />
+          </View>
+        </>
       )}
+
+      <View style={styles.divider} />
 
       {/* Note */}
       <View style={styles.fieldGroup}>
         <FormikTextfield
-          labelStyle={styles.fieldLabel}
-          name={field("notes")}
           label="NOTE (OPTIONAL)"
+          name={field("notes")}
           placeholder="What was this for?"
           multiline
           numberOfLines={3}
@@ -131,28 +106,16 @@ export function ExpenseEntryFields({
 
       {/* Date & Time */}
       <View style={styles.fieldGroup}>
-        <FormikDatePicker label="Date & Time" name={field("date")} />
+        <FormikDatePicker label="  DATE & TIME" name={field("date")} />
       </View>
 
       {/* Receipt */}
       <View style={styles.fieldGroup}>
-        <Text style={styles.fieldLabel}>RECEIPT</Text>
         <ReceiptUploadField
           value={receiptUrl}
           onChange={(url) => setFieldValue(field("receiptUrl"), url || "")}
         />
       </View>
-
-      <IncomeSourcesModal
-        title={
-          trackMode === "income" ? "Select Income Source" : "Select Budget"
-        }
-        modalRef={sourceModalRef}
-        sources={activeSources}
-        selectedIncomeId={sourceId}
-        onSelectIncome={(id) => setFieldValue(field("sourceId"), id)}
-        onConfirm={() => sourceModalRef.current?.dismiss()}
-      />
     </>
   );
 }

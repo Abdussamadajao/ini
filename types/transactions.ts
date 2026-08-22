@@ -159,6 +159,7 @@ export interface TransactionFilters {
   amountMin?: number;
   amountMax?: number;
   income_id?: string;
+  budget_id?: string;
   q?: string;
   page?: number;
   pageSize?: number;

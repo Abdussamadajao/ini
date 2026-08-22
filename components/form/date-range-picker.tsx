@@ -466,7 +466,7 @@ export const FormikDateRangePicker: React.FC<FormikDateRangePickerProps> = ({
 };
 
 const useDateRangePickerStyles = makeStyles(
-  ({ colors, radius, typography }) => ({
+  ({ colors, radius, typography, textMetrics }) => ({
     select: {
       flexDirection: "row",
       alignItems: "center",
@@ -491,13 +491,13 @@ const useDateRangePickerStyles = makeStyles(
     },
     textSection: { flex: 1 },
     label: {
-      fontSize: 12,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.secondary,
       marginBottom: 2,
     },
     value: {
-      fontSize: 16,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.primary,
     },
@@ -523,13 +523,13 @@ const useDateRangePickerStyles = makeStyles(
     headerSideRight: { justifyContent: "flex-end" },
     modalTitle: {
       flex: 1,
-      fontSize: 17,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
       textAlign: "center",
     },
     brandMark: {
-      fontSize: 13,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.ExtraBold,
       color: colors.primary.main,
       letterSpacing: 0.5,
@@ -544,7 +544,7 @@ const useDateRangePickerStyles = makeStyles(
       borderColor: colors.border.default,
     },
     activeRangeLabel: {
-      fontSize: 10,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.secondary,
       letterSpacing: 0.6,
@@ -558,7 +558,7 @@ const useDateRangePickerStyles = makeStyles(
     },
     activeRangeDateBtn: { flex: 1, minWidth: 0 },
     activeRangeDateText: {
-      fontSize: 14,
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -579,7 +579,7 @@ const useDateRangePickerStyles = makeStyles(
       justifyContent: "center",
     },
     monthYear: {
-      fontSize: 18,
+      ...textMetrics("lg", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.text.primary,
     },
@@ -592,7 +592,7 @@ const useDateRangePickerStyles = makeStyles(
     weekday: {
       width: 36,
       textAlign: "center",
-      fontSize: 11,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
       color: colors.text.secondary,
     },
@@ -612,7 +612,7 @@ const useDateRangePickerStyles = makeStyles(
       justifyContent: "center",
     },
     dayText: {
-      fontSize: 15,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Medium,
       color: colors.text.primary,
     },
@@ -630,13 +630,13 @@ const useDateRangePickerStyles = makeStyles(
       gap: 10,
     },
     applyRangeBtnText: {
-      fontSize: 16,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       color: colors.primary.contrastText,
     },
     errorText: {
+      ...textMetrics("xs", "snug"),
       color: colors.status.error.main,
-      fontSize: 12,
       marginTop: 4,
       fontFamily: typography.fontFamily.Manrope.Medium,
     },

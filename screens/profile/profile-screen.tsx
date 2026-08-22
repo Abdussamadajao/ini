@@ -1,12 +1,12 @@
 import { useToast } from "@/components/toasts";
-import { useAuthStore } from "@/stores";
+import { authClient, useAuthStore } from "@/stores";
 import { ThemeMode, makeStyles, useThemeMode, useToggleTheme } from "@/theme";
 import { router } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProfileFooter } from "./profile-footer";
-import { ProfileHeader } from "./profile-header";
+
 import { ProfileUserCard } from "./profile-user-card";
 import {
   SettingsActionRow,
@@ -16,6 +16,7 @@ import {
 } from "./settings-rows";
 import { SettingsSection } from "./settings-section";
 import { ThemeSegmentControl } from "./theme-segment-control";
+import { Header } from "@/components/shared";
 
 export function ProfileScreen() {
   const mode = useThemeMode();
@@ -23,8 +24,8 @@ export function ProfileScreen() {
   const { toast } = useToast();
   const { logout, user, isHydrating } = useAuthStore();
   const styles = useStyles();
-  const [transactionAlerts, setTransactionAlerts] = useState(true);
-  const [budgetAlerts, setBudgetAlerts] = useState(false);
+  // const [transactionAlerts, setTransactionAlerts] = useState(true);
+  // const [budgetAlerts, setBudgetAlerts] = useState(false);
 
   const onThemeSelect = useCallback(
     (next: ThemeMode) => {
@@ -52,7 +53,8 @@ export function ProfileScreen() {
     router.push("/categories");
   }, []);
 
-  const onLogout = useCallback(() => {
+  const onLogout = useCallback(async () => {
+    await authClient.signOut();
     logout();
     toast.success("Logged out successfully");
   }, [logout, toast]);
@@ -67,7 +69,11 @@ export function ProfileScreen() {
 
   return (
     <SafeAreaView edges={["top"]} style={styles.safe}>
-      <ProfileHeader />
+      <Header
+        title="Profile"
+        desc="Manage your account and preferences"
+        titleSize="large"
+      />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -105,7 +111,7 @@ export function ProfileScreen() {
             <ThemeSegmentControl mode={mode} onSelect={onThemeSelect} />
           </SettingsThemeRow>
         </SettingsSection>
-
+        {/* 
         <SettingsSection title="Notifications">
           <SettingsToggleRow
             icon="receipt-long"
@@ -120,8 +126,8 @@ export function ProfileScreen() {
             onValueChange={setBudgetAlerts}
             showDivider={false}
           />
-        </SettingsSection>
-
+        </SettingsSection> */}
+        {/* 
         <SettingsSection title="Privacy">
           <SettingsActionRow icon="download" label="Export Data" />
           <SettingsActionRow
@@ -130,7 +136,7 @@ export function ProfileScreen() {
             danger
             showDivider={false}
           />
-        </SettingsSection>
+        </SettingsSection> */}
 
         <ProfileFooter onLogout={onLogout} />
       </ScrollView>

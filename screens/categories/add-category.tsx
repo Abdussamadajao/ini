@@ -25,17 +25,13 @@ export default function NewCategory() {
   const { mutateAsync: createCategory, isPending } = useCreateCategory();
 
   const handleSubmit = async (values: CategoryFormValues) => {
-    try {
-      await createCategory({
-        name: values.name,
-        icon: CATEGORY_ICONS[values.iconIndex],
-        color: COLOR_SWATCHES[values.colorIndex],
-        type: values.type,
-      });
-      router.back();
-    } catch (error) {
-      // Error is handled by the mutation hook
-    }
+    await createCategory({
+      name: values.name,
+      icon: CATEGORY_ICONS[values.iconIndex],
+      color: COLOR_SWATCHES[values.colorIndex],
+      type: values.type,
+    });
+    router.back();
   };
 
   return (

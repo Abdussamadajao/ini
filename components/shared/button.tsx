@@ -5,29 +5,44 @@ import {
   Pressable,
   PressableProps,
   StyleProp,
+  Text,
+  TextStyle,
+  View,
   ViewStyle,
 } from "react-native";
 
 interface ButtonProps extends PressableProps {
-  variant?: "primary" | "secondary" | "tertiary" | "danger" | "ghost";
+  title: string;
+  variant?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "danger"
+    | "warning"
+    | "ghost";
   appearance?: "solid" | "outline";
   loading?: boolean;
   disabled?: boolean;
-  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  flex?: boolean;
+  textStyle?: StyleProp<TextStyle>;
   width?: "small" | "medium" | "large";
+  flex?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const Button = ({
+  title,
   variant = "primary",
   appearance = "solid",
   loading = false,
   disabled = false,
-  children,
   style,
-  flex,
+  textStyle,
   width,
+  flex,
+  leftIcon,
+  rightIcon,
   ...props
 }: ButtonProps) => {
   const { colors } = useTheme();
@@ -37,7 +52,6 @@ const Button = ({
   const isOutline = appearance === "outline" && !isGhost;
   const isSolid = appearance === "solid" && !isGhost;
 
-  // Base color per variant (used for solid bg, outline border/text, and the spinner)
   const variantColor =
     variant === "primary"
       ? colors.primary.main
@@ -45,9 +59,11 @@ const Button = ({
         ? colors.secondary.main
         : variant === "danger"
           ? colors.status.error.main
-          : variant === "tertiary"
-            ? colors.text.primary
-            : colors.text.secondary; // ghost
+          : variant === "warning"
+            ? colors.status.warning.main
+            : variant === "tertiary"
+              ? colors.text.primary
+              : colors.text.secondary;
 
   const backgroundColor = isSolid
     ? variant === "tertiary"
@@ -55,35 +71,40 @@ const Button = ({
       : variantColor
     : "transparent";
 
-  const borderColor = isGhost
-    ? colors.border.default
-    : isOutline
-      ? variantColor
-      : "transparent";
+  const borderColor = isGhost ? "" : isOutline ? variantColor : "transparent";
 
-  const indicatorColor = isSolid
+  const contentColor = isSolid
     ? variant === "primary"
       ? colors.primary.contrastText
       : variant === "secondary"
         ? colors.secondary.contrastText
         : variant === "danger"
           ? colors.status.error.contrastText
-          : colors.text.primary // tertiary
-    : variantColor; // outline & ghost
+          : variant === "warning"
+            ? colors.status.warning.contrastText
+            : colors.text.primary
+    : variantColor;
 
   const buttonWidth =
-    width === "small" ? 120 : width === "medium" ? 160 : "100%";
+    width === "small"
+      ? 120
+      : width === "medium"
+        ? 160
+        : flex
+          ? undefined
+          : "100%";
+
   return (
     <Pressable
       style={[
         styles.base,
         {
           width: buttonWidth,
-          flex: flex ? 1 : undefined,
           backgroundColor,
           borderColor,
           borderWidth: borderColor === "transparent" ? 0 : 1,
         },
+        flex && styles.flex,
         disabled && styles.disabled,
         style,
       ]}
@@ -91,9 +112,18 @@ const Button = ({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={indicatorColor} />
+        <ActivityIndicator size="small" color={contentColor} />
       ) : (
-        children
+        <>
+          {leftIcon && <View style={styles.iconLeft}>{leftIcon}</View>}
+          <Text
+            style={[styles.text, { color: contentColor }, textStyle]}
+            numberOfLines={1}
+          >
+            {title}
+          </Text>
+          {rightIcon && <View style={styles.iconRight}>{rightIcon}</View>}
+        </>
       )}
     </Pressable>
   );
@@ -102,16 +132,35 @@ const Button = ({
 export default Button;
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────
-const useStyles = makeStyles(({ colors, spacing, radius }) => ({
-  base: {
-    padding: spacing[3],
-    height: 48,
-    borderRadius: radius.sm,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-}));
+const useStyles = makeStyles(
+  ({ spacing, radius, typography, textMetrics }) => ({
+    base: {
+      padding: spacing[3],
+      height: 48,
+      borderRadius: radius.md,
+      alignItems: "center",
+      justifyContent: "center",
+      flexDirection: "row",
+      flexShrink: 1,
+      minWidth: 0,
+    },
+    flex: {
+      flex: 1,
+      width: undefined,
+    },
+    text: {
+      ...textMetrics("lg", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      letterSpacing: 0.5,
+    },
+    iconLeft: {
+      marginRight: spacing[2],
+    },
+    iconRight: {
+      marginLeft: spacing[2],
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+  }),
+);

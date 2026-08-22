@@ -37,9 +37,10 @@ function sanitizeRaw(text: string, maxRawLen: number): string {
 }
 
 function formatDisplay(raw: string): string {
-  if (!raw) return "";
-  const trailingDot = raw.endsWith(".") && raw.split(".").length === 2;
-  const body = trailingDot ? raw.slice(0, -1) : raw;
+  if (raw === null || raw === undefined || raw === "") return "";
+  const str = String(raw);
+  const trailingDot = str.endsWith(".") && str.split(".").length === 2;
+  const body = trailingDot ? str.slice(0, -1) : str;
   const [intPart = "", decPart] = body.split(".");
   const intDigits = intPart.replace(/\D/g, "");
   const decDigits =
@@ -172,45 +173,47 @@ export default AmountField;
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  amountSection: {
-    alignItems: "center",
-    alignSelf: "stretch",
-    paddingTop: spacing[2],
-    paddingBottom: spacing[2],
-    paddingHorizontal: spacing[1],
-  },
-  amountRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 2,
-  },
-  currencySymbol: {
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    marginBottom: 2,
-  },
-  amountDisplay: {
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    letterSpacing: -1,
-    minWidth: 20,
-    padding: 0,
-    includeFontPadding: false,
-  },
-  amountHint: {
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-    fontSize: 11,
-    letterSpacing: 2.5,
-    marginTop: spacing[2.5],
-    textAlign: "center",
-  },
-  formikWrap: {
-    alignSelf: "stretch",
-  },
-  errorText: {
-    fontSize: 12,
-    marginTop: spacing[1.5],
-    marginLeft: spacing[1],
-    fontFamily: typography.fontFamily.Manrope.Medium,
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    amountSection: {
+      alignItems: "center",
+      alignSelf: "stretch",
+      paddingTop: spacing[2],
+      paddingBottom: spacing[2],
+      paddingHorizontal: spacing[1],
+    },
+    amountRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 2,
+    },
+    currencySymbol: {
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      marginBottom: 2,
+    },
+    amountDisplay: {
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      letterSpacing: -1,
+      minWidth: 20,
+      padding: 0,
+      includeFontPadding: false,
+    },
+    amountHint: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+      letterSpacing: 2.5,
+      marginTop: spacing[2.5],
+      textAlign: "center",
+    },
+    formikWrap: {
+      alignSelf: "stretch",
+    },
+    errorText: {
+      ...textMetrics("xs", "snug"),
+      marginTop: spacing[1.5],
+      marginLeft: spacing[1],
+      fontFamily: typography.fontFamily.Manrope.Medium,
+    },
+  }),
+);

@@ -203,46 +203,48 @@ export default FormikCategorySelect;
 
 // ─── Theme‑aware styles (at the very bottom) ────────────────────────────────
 
-const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
-  optionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing[3],
-    minHeight: 40,
-  },
-  iconWrap: {
-    width: 30,
-    height: 30,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  optionLabel: {
-    fontSize: typography.fontSize.md,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-  },
-  infoText: {
-    fontSize: 12,
-    fontFamily: typography.fontFamily.Manrope.Medium,
-    marginBottom: 10,
-  },
-  addCustomBtn: {
-    paddingHorizontal: spacing[3],
-    height: 32,
-    borderRadius: radius.full,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addCustomBtnText: {
-    fontSize: 12,
-    fontFamily: typography.fontFamily.Manrope.SemiBold,
-  },
-  selectedIconWrap: {
-    width: 24,
-    height: 24,
-    borderRadius: radius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-}));
+const useStyles = makeStyles(
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
+    optionRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing[3],
+      minHeight: 40,
+    },
+    iconWrap: {
+      width: 30,
+      height: 30,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    optionLabel: {
+      ...textMetrics("md", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+    },
+    infoText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.Medium,
+      marginBottom: 10,
+    },
+    addCustomBtn: {
+      paddingHorizontal: spacing[3],
+      height: 32,
+      borderRadius: radius.full,
+      borderWidth: 1,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    addCustomBtnText: {
+      ...textMetrics("xs", "snug"),
+      fontFamily: typography.fontFamily.Manrope.SemiBold,
+    },
+    selectedIconWrap: {
+      width: 24,
+      height: 24,
+      borderRadius: radius.full,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  }),
+);

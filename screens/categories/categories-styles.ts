@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useCategoriesStyles = makeStyles(
-  ({ colors, spacing, radius, typography }) => ({
+  ({ colors, spacing, radius, typography, textMetrics }) => ({
     safeArea: {
       flex: 1,
       backgroundColor: colors.background.screen,
@@ -21,9 +21,9 @@ export const useCategoriesStyles = makeStyles(
       width: 36,
     },
     headerTitle: {
+      ...textMetrics("lg", "snug"),
       color: colors.text.primary,
       fontFamily: typography.fontFamily.Manrope.Bold,
-      fontSize: typography.fontSize.lg,
     },
     headerIcon: {
       color: colors.text.primary,
@@ -57,8 +57,8 @@ export const useCategoriesStyles = makeStyles(
       backgroundColor: "transparent",
     },
     tabLabel: {
+      ...textMetrics("sm", "snug"),
       fontFamily: typography.fontFamily.Manrope.SemiBold,
-      fontSize: typography.fontSize.sm,
     },
     tabLabelActive: {
       color: colors.primary.contrastText,
@@ -85,15 +85,15 @@ export const useCategoriesStyles = makeStyles(
       paddingHorizontal: spacing[0.5],
     },
     sectionTitle: {
+      ...textMetrics("xs", "snug"),
       color: colors.text.secondary,
       fontFamily: typography.fontFamily.Manrope.SemiBold,
-      fontSize: typography.fontSize.xs,
       letterSpacing: 0.2,
     },
     sectionCount: {
+      ...textMetrics("xs", "snug"),
       color: colors.text.secondary,
       fontFamily: typography.fontFamily.Manrope.Bold,
-      fontSize: typography.fontSize.xs,
     },
 
     // ── Grid ──────────────────────────────────────────────
@@ -124,9 +124,9 @@ export const useCategoriesStyles = makeStyles(
       marginBottom: spacing[2],
     },
     tileTitle: {
+      ...textMetrics("xs", "snug"),
       color: colors.text.primary,
       fontFamily: typography.fontFamily.Manrope.SemiBold,
-      fontSize: typography.fontSize.xs,
       textAlign: "center",
       marginBottom: spacing[1.5],
     },
@@ -154,15 +154,15 @@ export const useCategoriesStyles = makeStyles(
       paddingHorizontal: spacing[4],
     },
     feedbackTitle: {
+      ...textMetrics("lg", "snug"),
       color: colors.text.primary,
       fontFamily: typography.fontFamily.Manrope.Bold,
-      fontSize: typography.fontSize.lg,
       textAlign: "center",
     },
     feedbackSubtitle: {
+      ...textMetrics("sm", "snug"),
       color: colors.text.secondary,
       fontFamily: typography.fontFamily.Manrope.Medium,
-      fontSize: typography.fontSize.sm,
       marginTop: spacing[1],
       textAlign: "center",
     },
@@ -174,9 +174,9 @@ export const useCategoriesStyles = makeStyles(
       paddingVertical: spacing[2],
     },
     retryBtnText: {
+      ...textMetrics("sm", "snug"),
       color: colors.primary.contrastText,
       fontFamily: typography.fontFamily.Manrope.SemiBold,
-      fontSize: typography.fontSize.sm,
     },
     fab: {
       alignItems: "center",

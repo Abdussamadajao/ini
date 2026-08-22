@@ -22,27 +22,20 @@ export function AddExpensesScreen() {
     values: ExpenseFormValues,
     { resetForm }: FormikHelpers<ExpenseFormValues>,
   ) => {
-    try {
-      const category_id =
-        values.trackMode === "income" ? values.categoryId : "";
-      const income_id =
-        values.trackMode === "income" ? values.sourceId : undefined;
+    await createTransaction.mutateAsync({
+      type: "EXPENSE",
+      amount: parseFloat(values.amount),
+      category_id: values.categoryId,
+      ...(values.trackMode === "income"
+        ? { income_id: values.sourceId }
+        : { budget_id: values.sourceId }),
+      recorded_at: values.date,
+      notes: values.notes || undefined,
+      receipt_url: values.receiptUrl || undefined,
+    });
 
-      await createTransaction.mutateAsync({
-        type: "EXPENSE",
-        amount: parseFloat(values.amount),
-        category_id,
-        income_id,
-        recorded_at: values.date,
-        notes: values.notes || undefined,
-        receipt_url: values.receiptUrl || undefined,
-      });
-
-      resetForm();
-      router.back();
-    } catch (error) {
-      console.error("Error creating expense:", error);
-    }
+    resetForm();
+    router.back();
   };
 
   return (
@@ -51,6 +44,7 @@ export function AddExpensesScreen() {
       submitLabel="Save Expense"
       initialValues={initialValues}
       onSubmit={handleSubmit}
+      loading={createTransaction.isPending}
     />
   );
 }

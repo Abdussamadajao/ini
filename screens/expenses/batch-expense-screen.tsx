@@ -1,6 +1,6 @@
 import { useTransactionMutation } from "@/actions";
 import { FormikAmountField } from "@/components/form";
-import { Button } from "@/components/shared";
+import { Button, FormHeader } from "@/components/shared";
 import { formatPrice } from "@/lib/custom";
 import { useTheme } from "@/theme";
 import { CreateTransactionBody } from "@/types";
@@ -36,21 +36,6 @@ type BatchExpenseValues = {
   expenses: BatchExpenseEntry[];
 };
 
-// Shape matching the API contract, kept here so the dummy payload
-// stays consistent with what the real request will eventually look like.
-type TransactionPayload = {
-  type: "INCOME" | "EXPENSE";
-  amount: number;
-  category_id: string;
-  income_id?: string;
-  budget_id?: string;
-  source_name?: string;
-  notes?: string;
-  receipt_url?: string;
-  tag?: string;
-  recorded_at: string;
-};
-
 let localIdCounter = 0;
 const nextLocalId = () => `entry-${Date.now()}-${localIdCounter++}`;
 
@@ -83,7 +68,6 @@ export function BatchExpenseScreen() {
     const transactions: CreateTransactionBody[] = values.expenses.map(
       (entry) => {
         const isIncome = entry.trackMode === "income";
-
         const selectedSource = budgetSources.find(
           (s) => s.id === entry.sourceId,
         );
@@ -92,9 +76,7 @@ export function BatchExpenseScreen() {
           type: "EXPENSE",
           amount: parseFloat(entry.amount) || 0,
           category_id: entry.categoryId,
-          // If income, add income_id; otherwise, don't include it
           ...(isIncome && { income_id: entry.sourceId }),
-          // If expense, add budget_id; otherwise, don't include it
           ...(!isIncome && { budget_id: entry.sourceId || undefined }),
           source_name: selectedSource?.label,
           notes: entry.notes || undefined,
@@ -109,6 +91,7 @@ export function BatchExpenseScreen() {
     resetForm();
     router.back();
   };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <Formik
@@ -152,11 +135,13 @@ export function BatchExpenseScreen() {
             (sum, e) => sum + (parseFloat(e.amount) || 0),
             0,
           );
+          const allFilled = values.expenses.every(
+            (e) => e.amount && parseFloat(e.amount) > 0 && e.sourceId,
+          );
 
           const handleSavePress = async () => {
             const formErrors = await validateForm();
             if (Object.keys(formErrors).length > 0) {
-              // mark all fields touched so validation errors render
               const touchedExpenses = values.expenses.map(() => ({
                 amount: true,
                 categoryId: true,
@@ -170,27 +155,17 @@ export function BatchExpenseScreen() {
 
           return (
             <>
-              {/* Header */}
-              <View style={styles.header}>
-                <Pressable
-                  onPress={() => router.back()}
-                  style={styles.headerBtn}
-                  hitSlop={8}
-                >
-                  <MaterialIcons
-                    name="close"
-                    size={24}
-                    color={colors.text.secondary}
-                  />
-                </Pressable>
-                <Text style={styles.headerTitle}>Batch expense</Text>
-                <View style={styles.headerCountBadge}>
-                  <Text style={styles.headerCountText}>
-                    {values.expenses.length} EXPENSE
-                    {values.expenses.length !== 1 ? "S" : ""}
-                  </Text>
-                </View>
-              </View>
+              <FormHeader
+                title="Batch expense"
+                rightContent={
+                  <View style={styles.headerCountBadge}>
+                    <Text style={styles.headerCountText}>
+                      {values.expenses.length} EXPENSE
+                      {values.expenses.length !== 1 ? "S" : ""}
+                    </Text>
+                  </View>
+                }
+              />
 
               <ScrollView
                 style={styles.scroll}
@@ -202,57 +177,69 @@ export function BatchExpenseScreen() {
                   {({ remove, push }) => (
                     <>
                       {values.expenses.map((entry, index) => (
-                        <View key={entry.localId} style={styles.batchSection}>
-                          <View style={styles.batchSectionHeader}>
-                            <Text style={styles.fieldLabel}>
-                              EXPENSE {String(index + 1).padStart(2, "0")}
-                            </Text>
-                            {values.expenses.length > 1 && (
-                              <TouchableOpacity
-                                style={styles.removeButton}
-                                onPress={() => remove(index)}
-                              >
-                                <MaterialIcons
-                                  name="delete"
-                                  size={18}
-                                  color={colors.status.error.main}
-                                />
-                                <Text style={styles.removeButtonText}>
-                                  Remove
-                                </Text>
-                              </TouchableOpacity>
-                            )}
-                          </View>
-
-                          {/* Amount Hero */}
-                          <View style={styles.amountSection}>
-                            <View style={styles.amountRow}>
-                              <FormikAmountField
-                                name={`expenses[${index}].amount`}
-                              />
+                        <View key={entry.localId}>
+                          <View style={styles.batchSection}>
+                            <View style={styles.batchSectionHeader}>
+                              <View style={styles.rowLabel}>
+                                <View style={styles.batchIndexBadge}>
+                                  <Text style={styles.batchIndexText}>
+                                    {index + 1}
+                                  </Text>
+                                </View>
+                                <Text style={styles.fieldLabel}>EXPENSE</Text>
+                              </View>
+                              {values.expenses.length > 1 && (
+                                <TouchableOpacity
+                                  style={styles.removeButton}
+                                  onPress={() => remove(index)}
+                                  hitSlop={8}
+                                >
+                                  <MaterialIcons
+                                    name="delete-outline"
+                                    size={16}
+                                    color={colors.status.error.main}
+                                  />
+                                  <Text style={styles.removeButtonText}>
+                                    Remove
+                                  </Text>
+                                </TouchableOpacity>
+                              )}
                             </View>
+
+                            <View style={styles.amountSection}>
+                              <View style={styles.amountRow}>
+                                <FormikAmountField
+                                  name={`expenses[${index}].amount`}
+                                />
+                              </View>
+                            </View>
+
+                            <ExpenseEntryFields
+                              namePrefix={`expenses[${index}]`}
+                              trackMode={entry.trackMode}
+                              sourceId={entry.sourceId}
+                              categoryId={entry.categoryId}
+                              receiptUrl={entry.receiptUrl}
+                              sourceError={
+                                (errors.expenses as any)?.[index]?.sourceId
+                              }
+                              sourceTouched={
+                                (touched.expenses as any)?.[index]?.sourceId
+                              }
+                              setFieldValue={setFieldValue}
+                            />
                           </View>
 
-                          <ExpenseEntryFields
-                            namePrefix={`expenses[${index}]`}
-                            trackMode={entry.trackMode}
-                            sourceId={entry.sourceId}
-                            categoryId={entry.categoryId}
-                            receiptUrl={entry.receiptUrl}
-                            sourceError={
-                              (errors.expenses as any)?.[index]?.sourceId
-                            }
-                            sourceTouched={
-                              (touched.expenses as any)?.[index]?.sourceId
-                            }
-                            setFieldValue={setFieldValue}
-                          />
+                          {index < values.expenses.length - 1 && (
+                            <View style={styles.batchDivider} />
+                          )}
                         </View>
                       ))}
 
                       <TouchableOpacity
                         style={styles.addAnotherButton}
                         onPress={() => push(makeEmptyEntry())}
+                        activeOpacity={0.7}
                       >
                         <MaterialIcons
                           name="add"
@@ -270,7 +257,14 @@ export function BatchExpenseScreen() {
 
               {/* Bottom Action Bar */}
               <View style={styles.footer}>
-                <View style={styles.batchSummaryRow}>
+                <View
+                  style={[
+                    styles.batchSummaryRow,
+                    allFilled
+                      ? styles.batchSummaryRowReady
+                      : styles.batchSummaryRowPending,
+                  ]}
+                >
                   <View>
                     <Text style={styles.fieldLabel}>BATCH SUMMARY</Text>
                     <Text style={styles.budgetMeta}>
@@ -286,12 +280,11 @@ export function BatchExpenseScreen() {
                   </View>
                 </View>
                 <Button
-                  //   style={styles.saveButton}
+                  title="Save all expenses"
                   onPress={handleSavePress}
                   loading={createBatchTransaction.isPending}
-                >
-                  <Text style={styles.saveButtonText}>Save all expenses</Text>
-                </Button>
+                  textStyle={styles.saveButtonText}
+                />
               </View>
             </>
           );

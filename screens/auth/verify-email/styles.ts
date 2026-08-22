@@ -1,7 +1,7 @@
 import { makeStyles } from "@/theme";
 
 export const useStyles = makeStyles(
-  ({ colors, spacing, radius, shadow, typography }) => ({
+  ({ colors, spacing, radius, shadow, typography, textMetrics }) => ({
     flex: { flex: 1 },
     container: {
       flex: 1,
@@ -73,17 +73,15 @@ export const useStyles = makeStyles(
       marginBottom: spacing[4],
     },
     heroTitle: {
-      fontSize: typography.fontSize["3xl"],
-      lineHeight: 32,
+      ...textMetrics("3xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
       textAlign: "center",
       marginBottom: spacing[2],
     },
     subtitle: {
-      textAlign: "center",
-      fontSize: typography.fontSize.md,
-      lineHeight: 24,
+      ...textMetrics("md", "snug"),
       fontFamily: typography.fontFamily.Manrope.Regular,
+      textAlign: "center",
       maxWidth: 280,
     },
     otpDisplay: {
@@ -102,8 +100,7 @@ export const useStyles = makeStyles(
       alignItems: "center",
     },
     resendLabel: {
-      fontSize: typography.fontSize.xs,
-      lineHeight: 16,
+      ...textMetrics("xs", "snug"),
       letterSpacing: 0.6,
       fontFamily: typography.fontFamily.Manrope.SemiBold,
     },
@@ -111,7 +108,7 @@ export const useStyles = makeStyles(
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
     resendLink: {
-      fontSize: typography.fontSize.xs,
+      ...textMetrics("xs", "snug"),
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
     bottomShell: {
@@ -120,8 +117,26 @@ export const useStyles = makeStyles(
       paddingBottom: spacing[10],
     },
     submitText: {
-      fontSize: typography.fontSize.md,
+      ...textMetrics("md", "snug"),
       fontWeight: "700",
+      fontFamily: typography.fontFamily.Manrope.Bold,
+    },
+    backLink: {
+      alignSelf: "center",
+      marginTop: spacing[3],
+      padding: spacing[2],
+    },
+
+    otpBox: {
+      width: 44,
+      height: 52,
+      borderRadius: radius.md,
+      borderWidth: 1.5,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    otpBoxText: {
+      ...textMetrics("xl", "tight"),
       fontFamily: typography.fontFamily.Manrope.Bold,
     },
   }),

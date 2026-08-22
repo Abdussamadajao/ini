@@ -2,6 +2,7 @@ import { ToastRoot } from "@/components/toasts";
 import { useAuthGuard } from "@/guard/use-auth";
 import { useAuthHydration } from "@/guard/use-auth-hydration";
 import { queryClient } from "@/lib/query-client";
+import { useAuthStore } from "@/stores";
 import { ThemeProvider, useColors, useIsDark } from "@/theme";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -25,9 +26,9 @@ configureReanimatedLogger({
 
 SplashScreen.preventAutoHideAsync();
 
-// export const unstable_settings = {
-//   anchor: "(tabs)",
-// };
+export const unstable_settings = {
+  anchor: "(tabs)",
+};
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -40,22 +41,21 @@ export default function RootLayout() {
     "Manrope-ExtraLight": require("@/assets/fonts/Manrope-ExtraLight.ttf"),
   });
   const { isHydrated } = useAuthHydration();
-  const isReady = fontsLoaded && isHydrated;
+  const appReady = fontsLoaded && isHydrated;
 
   useEffect(() => {
-    if (isReady) SplashScreen.hideAsync();
-  }, [isReady]);
+    useAuthStore.getState().hydrate();
+  }, []);
 
-  if (!isReady) {
-    return null;
-  }
-
+  // No more `if (!isReady) return null` — always mount the navigator
+  // so useRootNavigationState() can become available. The splash
+  // screen stays up (native, not JS) until we explicitly hide it.
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <BottomSheetModalProvider>
-            <RootNavigator />
+            <RootNavigator appReady={appReady} />
             <ToastRoot />
             <ThemedStatusBar />
           </BottomSheetModalProvider>
@@ -65,9 +65,14 @@ export default function RootLayout() {
   );
 }
 
-function RootNavigator() {
-  useAuthGuard();
+function RootNavigator({ appReady }: { appReady: boolean }) {
   const colors = useColors();
+  const navReady = useAuthGuard({ appReady });
+
+  useEffect(() => {
+    if (navReady) SplashScreen.hideAsync();
+  }, [navReady]);
+
   return (
     <Stack
       screenOptions={{

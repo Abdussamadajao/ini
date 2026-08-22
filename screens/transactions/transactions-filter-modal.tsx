@@ -1,4 +1,4 @@
-﻿import { DateRangePicker, type RangeValue } from "@/components/form";
+﻿import { DateRangePicker, Textfield, type RangeValue } from "@/components/form";
 import BlurBackdrop, {
   BlurBackdropProps,
 } from "@/components/shared/blur-backdrop";
@@ -17,7 +17,11 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { TABS, TabType } from "./types";
 
 export type DateRangePreset =
-  "all_time" | "today" | "this_week" | "this_month" | "custom";
+  | "all_time"
+  | "today"
+  | "this_week"
+  | "this_month"
+  | "custom";
 
 export type TransactionCategoryId = string;
 
@@ -393,15 +397,7 @@ export default function TransactionsFilterModal({
             >
               MIN
             </Text>
-            <TextInput
-              style={[
-                styles.amountInput,
-                {
-                  borderColor: colors.border.default,
-                  backgroundColor: colors.background.surface,
-                  color: colors.text.primary,
-                },
-              ]}
+            <Textfield
               value={amountMin}
               onChangeText={setAmountMin}
               placeholder="$0"
@@ -415,15 +411,7 @@ export default function TransactionsFilterModal({
             >
               MAX
             </Text>
-            <TextInput
-              style={[
-                styles.amountInput,
-                {
-                  borderColor: colors.border.default,
-                  backgroundColor: colors.background.surface,
-                  color: colors.text.primary,
-                },
-              ]}
+            <Textfield
               value={amountMax}
               onChangeText={setAmountMax}
               placeholder="$10,000"
@@ -514,7 +502,7 @@ const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
     fontSize: 12,
     fontFamily: typography.fontFamily.Manrope.Bold,
     letterSpacing: 0.6,
-    textTransform: "uppercase",
+    textTransform: "capitalize",
     marginBottom: spacing[3],
   },
 
@@ -606,7 +594,7 @@ const useStyles = makeStyles(({ colors, spacing, radius, typography }) => ({
     fontSize: 12,
     fontFamily: typography.fontFamily.Manrope.Bold,
     letterSpacing: 0.5,
-    textTransform: "uppercase",
+    textTransform: "capitalize",
   },
   amountInput: {
     width: "100%",
